@@ -1,7 +1,7 @@
 var Casemanager = require('../models/casemanager');
 var models = require('../models');
 const caseStatus = ['New', 'On Hold', 'Escalated', 'Working', 'Closed'];
-const casePriority = ['High', 'Medium', 'Low'];
+const casePriority = ['Low', 'Medium', 'High'];
 const caseOrigin = ['Web', 'Email'];
 const caseType = ['Support', 'Request'];
 const caseResponseStatus = ['Awaiting Business Reply', 'Completed'];
@@ -22,7 +22,7 @@ exports.getCasemanagerCreate = async function(req, res, next) {
             },
         }],
     });
-    
+
     res.render('pages/content', {
         title: 'Create a Casemanager Record',
         users: users,
@@ -42,101 +42,47 @@ exports.getCasemanagerCreate = async function(req, res, next) {
 
 // Handle casemanager create on CASEMANAGER.
 exports.postCasemanagerCreate = async function( req, res, next) {
-    
-    
-    console.log("This is user id of the user selected " + req.body.user_id)
-    
-    // get the user id that is creating the casemanager
-    let user_id = req.body.user_id;
-    
     try{
-    // get full details of the user that is creating the casemanager i.e. Department and Current Business
-    const user = await models.User.findByPk(
-        user_id,
-        {
-            include:
-            [
-                        {
-                            model: models.Department 
-                        },
-                        {
-                            model: models.Role,
-                            attributes: ['id', 'role_name']
-                        },
-                        {
-                            model: models.Profile,
-                            attributes: ['id', 'profile_name']
-                        },
-                        {
-                            model: models.Permission,
-                            as: 'permissions',
-                            attributes: ['id', 'permission_name']
-                        },
-                        {
-                            model: models.CurrentBusiness,
-                            // through: { where: { user_id: `${user_id}` } },
-                            as: 'currentbusinesses',
-                            attributes: ['id', 'current_business_name']
-                        },
-                        
-            ]
+        var rand = Math.floor(1000000000 + Math.random() * 9000000000);
+        var casemanagers = await models.Casemanager.findAll({where: {case_number: rand}});
+        console.log(casemanagers);
+        if (casemanagers.length != 0) {
+            return res.status(400);
         }
-    );
- 
-
-    console.log('This is the user details making the casemanager' + user);
-    
-    var currentBusinessId;
-    
-    user.currentbusinesses.forEach(function(currentBusiness) {
-        console.log('This is the user current business id making the casemanager ' + currentBusiness.id);
-        currentBusinessId = currentBusiness.id;
-    });
-    
-    console.log('This is the user department id making the casemanager ' + user.Department.id);
-    
-    let departmentId = user.Department.id
-    
     // create the casemanager with user current business and department
-    var casemanager = await models.Casemanager.create({
-            casemanager_title: req.body.casemanager_title,
-            casemanager_body: req.body.casemanager_body,
-            UserId: user_id,
-            DepartmentId: departmentId,
-            CurrentBusinessId: currentBusinessId
-            
+    var casemanager = await models.Casemanager.create(
+        {
+            status: req.body.status,
+            priority: req.body.priority,
+            case_origin: req.body.origin,
+            request_type: req.body.request_type,
+            assigned_to: req.body.assigned,
+            case_type: req.body.case_type,
+            case_number: req.body.casemanager_body,
+            UserId: req.user.id,
+            DepartmentId: req.user.DepartmentId,
+            CurrentBusinessId: req.user.CurrentBusinessId,
+            subject: req.body.subject,
+            description: req.body.description,
+            contact_name: req.body.contact_name,
+            contact_email: req.body.contact_email,
+            email: req.body.email,
+            note: req.body.note,
+            AccountId: req.user.account_id,
+            case_number: rand
         } 
     );
-    
-    console.log("The casemanager id " + casemanager.id);
-
-    
-    // let's do what we did for user model
-    var actionType = 'create';
-        
-        // START MANY TO MANY RELATIONSHIP (add categories)
-        
-        // INSERT PERMISSION MANY TO MANY RELATIONSHIP
-        var addCategories = await CreateOrUpdateCategories (req, res, casemanager, actionType);
-        
-        console.log(addCategories);
-        
-        if(!addCategories){
-            return res.status(422).json({ status: false,  error: 'Error occured while adding Categories'});
-        }
-        
-        // END MANY TO MANY 
         
         console.log('Casemanager Created Successfully');
         
         // everything done, now redirect....to casemanager listing.
-        res.redirect('/main/casemanager/' + casemanager.id);
+        res.redirect('/casemanager/' + casemanager.id);
         
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
         console.log("There was an error " + error);
         // not sure if we need to detsory the casemanager? shall we?
-        models.Casemanager.destroy({ where: {id: casemanager.id}});
+        // models.Casemanager.destroy({ where: {id: casemanager.id}});
         res.render('pages/error', {
         title: 'Error',
         message: error,
@@ -318,14 +264,6 @@ exports.getCasemanagerDetails = async function(req, res, next) {
                     model: models.CurrentBusiness,
                     attributes: ['id', 'current_business_name']
                 },
-                {
-                    model: models.Category,
-                    as: 'categories',
-                    required: false,
-                    // Pass in the Category attributes that you want to retrieve
-                    attributes: ['id', 'category_name']
-                }
-
             ]
 
         }
@@ -346,36 +284,7 @@ exports.getCasemanagerDetails = async function(req, res, next) {
 // Display list of all casemanagers.
 exports.getCasemanagerList = function(req, res, next) {
     // controller logic to display all casemanagers
-    models.Casemanager.findAll({
-      
-        // Make sure to include the categories
-        include: [
-            {
-                model: models.User,
-                attributes: ['id', 'first_name', 'last_name'],
-                include: [
-                    {
-                        model: models.Department
-                    },
-                    {
-                        model: models.CurrentBusiness
-                    }
-                    // ,
-                    // {
-                    //     model: models.CurrentBusiness,
-                    //     as: 'currentbusinesses',
-                    //     attributes: ['id', 'current_business_name']
-                    // }
-                ]
-            },
-            {
-                model: models.Category,
-                as: 'categories',
-                attributes: ['id', 'category_name']
-            }
-        ]
-
-    }).then(function(casemanagers) {
+    models.Casemanager.findAll().then(function(casemanagers) {
         // renders a casemanager list page
         console.log(casemanagers);
         console.log("rendering casemanager list");

@@ -2,7 +2,7 @@
         <div class="jumbotron">
             <form action="" method="post">
               Status: 
-               <select name = "user_id">
+               <select name = "status">
                     <% caseStatus.forEach(function(dropdown) { %>
                     <option  value="<%= dropdown %>"><%= dropdown %></option>
                 <br/>
@@ -10,7 +10,7 @@
                 </select>
             <br><br>
             Priority: 
-               <select name = "user_id">
+               <select name = "priority">
                     <% casePriority.forEach(function(dropdown) { %>
                     <option  value="<%= dropdown %>"><%= dropdown %></option>
                 <br/>
@@ -18,7 +18,7 @@
                 </select>
             <br><br>
             Origin: 
-               <select name = "user_id">
+               <select name = "origin">
                     <% caseOrigin.forEach(function(dropdown) { %>
                     <option  value="<%= dropdown %>"><%= dropdown %></option>
                 <br/>
@@ -26,7 +26,7 @@
                 </select>
             <br><br>
             Request Type: 
-               <select name = "user_id">
+               <select name = "request_type">
                     <% caseRequestType.forEach(function(dropdown) { %>
                     <option  value="<%= dropdown %>"><%= dropdown %></option>
                 <br/>
@@ -34,7 +34,7 @@
                 </select>
             <br><br>
             Case Type: 
-               <select name = "user_id">
+               <select name = "case_type">
                     <% caseType.forEach(function(dropdown) { %>
                     <option  value="<%= dropdown %>"><%= dropdown %></option>
                 <br/>
@@ -42,7 +42,7 @@
                 </select>
             <br><br>
             Department: 
-               <select name = "user_id">
+               <select name = "department">
                     <% departments.forEach(function(dropdown) { %>
                     <option  value="<%= dropdown.id %>"><%= dropdown.department_name %></option>
                 <br/>
@@ -50,7 +50,7 @@
                 </select>
             <br><br>
             Assigned To: 
-               <select name = "user_id">
+               <select required name = "assigned">
                     <% departments.forEach(function(dropdown) { %>
                     <option  value="<%= dropdown.id %>"><%= dropdown.department_name %></option>
                 <br/>
@@ -58,21 +58,21 @@
                 </select>
             <br><br>
             Subject: 
-            <textarea name="subject">Enter Case Subject here...</textarea>
+            <input type="text" name="subject" placeholder="Enter Case Subject here..." value="">
             <br><br>
             Description: 
-            <textarea name="description">Enter Case Description here...</textarea>
+            <textarea name="description" placeholder="Enter Case Description here..."></textarea>
             <br><br>
             Primary Contact Name: 
             <input type="text" name="contact_name" placeholder="Contact Name" value="">
             <br><br/>
-            Email: 
-            <input type="email" name="email" placeholder="Email" value="">
+            Contact Email: 
+            <input type="email" name="contact_email" placeholder="Email" value="">
             <br><br/>
             Additional Information: 
-            <textarea name="note">Enter Additional Information here...</textarea>
+            <textarea name="note" placeholder="Enter Additional Information here..."></textarea>
             <br><br>
-               <input type="submit" value="Create Post"  >
+               <input type="submit" value="Create Case"  >
              </form>
 
         </div>

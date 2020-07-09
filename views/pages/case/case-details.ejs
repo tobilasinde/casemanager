@@ -1,20 +1,24 @@
- <div class="col-sm-8">    
-        <div class="">
-        
-            <h1>Post Details - <%= post.post_title %>  </h1>
-            <p>I am a post for this ID = <%= post.id %></p>
-            <p>Post Title: <%= post.post_title %></p>
-            <p>Post Body:  <%= post.post_body %></p>
-            <p>
-            <b>Posted by User: </b> <%= post.User.first_name %> <%= post.User.last_name %> <br/>
-            <b>User belongs to this Current Business</b> <%= post.CurrentBusiness.current_business_name %><br/>
-            <b>Poast was made when user was in this Department: </b> <%= post.Department.department_name %> <br/>
-            <b>inside these Categories:</b> 
-             <% post.categories.forEach(function(category) { %>  <a href="/main/category/<%= category.id %>/"> <%= category.category_name %> </a>  
-            <% }); %>
-            </p>
-            <a href="/main/post/<%= post.id %>/update">Edit  Post</a> | <a href="/main/post/<%= post.id %>/delete">Delete Post</a>
 
-        
-        </div>
-    </div>
+<p>See below Case information:</p>
+
+<ul>
+    <li>Case Type: <b><%= casemanager.case_type %></b></li>
+    <li>Case Number: <b><%= casemanager.case_number %></b></li>
+    <li>Case Status: <b><%= casemanager.status %></b></li>
+    <li>Case Priority: <b><%= casemanager.priority %></b></li>
+    <li>Case Origin: <b><%= casemanager.case_origin %></b></li>
+    <li>Subject:  <b><%= casemanager.subject %></b></li>
+    <li>Contact Name:  <b><%= casemanager.contact_name %></b></li>
+    <li>Contact Email: <b><%= casemanager.contact_email %></b></li>
+    <li>Assigned to: <b><%= casemanager.assigned_to %></b></li>
+    <li>Response Status: <b><%= casemanager.response_status %></b></li>
+    <li>Request Type: <b><%= casemanager.request_type %></b></li>
+    <li>Description: <b><%= casemanager.description %></b></li>
+    <li>Additional Informantion: <b><%= casemanager.note %></b></li>
+    <li>Department:  <b><%= casemanager.Department.department_name %> </b>and Depatment ID is <b><%= casemanager.Department.id %> </b></li>
+    <li>Current Business: <b><%= casemanager.CurrentBusiness.current_business_name %> </b>and Current Business ID is <b><%= casemanager.CurrentBusiness.id %></b></li>
+</ul> 
+</div>
+
+<b>
+    

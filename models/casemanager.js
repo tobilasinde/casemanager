@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM('Support', 'Request')
       },
       case_number: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       allowNull: false,
       },
       status: {
@@ -31,10 +31,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       },
-      account_number: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      },
       assigned_to: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -50,24 +46,24 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       },
-      document: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      },
+      // document: {
+      // type: DataTypes.STRING,
+      // allowNull: false,
+      // },
       note: {
       type: DataTypes.STRING,
       allowNull: false,
       },
-      CurrentBusinessId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      },
-      DepartmentId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      },
-      UserId: {
-      type: DataTypes.INTEGER,
+      // CurrentBusinessId: {
+      // type: DataTypes.INTEGER,
+      // allowNull: false,
+      // },
+      // DepartmentId: {
+      // type: DataTypes.INTEGER,
+      // allowNull: false,
+      // },
+      AccountId: {
+      type: DataTypes.STRING,
       allowNull: false,
       } 
   });
