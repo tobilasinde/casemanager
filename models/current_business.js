@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
   CurrentBusiness.associate = function(models) {
     models.CurrentBusiness.hasMany(models.User);
     models.CurrentBusiness.hasMany(models.Post);
+    models.CurrentBusiness.hasMany(models.Casemanager);
   };
   
   // CurrentBusiness.associate = function(models) {

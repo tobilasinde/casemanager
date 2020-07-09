@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
   Department.associate = function(models) {
     models.Department.hasMany(models.User);
     models.Department.hasMany(models.Post);
+    models.Department.hasMany(models.Casemanager);
   };
   
   return Department;

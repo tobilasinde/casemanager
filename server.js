@@ -14,6 +14,7 @@ var env = process.env.NODE_ENV || 'development',
 var index = require('./routes/index');
 var user = require('./routes/user');
 var main = require('./routes/main');
+var casemanager = require('./routes/casemanager');
 var login = require('./routes/login');
 var siteAdmin = require('./routes/siteAdmin');
 var tools = require('./modules/tools');
@@ -127,13 +128,15 @@ app.get('/logout',
 //
 app.use('/', index);
 app.use('/main', main);
-app.use('/user', function(req, res, next) {
-    if (req.isAuthenticated()) {
-        next();
-    } else {
-        res.redirect('/login?m=not-logged-in');
-    }
-});
+app.use('/casemanager', casemanager);
+// app.use('/user', function(req, res, next) {
+//     console.log('I am here');
+//     if (req.isAuthenticated()) {
+//         next();
+//     } else {
+//         res.redirect('/login?m=not-logged-in');
+//     }
+// });
 
 app.use('/user', user);
 app.use('/siteAdmin', siteAdmin);

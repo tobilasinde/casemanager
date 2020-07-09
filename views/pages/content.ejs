@@ -175,7 +175,23 @@ case 'GET CURRENT BUSINESS DETAILS' : %>
        
 case 'GET CURRENT BUSINESS LIST' : %>
        <%- include ('../pages/currentBusiness/current-business-list') %>
-       <% break;    
+       <% break;  
+       
+case 'GET CASE CREATE' : %>
+       <%- include ('../pages/case/case-create') %>
+       <% break;
+
+case 'GET CASE UPDATE' : %>
+       <%- include ('../pages/case/case-update') %>
+       <% break;
+       
+case 'GET CASE DETAILS' : %>
+       <%- include ('../pages/case/case-details') %>
+       <% break;
+       
+case 'GET CASE LIST' : %>
+       <%- include ('../pages/case/case-list') %>
+       <% break;
        
 default : %>
        <%- include ('../pages/index') %>
