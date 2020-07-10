@@ -1,35 +1,77 @@
-    <div class="col-sm-8">    
-        <div class="jumbotron">
-            <form action="/main/post/<%= post.id %>/update" method="post">
-              Post Title:<br>
-              <input type="text" name="post_title" value="<%= post.post_title %>" placeholder="Post Title" value="" >
-              <br><br/>
-              Post Body:<br>
-              <input type="text" name="post_body" value="<%= post.post_body %>" placeholder="Post Body" value="">
-              <br><br>
-              Posted By:<br>
-             <select name = "user_id">
-                <% users.forEach(function(user) { 
-                     var selected = ( post.User.id == user.id ) ? "selected" : false;  %>
-                    <option value="<%= user.id %>" <%=selected%> >
-                        <%=user.first_name%>
-                    </option>
-                <% }); %>
-             </select>
-            <br><br>
-              Category:<br>
-                <div>
-                     <% categories.forEach(function(category) { %>
-                    <input type="checkbox" class='categoryCheckbox' name="categories" id="<%= category.id %>" value="<%= category.id %>">
-                    <label for="<%= category.category_name %>"><%= category.category_name %></label>
-                <br/>
-               <% }); %>
-                 </div>
-                 </br>
-               <input type="submit" value="Update Post"  >
-             </form>
+<div class="col-sm-8">    
+  <div class="jumbotron">
+      <form action="" method="post">
+        Status: 
+         <select name = "status">
+          <option  value="<%= casemanager.status %>"><%= casemanager.status %></option>
+            <% caseStatus.forEach(function(dropdown) { %>
+            <option  value="<%= dropdown %>"><%= dropdown %></option>
+          <br/>
+         <% }); %>
+          </select>
+      <br><br>
+      Priority: 
+         <select name = "priority">
+          <option  value="<%= casemanager.priority %>"><%= casemanager.priority %></option>
+              <% casePriority.forEach(function(dropdown) { %>
+              <option  value="<%= dropdown %>"><%= dropdown %></option>
+          <br/>
+         <% }); %>
+          </select>
+      <br><br>
+      Origin: 
+         <select name = "origin">
+          <option  value="<%= casemanager.case_origin %>"><%= casemanager.case_origin %></option>
+              <% caseOrigin.forEach(function(dropdown) { %>
+              <option  value="<%= dropdown %>"><%= dropdown %></option>
+          <br/>
+         <% }); %>
+          </select>
+      <br><br>
+      Request Type: 
+         <select name = "request_type">
+          <option  value="<%= casemanager.request_type %>"><%= casemanager.request_type %></option>
+              <% caseRequestType.forEach(function(dropdown) { %>
+              <option  value="<%= dropdown %>"><%= dropdown %></option>
+          <br/>
+         <% }); %>
+          </select>
+      <br><br>
+      Case Type: 
+         <select name = "case_type">
+          <option  value="<%= casemanager.case_type %>"><%= casemanager.case_type %></option>
+              <% caseType.forEach(function(dropdown) { %>
+              <option  value="<%= dropdown %>"><%= dropdown %></option>
+          <br/>
+         <% }); %>
+          </select>
+      <br><br>
+      Assigned To: 
+         <select required name = "assigned">
+          <option  value="<%= assignedTo.id %>"><%= assignedTo.department_name %></option>
+              <% departments.forEach(function(dropdown) { %>
+              <option  value="<%= dropdown.id %>"><%= dropdown.department_name %></option>
+          <br/>
+         <% }); %>
+          </select>
+      <br><br>
+      Subject: 
+      <input type="text" name="subject" placeholder="Enter Case Subject here..." value="<%= casemanager.subject %>">
+      <br><br>
+      Description: 
+      <textarea name="description" placeholder="Enter Case Description here..."><%= casemanager.description %></textarea>
+      <br><br>
+      Primary Contact Name: 
+      <input type="text" name="contact_name" placeholder="Contact Name" value="<%= casemanager.contact_name %>">
+      <br><br/>
+      Contact Email: 
+      <input type="email" name="contact_email" placeholder="Email" value="<%= casemanager.contact_email %>">
+      <br><br/>
+      Additional Information: 
+      <textarea name="note" placeholder="Enter Additional Information here..."><%= casemanager.note %></textarea>
+      <br><br>
+         <input type="submit" value="Update Case"  >
+       </form>
 
-        </div>
-    </div>
-    
- 
+  </div>
+</div>

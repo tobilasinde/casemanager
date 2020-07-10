@@ -28,11 +28,15 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       },
       contact_email: {
-      type: DataTypes.STRING,
-      allowNull: false,
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: false,
+        validate: {
+            isEmail: true
+        }
       },
       assigned_to: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false,
       },
       response_status: {
@@ -43,34 +47,21 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM('Issues', 'Complaints')
       },
       description: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: DataTypes.STRING
       },
       // document: {
       // type: DataTypes.STRING,
       // allowNull: false,
       // },
       note: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: DataTypes.STRING
       },
-      // CurrentBusinessId: {
-      // type: DataTypes.INTEGER,
-      // allowNull: false,
-      // },
-      // DepartmentId: {
-      // type: DataTypes.INTEGER,
-      // allowNull: false,
-      // },
-      AccountId: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      } 
+      updatedBy: {
+        type: DataTypes.STRING
+      }
   });
   
-  // create post association
-  // a post will have a user
-  // a field called UserId will be created in our post table inside the db
+  // create case association
   Casemanager.associate = function (models) {
     
     models.Casemanager.belongsTo(models.User, {
@@ -93,6 +84,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false
       }
     });
+    models.Casemanager.hasMany(models.Casecomment);
     
     // models.Casemanager.hasMany(models.Comment);
         
@@ -100,5 +92,3 @@ module.exports = (sequelize, DataTypes) => {
   
   return Casemanager;
 };
-
-// Make sure you complete other models fields

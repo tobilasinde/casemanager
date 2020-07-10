@@ -50,6 +50,7 @@ module.exports = (sequelize, DataTypes) => {
     
     models.User.hasMany(models.Post);
     models.User.hasMany(models.Casemanager);
+    models.User.hasMany(models.Casecomment);
 
     models.User.belongsTo(models.Department, {
     allowNull: true

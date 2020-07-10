@@ -12,6 +12,7 @@
 var express = require('express');
 var router = express.Router();
 var casemanagerController = require('../controllers/casemanagerController');
+var casecommentController = require('../controllers/casecommentController');
 
 
 // CASEMANAGER ROUTES
@@ -36,5 +37,27 @@ router.get('/', casemanagerController.getCasemanagerList);
 // GET CASEMANAGER DETAIL 
 router.get('/:casemanager_id', casemanagerController.getCasemanagerDetails); 
 
+
+// CASE COMMENT ROUTES
+// // CASECOMMENT CREATE GET
+// router.get('/create', casecommentController.getCasecommentCreate); 
+
+// POST CASECOMMENT CREATE
+router.post('/comment/create', casecommentController.postCasecommentCreate); 
+
+// GET CASECOMMENT UPDATE
+router.get('/comment/:casecomment_id/update', casecommentController.getCasecommentUpdate); 
+
+// POST CASECOMMENT UPDATE
+router.post('/comment/:casecomment_id/update', casecommentController.postCasecommentUpdate); 
+
+// GET CASECOMMENT DELETE
+router.get('/comment/:casecomment_id/delete', casecommentController.getCasecommentDelete); 
+
+// GET CASECOMMENT LIST
+// router.get('/', casecommentController.getCasecommentList); 
+
+// GET CASECOMMENT DETAIL 
+router.get('/comment/:casecomment_id', casecommentController.getCasecommentDetails); 
 
 module.exports = router;

@@ -58,7 +58,6 @@ exports.postCasemanagerCreate = async function( req, res, next) {
             request_type: req.body.request_type,
             assigned_to: req.body.assigned,
             case_type: req.body.case_type,
-            case_number: req.body.casemanager_body,
             UserId: req.user.id,
             DepartmentId: req.user.DepartmentId,
             CurrentBusinessId: req.user.CurrentBusinessId,
@@ -68,7 +67,6 @@ exports.postCasemanagerCreate = async function( req, res, next) {
             contact_email: req.body.contact_email,
             email: req.body.email,
             note: req.body.note,
-            AccountId: req.user.account_id,
             case_number: rand
         } 
     );
@@ -91,19 +89,10 @@ exports.postCasemanagerCreate = async function( req, res, next) {
     }
 };
 
- 
-
- 
-
-
 // Display casemanager delete form on GET.
 exports.getCasemanagerDelete = async function(req, res, next) {
     // find the casemanager
     const casemanager = await models.Casemanager.findByPk(req.params.casemanager_id);
-
-    // Find and remove all associations (maybe not necessary with new libraries - automatically remove. Check Cascade)
-    //const categories = await casemanager.getCategories();
-    //casemanager.removeCategories(categories);
 
     // delete casemanager 
     models.Casemanager.destroy({
@@ -114,7 +103,7 @@ exports.getCasemanagerDelete = async function(req, res, next) {
     }).then(function() {
         // If an casemanager gets deleted successfully, we just redirect to casemanagers list
         // no need to render a page
-        res.redirect('/main/casemanagers');
+        res.redirect('/casemanager');
         console.log("Casemanager deleted successfully");
     });
 };
@@ -124,110 +113,74 @@ exports.getCasemanagerDelete = async function(req, res, next) {
 exports.getCasemanagerUpdate = async function(req, res, next) {
     // Find the casemanager you want to update
     console.log("ID is " + req.params.casemanager_id);
-    const categories = await models.Category.findAll();
+
     const users = await models.User.findAll();
-    // console.log('This is the user details making the casemanager' + user);
-    
-    // var currentBusinessId;
-    
-    // user.currentbusinesses.forEach(function(currentBusiness) {
-    //     console.log('This is the user current business id making the casemanager ' + currentBusiness.id);
-    //     currentBusinessId = currentBusiness.id;
-    // });
-    
-    // console.log('This is the user department id making the casemanager ' + user.Department.id);
-    
-    // let departmentId = user.Department.id
-    
-    models.Casemanager.findByPk(
+    const departments = await models.Department.findAll({
+        include: [{
+            model: models.User,
+            where: {
+                CurrentBusinessId: req.user.CurrentBusinessId
+            },
+        }],
+    });
+
+    const casemanager = await  models.Casemanager.findByPk(
         req.params.casemanager_id,
         {
             include:
             [
-                        {
-                            model: models.Department 
-                        },
-                        {
-                            model: models.User 
-                        },
-                        {
-                            model: models.CurrentBusiness
-                        },
-                        
+                {
+                    model: models.Department 
+                }      
             ]
-        }
-    ).then(function(casemanager) {
-        console.log('this is casemanager user ' + casemanager.User.first_name);
+        });
+    const assignedTo = await models.Department.findByPk(casemanager.assigned_to);
+    // ).then(function(casemanager) {
+        // console.log('this is casemanager user ' + casemanager.User.first_name);
         // renders a casemanager form
-        res.render('pages/content', {
+        await res.render('pages/content', {
             title: 'Update Casemanager',
-            categories: categories,
             casemanager: casemanager,
             users: users,
+            departments: departments,
+            caseStatus: caseStatus,
+            casePriority: casePriority,
+            caseOrigin: caseOrigin,
+            caseType: caseType,
+            caseResponseStatus: caseResponseStatus,
+            caseRequestType: caseRequestType,
+            assignedTo: assignedTo,
             // departments: departments,
             // currentBusinesses: currentBusinesses,
             functioName: 'GET CASE UPDATE',
             layout: 'layouts/detail'
         });
         console.log("Casemanager update get successful");
-    });
+    // });
 
 };
-
 
 // Handle casemanager update on CASEMANAGER.
 exports.postCasemanagerUpdate = async function(req, res, next) {
     console.log("ID is " + req.params.casemanager_id);
 
-    // find the casemanager
-    const casemanager = await models.Casemanager.findByPk(req.params.casemanager_id);
-
-    // Find and remove all associations 
-    const categories = await casemanager.getCategories();
-    casemanager.removeCategories(categories);
-
-
-    // const category = await models.Category.findById(req.body.category_id);
-
-    let cateoryList = req.body.categories;
-
-    // check the size of the category list
-    console.log(cateoryList.length);
-
-
-    // I am checking if only 1 category has been selected
-    // if only one category then use the simple case scenario
-    if (cateoryList.length == 1) {
-        // check if we have that category in our database
-        const category = await models.Category.findByPk(req.body.categories);
-        if (!category) {
-            return res.status(400);
-        }
-        //otherwise add new entry inside CasemanagerCategory table
-        await casemanager.addCategory(category);
-    }
-    // Ok now lets do for more than 1 category, the hard bit.
-    // if more than one category has been selected
-    else {
-        // Loop through all the ids in req.body.categories i.e. the selected categories
-        await req.body.categories.forEach(async (id) => {
-            // check if all category selected are in the database
-            const category = await models.Category.findByPk(id);
-            if (!category) {
-                return res.status(400);
-            }
-            // add to CasemanagerCategory after
-            await casemanager.addCategory(category);
-        });
-    }
-
     // now update
     models.Casemanager.update(
         // Values to update
         {
-            casemanager_title: req.body.casemanager_title,
-            casemanager_body: req.body.casemanager_body,
-            UserId: req.body.user_id
+            status: req.body.status,
+            priority: req.body.priority,
+            case_origin: req.body.origin,
+            request_type: req.body.request_type,
+            assigned_to: req.body.assigned,
+            case_type: req.body.case_type,
+            subject: req.body.subject,
+            description: req.body.description,
+            contact_name: req.body.contact_name,
+            contact_email: req.body.contact_email,
+            email: req.body.email,
+            note: req.body.note,
+            updatedBy: req.user.id
         }, { // Clause
             where: {
                 id: req.params.casemanager_id
@@ -237,7 +190,7 @@ exports.postCasemanagerUpdate = async function(req, res, next) {
     ).then(function() {
         // If an casemanager gets updated successfully, we just redirect to casemanagers list
         // no need to render a page
-        res.redirect("/main/casemanagers");
+        res.redirect("/casemanager/"+req.params.casemanager_id);
         console.log("Casemanager updated successfully");
     });
 };
@@ -247,11 +200,15 @@ exports.postCasemanagerUpdate = async function(req, res, next) {
 exports.getCasemanagerDetails = async function(req, res, next) {
     
     console.log("I am in casemanager details")
+    // find all comment for a a case
+    var casecomments = await models.Casecomment.findAll({where: {
+        CasemanagerId: req.params.casemanager_id
+    }});
+    
     // find a casemanager by the primary key Pk
-    models.Casemanager.findByPk(
+    var casemanager = await models.Casemanager.findByPk(
         req.params.casemanager_id, {
             include: [
-                
                 {
                     model: models.User,
                     attributes: ['id', 'first_name', 'last_name']
@@ -263,20 +220,20 @@ exports.getCasemanagerDetails = async function(req, res, next) {
                 {
                     model: models.CurrentBusiness,
                     attributes: ['id', 'current_business_name']
-                },
+                }
             ]
-
-        }
-    ).then(async function(casemanager) {
+        });
+        const assignedTo = await models.Department.findByPk(casemanager.assigned_to);
         console.log(casemanager)
         res.render('pages/content', {
             title: 'Casemanager Details',
             functioName: 'GET CASE DETAILS',
             casemanager: casemanager,
+            assignedTo: assignedTo,
+            casecomments: casecomments,
             layout: 'layouts/detail'
         });
         console.log("Casemanager details renders successfully");
-    });
 };
 
      
@@ -284,7 +241,9 @@ exports.getCasemanagerDetails = async function(req, res, next) {
 // Display list of all casemanagers.
 exports.getCasemanagerList = function(req, res, next) {
     // controller logic to display all casemanagers
-    models.Casemanager.findAll().then(function(casemanagers) {
+    models.Casemanager.findAll({where: {
+        CurrentBusinessId: req.user.CurrentBusinessId
+    }}).then(function(casemanagers) {
         // renders a casemanager list page
         console.log(casemanagers);
         console.log("rendering casemanager list");

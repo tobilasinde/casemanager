@@ -10,7 +10,7 @@
     <li>Subject:  <b><%= casemanager.subject %></b></li>
     <li>Contact Name:  <b><%= casemanager.contact_name %></b></li>
     <li>Contact Email: <b><%= casemanager.contact_email %></b></li>
-    <li>Assigned to: <b><%= casemanager.assigned_to %></b></li>
+    <li>Assigned to: <b><%= assignedTo.department_name %></b></li>
     <li>Response Status: <b><%= casemanager.response_status %></b></li>
     <li>Request Type: <b><%= casemanager.request_type %></b></li>
     <li>Description: <b><%= casemanager.description %></b></li>
@@ -18,6 +18,34 @@
     <li>Department:  <b><%= casemanager.Department.department_name %> </b>and Depatment ID is <b><%= casemanager.Department.id %> </b></li>
     <li>Current Business: <b><%= casemanager.CurrentBusiness.current_business_name %> </b>and Current Business ID is <b><%= casemanager.CurrentBusiness.id %></b></li>
 </ul> 
+<a href="/casemanager/<%= casemanager.id %>/update">Edit Case</a> | <a href="/casemanager/<%= casemanager.id %>/delete">Delete Case</a>
+<p><b>Comments</b></p>
+<ol>
+    <% casecomments.forEach(function(casecomment) { %>
+        <li>
+            <h4><%= casecomment.title %></h4>
+            <%= casecomment.body %> <br/>
+        </li>
+        <a href="/casemanager/comment/<%= casecomment.id %>/update">Edit Comment</a> | <a href="/casemanager/comment/<%= casecomment.id %>/delete">Delete Comment</a>
+        <br/>
+    <% }); %>
+    </ol>
+<div class="col-sm-8">    
+    <div class="jumbotron">
+        <form action="/casemanager/comment/create" method="post">
+        Title: 
+        <input type="text" name="title" placeholder="Enter Comment Title here...">
+        <br><br>
+        Description: 
+        <textarea name="description" placeholder="Enter Comment Description here..."></textarea>
+        <input type="hidden" name="caseId" value="<%= casemanager.id %>">
+        <br><br>
+           <input type="submit" value="Create Comment"  >
+         </form>
+
+    </div>
+</div>
+
 </div>
 
 <b>
