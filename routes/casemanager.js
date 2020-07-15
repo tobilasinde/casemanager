@@ -15,29 +15,32 @@ var casemanagerController = require('../controllers/casemanagerController');
 var casecommentController = require('../controllers/casecommentController');
 
 
-// CASEMANAGER ROUTES
+// CASE ROUTES
 router.get('/create', casemanagerController.getCasemanagerCreate); 
 
-// POST CASEMANAGER CREATE
+// POST CASE CREATE
 router.post('/create', casemanagerController.postCasemanagerCreate); 
 
-// GET CASEMANAGER UPDATE
+// GET CASE UPDATE
 // casemanager/:casemanager_id/update
 router.get('/:casemanager_id/update', casemanagerController.getCasemanagerUpdate); 
 
-// POST CASEMANAGER UPDATE
+// POST CASE UPDATE
 router.post('/:casemanager_id/update', casemanagerController.postCasemanagerUpdate); 
 
-// GET CASEMANAGER DELETE
+// GET CASE DELETE
 router.get('/:casemanager_id/delete', casemanagerController.getCasemanagerDelete); 
 
-// GET CASEMANAGER LIST
+// GET CASE LIST
 router.get('/cases', casemanagerController.getCasemanagerList); 
 
-// GET CASEMANAGER DETAIL 
+// GET CASE DETAIL 
 router.get('/:casemanager_id', casemanagerController.getCasemanagerDetails); 
 
-// GET CASEMANAGER LIST
+// UPDATE CASE STATUS
+router.get('/:casemanager_id/status/:status', casemanagerController.getStatusUpdate); 
+
+// GET CASE LIST
 router.get('/', casemanagerController.getCasemanagerDashboard); 
 
 

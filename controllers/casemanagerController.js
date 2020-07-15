@@ -15,7 +15,11 @@ var async = require('async');
 exports.getCasemanagerCreate = async function(req, res, next) {
     
     // create User GET controller logic here 
-    const users = await models.User.findAll();
+    const users = await models.User.findAll({
+        where: {
+            CurrentBusinessId: req.user.CurrentBusinessId
+        }
+    });
     const departments = await models.Department.findAll({
         include: [{
             model: models.User,
@@ -136,7 +140,7 @@ exports.getCasemanagerUpdate = async function(req, res, next) {
                 }      
             ]
         });
-    const assignedTo = await models.Department.findByPk(casemanager.assigned_to);
+    const assignedTo = await models.User.findByPk(casemanager.assigned_to);
     // ).then(function(casemanager) {
         // console.log('this is casemanager user ' + casemanager.User.first_name);
         // renders a casemanager form
@@ -152,8 +156,6 @@ exports.getCasemanagerUpdate = async function(req, res, next) {
             caseResponseStatus: caseResponseStatus,
             caseRequestType: caseRequestType,
             assignedTo: assignedTo,
-            // departments: departments,
-            // currentBusinesses: currentBusinesses,
             functioName: 'GET CASE UPDATE',
             layout: 'layout'
         });
@@ -182,7 +184,8 @@ exports.postCasemanagerUpdate = async function(req, res, next) {
             contact_email: req.body.contact_email,
             email: req.body.email,
             note: req.body.note,
-            updatedBy: req.user.id
+            updatedBy: req.user.id,
+            DepartmentId: req.body.department
         }, { // Clause
             where: {
                 id: req.params.casemanager_id
@@ -194,6 +197,29 @@ exports.postCasemanagerUpdate = async function(req, res, next) {
         // no need to render a page
         res.redirect("/casemanager/"+req.params.casemanager_id);
         console.log("Casemanager updated successfully");
+    });
+};
+
+// Handle status update on CASEMANAGER.
+exports.getStatusUpdate = async function(req, res, next) {
+    console.log("ID is " + req.params.casemanager_id);
+
+    // now update
+    models.Casemanager.update(
+        // Values to update
+        {
+            status: req.params.status,
+        }, { // Clause
+            where: {
+                id: req.params.casemanager_id
+            }
+        }
+        //   returning: true, where: {id: req.params.casemanager_id} 
+    ).then(function() {
+        // If an casemanager gets updated successfully, we just redirect to casemanagers list
+        // no need to render a page
+        res.redirect("/casemanager/"+req.params.casemanager_id);
+        console.log("Status updated successfully");
     });
 };
 
@@ -234,8 +260,10 @@ exports.getCasemanagerDetails = async function(req, res, next) {
             ]
         });
 
+        const assignedTo = await models.User.findByPk(casemanager.assigned_to);
+
         console.log(casemanager);
-        const assignedTo = await models.Department.findByPk(casemanager.assigned_to);
+        // const assignedTo = await models.Department.findByPk(casemanager.assigned_to);
         res.render('pages/content', {
             title: 'Casemanager Details',
             functioName: 'GET CASE DETAILS',
@@ -262,6 +290,7 @@ exports.getCasemanagerList = function(req, res, next) {
             title: 'Cases List',
             functioName: 'GET CASE LIST',
             casemanagers: casemanagers,
+            caseStatus: caseStatus,
             layout: 'layout'
         });
         console.log("Casemanagers list renders successfully");

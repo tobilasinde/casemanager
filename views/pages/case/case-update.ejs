@@ -46,11 +46,19 @@
          <% }); %>
           </select>
       <br><br>
+      Department: 
+               <select name = "department">
+                    <% departments.forEach(function(dropdown) { %>
+                    <option  value="<%= dropdown.id %>"><%= dropdown.department_name %></option>
+                <br/>
+               <% }); %>
+                </select>
+            <br><br>
       Assigned To: 
          <select required name = "assigned">
-          <option  value="<%= assignedTo.id %>"><%= assignedTo.department_name %></option>
-              <% departments.forEach(function(dropdown) { %>
-              <option  value="<%= dropdown.id %>"><%= dropdown.department_name %></option>
+          <option  value="<%= assignedTo.id %>"><%= assignedTo.username %></option>
+              <% users.forEach(function(dropdown) { %>
+              <option  value="<%= dropdown.id %>"><%= dropdown.username %></option>
           <br/>
          <% }); %>
           </select>
@@ -71,7 +79,6 @@
       <textarea name="note" placeholder="Enter Additional Information here..."><%= casemanager.note %></textarea>
       <br><br>
          <input type="submit" value="Update Case"  >
-       </form>
-
+        </form>
   </div>
 </div>

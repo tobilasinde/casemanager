@@ -10,46 +10,9 @@
 			<div class="kt-portlet__head-toolbar">
 				<div class="kt-portlet__head-toolbar">
 					<div class="dropdown dropdown-inline">
-						<button type="button" class="btn btn-clean btn-sm btn-icon btn-icon-md" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							<i class="la la-sellsy"></i>
-						</button>
-						<div class="dropdown-menu dropdown-menu-right">
-							<ul class="kt-nav">
-								<li class="kt-nav__section kt-nav__section--first">
-									<span class="kt-nav__section-text">Quick Actions</span>
-								</li>
-								<li class="kt-nav__item">
-									<a href="#" class="kt-nav__link">
-										<i class="kt-nav__link-icon flaticon2-graph-1"></i>
-										<span class="kt-nav__link-text">Statistics</span>
-									</a>
-								</li>
-								<li class="kt-nav__item">
-									<a href="#" class="kt-nav__link">
-										<i class="kt-nav__link-icon flaticon2-calendar-4"></i>
-										<span class="kt-nav__link-text">Events</span>
-									</a>
-								</li>
-								<li class="kt-nav__item">
-									<a href="#" class="kt-nav__link">
-										<i class="kt-nav__link-icon flaticon2-layers-1"></i>
-										<span class="kt-nav__link-text">Reports</span>
-									</a>
-								</li>
-								<li class="kt-nav__item">
-									<a href="#" class="kt-nav__link">
-										<i class="kt-nav__link-icon flaticon2-bell-1o"></i>
-										<span class="kt-nav__link-text">Notifications</span>
-									</a>
-								</li>
-								<li class="kt-nav__item">
-									<a href="#" class="kt-nav__link">
-										<i class="kt-nav__link-icon flaticon2-file-1"></i>
-										<span class="kt-nav__link-text">Files</span>
-									</a>
-								</li>
-							</ul>
-						</div>
+						<a href='create' class="btn btn-clean btn-sm btn-icon btn-icon-md" title="Create new Case">
+							<i class="la la-pencil"></i>
+						</a>
 					</div>
 				</div>
 			</div>
@@ -78,18 +41,32 @@
 							<td><%= casemanager.priority %></td>
 							<td><%= casemanager.status %></td>
 							<td><%= casemanager.request_type %></td>
-							<td <span class="dropdown">
-								<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" data-toggle="dropdown" aria-expanded="true">
-								  <i class="la la-ellipsis-h"></i>
-								</a>
-								<div class="dropdown-menu dropdown-menu-right">
-									<a class="dropdown-item" href="/casemanager/<%= casemanager.id %>/update"><i class="la la-edit"></i> Edit Case</a>
-									<a class="dropdown-item" href="/casemanager/<%= casemanager.id %>/delete"><i class="la la-trash"></i> Delete Case</a>
-								</div>
-							</span>
-							<a href="/casemanager/<%= casemanager.id %>" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="View">
-							  <i class="la la-book"></i>
-							</a></td>
+							<td>
+								<span class="dropdown">
+									<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" data-toggle="dropdown" aria-expanded="true">
+									<i class="la la-ellipsis-h"></i>
+									</a>
+									<div class="dropdown-menu dropdown-menu-right">
+										<a class="dropdown-item" href="/casemanager/<%= casemanager.id %>/update"><i class="la la-edit"></i> Edit Case</a>
+										<a class="dropdown-item" href="/casemanager/<%= casemanager.id %>/delete"><i class="la la-trash"></i> Delete Case</a>
+									</div>
+								</span>
+								<span>
+									<a href="/casemanager/<%= casemanager.id %>" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="View">
+										<i class="la la-book"></i>
+									</a>
+								</span>
+								<span class="dropdown">
+									<a href="#" class="" data-toggle="dropdown" aria-expanded="true">
+									Change Status
+									</a>
+									<div class="dropdown-menu dropdown-menu-right">
+										<% caseStatus.forEach(function(status) { %>
+											<a class="dropdown-item" href="/casemanager/<%= casemanager.id %>/status/<%= status %>"><i class="la la-edit"></i> <%= status %></a>
+										<% }); %>
+									</div>
+								</span>
+							</td>
 						</tr>
 					<% }); %>
 				</tbody>

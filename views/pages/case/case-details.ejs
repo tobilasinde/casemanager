@@ -26,7 +26,7 @@
                                 <div class="kt-invoice__info">
                                     <span class="kt-invoice__subtitle">ASSIGNED TO:</span>
                                     <span class="kt-invoice__text">
-                                        <%= assignedTo.department_name %>
+                                        <%= assignedTo.username %>
                                     </span>
                                 </div>
                                 <div class="kt-invoice__info">
@@ -47,14 +47,7 @@
                                         <%= casemanager.priority %>
                                     </span>
                                 </div>
-                                <div class="kt-invoice__info">
-                                    <span class="kt-invoice__subtitle">REQUEST TYPE:</span>
-                                    <span class="kt-invoice__text"><%= casemanager.request_type %></span>
-                                </div>
-                                <div class="kt-invoice__info">
-                                    <span class="kt-invoice__subtitle">ADDITIONAL NOTE:</span>
-                                    <span class="kt-invoice__text"><%= casemanager.note %></span>
-                                </div>
+                                <div class="kt-invoice__info"></div>
                             </div>
                             <div class="kt-invoice__item">
                                 <div class="kt-invoice__info">
@@ -126,9 +119,6 @@
                                                     <div class="kt-inbox__message">
                                                         <span class="kt-inbox__subject"><%= casecomment.title %> - </span>
                                                         <span class="kt-inbox__summary"><%= casecomment.body %></span>
-                                                    </div>
-                                                    <div class="kt-inbox__labels">
-                                                        <span class="kt-inbox__label kt-badge kt-badge--unified-brand kt-badge--bold kt-badge--inline">inbox</span>
                                                     </div>
                                                 </div>
                                                 <div class="kt-inbox__datetime" data-toggle="view">

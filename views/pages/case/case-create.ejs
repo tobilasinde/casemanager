@@ -41,18 +41,18 @@
                <% }); %>
                 </select>
             <br><br>
-            <!-- Department: 
+            Department: 
                <select name = "department">
                     <% departments.forEach(function(dropdown) { %>
                     <option  value="<%= dropdown.id %>"><%= dropdown.department_name %></option>
                 <br/>
                <% }); %>
                 </select>
-            <br><br> -->
+            <br><br>
             Assigned To: 
                <select required name = "assigned">
-                    <% departments.forEach(function(dropdown) { %>
-                    <option  value="<%= dropdown.id %>"><%= dropdown.department_name %></option>
+                    <% users.forEach(function(dropdown) { %>
+                    <option  value="<%= dropdown.id %>"><%= dropdown.username %></option>
                 <br/>
                <% }); %>
                 </select>
