@@ -40,16 +40,18 @@ exports.postCasecommentCreate = function(req, res, next) {
 // Display casecomment delete form on GET.
 exports.getCasecommentDelete = async function(req, res, next) {
     const comment = await models.Casecomment.findByPk(req.params.casecomment_id);
-    console.log(comment.id);
+    // console.log(comment.id);
     // const commentId = comment.;
     models.Casecomment.destroy({
         where: {
             id: req.params.casecomment_id
         }
-    }).then(function() {
-        console.log(comment.id);
+    }).then(() => {
         res.redirect('/casemanager/'+comment.CasemanagerId);
-        console.log("Casecomment deleted successfully");
+        console.log("Casemanager deleted successfully");
+    })
+    .catch(err => {
+        res.status.json({ err: err });
     });
 };
 

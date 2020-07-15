@@ -32,10 +32,13 @@ router.post('/:casemanager_id/update', casemanagerController.postCasemanagerUpda
 router.get('/:casemanager_id/delete', casemanagerController.getCasemanagerDelete); 
 
 // GET CASEMANAGER LIST
-router.get('/', casemanagerController.getCasemanagerList); 
+router.get('/cases', casemanagerController.getCasemanagerList); 
 
 // GET CASEMANAGER DETAIL 
 router.get('/:casemanager_id', casemanagerController.getCasemanagerDetails); 
+
+// GET CASEMANAGER LIST
+router.get('/', casemanagerController.getCasemanagerDashboard); 
 
 
 // CASE COMMENT ROUTES

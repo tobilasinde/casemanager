@@ -47,14 +47,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM('Issues', 'Complaints')
       },
       description: {
-      type: DataTypes.STRING
+      type: DataTypes.TEXT
       },
       // document: {
       // type: DataTypes.STRING,
       // allowNull: false,
       // },
       note: {
-      type: DataTypes.STRING
+      type: DataTypes.TEXT
       },
       updatedBy: {
         type: DataTypes.STRING

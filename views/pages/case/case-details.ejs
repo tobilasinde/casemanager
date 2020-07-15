@@ -1,35 +1,186 @@
+<!-- begin:: Content -->
+<div class="kt-container  kt-grid__item kt-grid__item--fluid">
 
-<p>See below Case information:</p>
+    <!--begin::Portlet-->
+    <div class="kt-portlet">
+        <div class="kt-portlet__body kt-portlet__body--fit">
+            <div class="kt-invoice-1">
+                <div class="kt-invoice__head" style="background-image: url(/assets/media/misc/invoice1-bg.png);">
+                    <div class="kt-invoice__container">
+                        <div class="kt-invoice__brand">
+                            <h1 class="kt-invoice__title"><%= casemanager.subject %></h1>
+                            <a href="#" class="kt-invoice__logo">
+                                <span class="kt-invoice__desc">
+                                    <span><%= casemanager.description %></span>
+                                </span>
+                            </a>
+                        </div>
+                        <div class="kt-invoice__items">
+                            <div class="kt-invoice__item">
+                                <div class="kt-invoice__info">
+                                    <span class="kt-invoice__subtitle">DEPARTMENT:</span>
+                                    <span class="kt-invoice__text">
+                                        <%= casemanager.Department.department_name %>
+                                    </span>
+                                </div>
+                                <div class="kt-invoice__info">
+                                    <span class="kt-invoice__subtitle">ASSIGNED TO:</span>
+                                    <span class="kt-invoice__text">
+                                        <%= assignedTo.department_name %>
+                                    </span>
+                                </div>
+                                <div class="kt-invoice__info">
+                                    <span class="kt-invoice__subtitle">CASE TYPE:</span>
+                                    <span class="kt-invoice__text">
+                                        <%= casemanager.case_type %>
+                                    </span>
+                                </div>
+                                <div class="kt-invoice__info">
+                                    <span class="kt-invoice__subtitle">STATUS:</span>
+                                    <span class="kt-invoice__text">
+                                        <%= casemanager.status %>
+                                    </span>
+                                </div>
+                                <div class="kt-invoice__info">
+                                    <span class="kt-invoice__subtitle">PRIORITY:</span>
+                                    <span class="kt-invoice__text">
+                                        <%= casemanager.priority %>
+                                    </span>
+                                </div>
+                                <div class="kt-invoice__info">
+                                    <span class="kt-invoice__subtitle">REQUEST TYPE:</span>
+                                    <span class="kt-invoice__text"><%= casemanager.request_type %></span>
+                                </div>
+                                <div class="kt-invoice__info">
+                                    <span class="kt-invoice__subtitle">ADDITIONAL NOTE:</span>
+                                    <span class="kt-invoice__text"><%= casemanager.note %></span>
+                                </div>
+                            </div>
+                            <div class="kt-invoice__item">
+                                <div class="kt-invoice__info">
+                                    <span class="kt-invoice__subtitle">DATE CREATED:</span>
+                                    <span class="kt-invoice__text"><%= date %></span>
+                                </div>
+                                <div class="kt-invoice__info">
+                                    <span class="kt-invoice__subtitle">CASE NO:</span>
+                                    <span class="kt-invoice__text"><%= casemanager.case_number %></span>
+                                </div>
+                                <div class="kt-invoice__info">
+                                    <span class="kt-invoice__subtitle">ORIGIN:</span>
+                                    <span class="kt-invoice__text"><%= casemanager.case_origin %></span>
+                                </div>
+                                <div class="kt-invoice__info">
+                                    <span class="kt-invoice__subtitle">CONTACT NAME:</span>
+                                    <span class="kt-invoice__text"><%= casemanager.contact_name %></span>
+                                </div>
+                                <div class="kt-invoice__info">
+                                    <span class="kt-invoice__subtitle">CONTACT EMAIL:</span>
+                                    <span class="kt-invoice__text"><%= casemanager.contact_email %></span>
+                                </div>
+                                <div class="kt-invoice__info">
+                                    <span class="kt-invoice__subtitle">RESPONSE STATUS:</span>
+                                    <span class="kt-invoice__text"><%= casemanager.response_status %></span>
+                                </div>
+                                <div class="kt-invoice__info"></div>
+                            </div>
+                        </div>
+                        <div class="kt-invoice__actions">
+                            <div class="kt-invoice__container">
+                                <a href="/casemanager/<%= casemanager.id %>/update" class="btn btn-label-brand btn-bold">Edit Case</a>
+                                <a href="/casemanager/<%= casemanager.id %>/delete" class="btn btn-brand btn-bold">Delete Case</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="kt-invoice__footer">
+                    <!-- <div class="kt-invoice__container"> -->
+                        <% casecomments.forEach(function(casecomment) { %>
+                            <!--Begin::Inbox-->
+                            <div class="kt-grid kt-grid--desktop kt-grid--ver-desktop  kt-inbox" id="kt_inbox">
+                                <!--Begin:: Inbox List-->
+                                <div class="kt-grid__item kt-grid__item--fluid    kt-portlet    kt-inbox__list kt-inbox__list--shown" id="kt_inbox_list">
+                                    <div class="kt-portlet__body kt-portlet__body--fit-x">
+                                        <div class="kt-inbox__items" data-type="inbox">
+                                            <div class="kt-inbox__item kt-inbox__item--unread" data-type="inbox">
+                                                <div class="kt-inbox__info">
+                                                    <div class="kt-inbox__actions">
+                                                        <label class="kt-checkbox kt-checkbox--single kt-checkbox--tick kt-checkbox--brand">
+                                                            <input type="checkbox">
+                                                            <span></span>
+                                                        </label>
+                                                        <a href="/casemanager/comment/<%= casecomment.id %>/update %>" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="Edit">
+                                                            <i class="la la-edit"></i>
+                                                        </a>
+                                                        <a href="/casemanager/comment/<%= casecomment.id %>/delete %>" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="Delete">
+                                                            <i class="la la-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="kt-inbox__sender" data-toggle="view">
+                                                        <span class="kt-media kt-media--circle kt-media--sm kt-media--danger" style="background-image: url('assets/media/users/100_1.jpg')">
+                                                            <span></span>
+                                                        </span>
+                                                        <a href="#" class="kt-inbox__author"><%= casecomment.User.username %></a>
+                                                    </div>
+                                                </div>
+                                                <div class="kt-inbox__details" data-toggle="view">
+                                                    <div class="kt-inbox__message">
+                                                        <span class="kt-inbox__subject"><%= casecomment.title %> - </span>
+                                                        <span class="kt-inbox__summary"><%= casecomment.body %></span>
+                                                    </div>
+                                                    <div class="kt-inbox__labels">
+                                                        <span class="kt-inbox__label kt-badge kt-badge--unified-brand kt-badge--bold kt-badge--inline">inbox</span>
+                                                    </div>
+                                                </div>
+                                                <div class="kt-inbox__datetime" data-toggle="view">
+                                                    8:30 PM
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
-<ul>
-    <li>Case Type: <b><%= casemanager.case_type %></b></li>
-    <li>Case Number: <b><%= casemanager.case_number %></b></li>
-    <li>Case Status: <b><%= casemanager.status %></b></li>
-    <li>Case Priority: <b><%= casemanager.priority %></b></li>
-    <li>Case Origin: <b><%= casemanager.case_origin %></b></li>
-    <li>Subject:  <b><%= casemanager.subject %></b></li>
-    <li>Contact Name:  <b><%= casemanager.contact_name %></b></li>
-    <li>Contact Email: <b><%= casemanager.contact_email %></b></li>
-    <li>Assigned to: <b><%= assignedTo.department_name %></b></li>
-    <li>Response Status: <b><%= casemanager.response_status %></b></li>
-    <li>Request Type: <b><%= casemanager.request_type %></b></li>
-    <li>Description: <b><%= casemanager.description %></b></li>
-    <li>Additional Informantion: <b><%= casemanager.note %></b></li>
-    <li>Department:  <b><%= casemanager.Department.department_name %> </b>and Depatment ID is <b><%= casemanager.Department.id %> </b></li>
-    <li>Current Business: <b><%= casemanager.CurrentBusiness.current_business_name %> </b>and Current Business ID is <b><%= casemanager.CurrentBusiness.id %></b></li>
-</ul> 
-<a href="/casemanager/<%= casemanager.id %>/update">Edit Case</a> | <a href="/casemanager/<%= casemanager.id %>/delete">Delete Case</a>
-<p><b>Comments</b></p>
-<ol>
-    <% casecomments.forEach(function(casecomment) { %>
-        <li>
-            <h4><%= casecomment.title %></h4>
-            <%= casecomment.body %> <br/>
-        </li>
-        <a href="/casemanager/comment/<%= casecomment.id %>/update">Edit Comment</a> | <a href="/casemanager/comment/<%= casecomment.id %>/delete">Delete Comment</a>
-        <br/>
-    <% }); %>
-    </ol>
+                                <!--End:: Inbox List-->
+                            </div>
+
+                            <!--End::Inbox-->
+                        <% }); %>
+                    <!-- </div> -->
+                    <!-- <div class="kt-invoice__container"> -->
+                        <!--begin::Form-->
+                        <form class="kt-form" action="/casemanager/comment/create" method="post">
+                            <div class="kt-portlet__body">
+                                
+                                <div class="form-group">
+                                    <label>Comment Title</label>
+                                    <input type="text"name="title" class="form-control" aria-describedby="emailHelp" placeholder="Enter Comment Title here...">
+                                </div>
+                                <div class="form-group form-group-last">
+                                    <label for="exampleTextarea">Comment Body</label>
+                                    <textarea class="form-control" name="description" id="exampleTextarea" rows="3" placeholder="Enter Comment Title here..."></textarea>
+                                </div>
+                            </div>
+                            <input type="hidden" name="caseId" value="<%= casemanager.id %>">
+                            <div class="kt-portlet__foot">
+                                <div class="kt-form__actions">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                    <button type="reset" class="btn btn-secondary">Cancel</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!--end::Form-->
+                    <!-- </div>  -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--end::Portlet-->
+</div>
+    
+
+<!-- end:: Content -->
+<!-- end:: Content
 <div class="col-sm-8">    
     <div class="jumbotron">
         <form action="/casemanager/comment/create" method="post">
@@ -49,4 +200,4 @@
 </div>
 
 <b>
-    
+     -->

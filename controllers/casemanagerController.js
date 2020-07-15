@@ -1,5 +1,7 @@
 var Casemanager = require('../models/casemanager');
 var models = require('../models');
+var moment = require('moment');
+
 const caseStatus = ['New', 'On Hold', 'Escalated', 'Working', 'Closed'];
 const casePriority = ['Low', 'Medium', 'High'];
 const caseOrigin = ['Web', 'Email'];
@@ -34,7 +36,7 @@ exports.getCasemanagerCreate = async function(req, res, next) {
         caseResponseStatus: caseResponseStatus,
         caseRequestType: caseRequestType,
         functioName: 'GET CASE CREATE',
-        layout: 'layouts/detail'
+        layout: 'layout'
     });
     console.log("Casemanager form renders successfully")
 };
@@ -103,7 +105,7 @@ exports.getCasemanagerDelete = async function(req, res, next) {
     }).then(function() {
         // If an casemanager gets deleted successfully, we just redirect to casemanagers list
         // no need to render a page
-        res.redirect('/casemanager');
+        res.redirect('/casemanager/cases');
         console.log("Casemanager deleted successfully");
     });
 };
@@ -153,7 +155,7 @@ exports.getCasemanagerUpdate = async function(req, res, next) {
             // departments: departments,
             // currentBusinesses: currentBusinesses,
             functioName: 'GET CASE UPDATE',
-            layout: 'layouts/detail'
+            layout: 'layout'
         });
         console.log("Casemanager update get successful");
     // });
@@ -199,11 +201,19 @@ exports.postCasemanagerUpdate = async function(req, res, next) {
 // Display detail page for a specific casemanager.
 exports.getCasemanagerDetails = async function(req, res, next) {
     
-    console.log("I am in casemanager details")
+    console.log("I am in casemanager details"+ req.params.casemanager_id);
     // find all comment for a a case
-    var casecomments = await models.Casecomment.findAll({where: {
-        CasemanagerId: req.params.casemanager_id
-    }});
+    var casecomments = await models.Casecomment.findAll(
+        {
+            where:
+            {
+                CasemanagerId: req.params.casemanager_id
+            },
+            include: [{
+                model: models.User
+            }]
+        }
+    );
     
     // find a casemanager by the primary key Pk
     var casemanager = await models.Casemanager.findByPk(
@@ -223,15 +233,17 @@ exports.getCasemanagerDetails = async function(req, res, next) {
                 }
             ]
         });
+
+        console.log(casemanager);
         const assignedTo = await models.Department.findByPk(casemanager.assigned_to);
-        console.log(casemanager)
         res.render('pages/content', {
             title: 'Casemanager Details',
             functioName: 'GET CASE DETAILS',
             casemanager: casemanager,
             assignedTo: assignedTo,
             casecomments: casecomments,
-            layout: 'layouts/detail'
+            date: moment(casemanager.createdAt).format('MMMM Do YYYY, h:mm:ss a'),
+            layout: 'layout'
         });
         console.log("Casemanager details renders successfully");
 };
@@ -245,16 +257,38 @@ exports.getCasemanagerList = function(req, res, next) {
         CurrentBusinessId: req.user.CurrentBusinessId
     }}).then(function(casemanagers) {
         // renders a casemanager list page
-        console.log(casemanagers);
         console.log("rendering casemanager list");
         res.render('pages/content', {
-            title: 'Casemanager List',
+            title: 'Cases List',
             functioName: 'GET CASE LIST',
             casemanagers: casemanagers,
-            layout: 'layouts/list'
+            layout: 'layout'
         });
         console.log("Casemanagers list renders successfully");
     });
+
+};
+
+// Display list of all casemanagers.
+exports.getCasemanagerDashboard = async function(req, res, next) {
+    // controller logic to display all casemanagers
+    const business = await models.Casemanager.count({where: {CurrentBusinessId: req.user.CurrentBusinessId}});
+    const department = await models.Casemanager.count({where: {CurrentBusinessId: req.user.CurrentBusinessId, DepartmentId: req.user.DepartmentId}});
+    const user = await models.Casemanager.count({where: {CurrentBusinessId: req.user.CurrentBusinessId, UserId: req.user.id}});
+    // .then(function(casemanagers) {
+        // renders a casemanager list page
+        // console.log(casemanagers);
+        console.log("rendering casemanager dashboard");
+        res.render('pages/content', {
+            title: 'Casemanager Dashboard',
+            functioName: 'GET CASE DASHBOARD',
+            business: business,
+            department: department,
+            user: user,
+            layout: 'layout'
+        });
+        console.log("Casemanagers list renders successfully");
+    // });
 
 };
 
@@ -309,7 +343,7 @@ exports.getCasemanagerListByDepartment = async function(req, res, next) {
             title: 'Casemanager List',
             functioName: 'GET CASE LIST',
             casemanagers: casemanagers,
-            layout: 'layouts/list'
+            layout: 'layout'
         });
         console.log("Casemanagers list renders successfully");
     });
@@ -358,7 +392,7 @@ exports.getCasemanagerListByEmail = async function(req, res, next) {
             title: 'Casemanager List',
             functioName: 'GET CASE LIST',
             casemanagers: casemanagers,
-            layout: 'layouts/list'
+            layout: 'layout'
         });
         console.log("Casemanagers list renders successfully");
     });
