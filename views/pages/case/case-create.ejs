@@ -1,25 +1,9 @@
     <div class="col-sm-8">    
         <div class="jumbotron">
-            <form action="" method="post">
-              Status: 
-               <select name = "status">
-                    <% caseStatus.forEach(function(dropdown) { %>
-                    <option  value="<%= dropdown %>"><%= dropdown %></option>
-                <br/>
-               <% }); %>
-                </select>
-            <br><br>
+            <form action="" method="post" enctype="multipart/form-data">
             Priority: 
                <select name = "priority">
                     <% casePriority.forEach(function(dropdown) { %>
-                    <option  value="<%= dropdown %>"><%= dropdown %></option>
-                <br/>
-               <% }); %>
-                </select>
-            <br><br>
-            Origin: 
-               <select name = "origin">
-                    <% caseOrigin.forEach(function(dropdown) { %>
                     <option  value="<%= dropdown %>"><%= dropdown %></option>
                 <br/>
                <% }); %>
@@ -71,6 +55,8 @@
             <br><br/>
             Additional Information: 
             <textarea name="note" placeholder="Enter Additional Information here..."></textarea>
+            <br><br>
+            <input type="file" name="file">
             <br><br>
                <input type="submit" value="Create Case"  >
              </form>

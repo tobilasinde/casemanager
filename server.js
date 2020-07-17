@@ -7,6 +7,7 @@ var passport = require('passport');
 var auth = require('./modules/auth.js');
 var cookieParser = require('cookie-parser');
 var ejsLayouts = require('express-ejs-layouts');
+const fileUpload = require('express-fileupload');
 
 var env = process.env.NODE_ENV || 'development',
     config = require('./config/config.' + env);
@@ -15,6 +16,7 @@ var index = require('./routes/index');
 var user = require('./routes/user');
 var main = require('./routes/main');
 var casemanager = require('./routes/casemanager');
+var api = require('./routes/api/casemanager');
 var login = require('./routes/login');
 var siteAdmin = require('./routes/siteAdmin');
 var tools = require('./modules/tools');
@@ -27,6 +29,7 @@ var helmet = require('helmet');
 
 var app = express();
 
+app.use(fileUpload());
 //
 // Handlebars / HBS setup and configuration
 //
@@ -141,6 +144,7 @@ app.use('/casemanager', casemanager);
 app.use('/user', user);
 app.use('/siteAdmin', siteAdmin);
 app.use('/login', login);
+app.use('/api', api);
 
 //
 // error handling

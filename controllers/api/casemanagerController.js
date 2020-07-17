@@ -1,5 +1,5 @@
-var Casemanager = require('../models/casemanager');
-var models = require('../models');
+var Casemanager = require('../../models/casemanager');
+var models = require('../../models');
 var moment = require('moment');
 // import aws-sdk library
 const AWS = require('aws-sdk');
@@ -40,30 +40,12 @@ exports.getCasemanagerCreate = async function(req, res, next) {
                 },
             }],
         });
-
-        // Render Casemanager Form Page
-        res.render('pages/content', {
-            title: 'Create a Casemanager Record',
-            users: users,
-            departments: departments,
-            caseStatus: caseStatus,
-            casePriority: casePriority,
-            caseOrigin: caseOrigin,
-            caseType: caseType,
-            caseResponseStatus: caseResponseStatus,
-            caseRequestType: caseRequestType,
-            functioName: 'GET CASE CREATE',
-            layout: 'layout'
-        });
-        console.log("Casemanager form renders successfully")
+        res.json({
+            status: true,
+            data: {users, departments, caseStatus, casePriority, caseOrigin, caseType, caseResponseStatus, caseRequestType}
+        })
     } catch (error) {
-        // we have an error during the process, then catch it and redirect to error page
-        console.log("There was an error " + error);
-        res.render('pages/error', {
-            title: 'Error',
-            message: error,
-            error: error
-        });
+        return res.status(500).json({ status: false, message: `There was an error - ${error}` });
     }
 };
 
@@ -129,8 +111,13 @@ exports.postCasemanagerCreate = [
                         case_number: rand
                     } 
                 );
-                // everything done, now redirect....to casemanager detail.
-                return res.redirect('/casemanager/' + casemanager.id);
+                res.json({
+                    status: true,
+                    data: casemanager, 
+                    message: 'Case Created successfully'
+                  })
+                // // everything done, now redirect....to casemanager detail.
+                // return res.redirect('/api/' + casemanager.id);
             }
             
             // The User Uploaded a file
@@ -187,17 +174,17 @@ exports.postCasemanagerCreate = [
                         document: data.Location
                     } 
                 );
-                // everything done, now redirect....to casemanager listing.
-                res.redirect('/casemanager/' + casemanager.id);
+                res.json({
+                    status: true,
+                    data: casemanager, 
+                    message: 'Case Created successfully'
+                  })
+                // // everything done, now redirect....to casemanager listing.
+                // res.redirect('/casemanager/' + casemanager.id);
             });          
         } catch (error) {
+            return res.status(500).json({ status: false, message: `There was an error - ${error}` });
             // we have an error during the process, then catch it and redirect to error page
-            console.log("There was an error " + error);
-            res.render('pages/error', {
-                title: 'Error',
-                message: error,
-                error: error
-            });
         }
     }
 ];
@@ -220,17 +207,17 @@ exports.getCasemanagerDelete = async function(req, res, next) {
         }).then(function() {
             // If an casemanager gets deleted successfully, we just redirect to casemanagers list
             // no need to render a page
-            res.redirect('/casemanager/cases');
-            console.log("Casemanager deleted successfully");
+            res.json({
+                status: true,
+                // data: casemanager, 
+                message: 'Case Deleted successfully'
+              })
+            // res.redirect('/casemanager/cases');
+            // console.log("Casemanager deleted successfully");
         });
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
-        console.log("There was an error " + error);
-        res.render('pages/error', {
-            title: 'Error',
-            message: error,
-            error: error
-        });
+        return res.status(500).json({ status: false, message: `There was an error - ${error}` });
     }
 };
 
@@ -272,31 +259,13 @@ exports.getCasemanagerUpdate = async function(req, res, next) {
         });
     // Find the person the case was assigned to
     const assignedTo = await models.User.findByPk(casemanager.assigned_to);
-        // renders a casemanager form
-        await res.render('pages/content', {
-            title: 'Update Casemanager',
-            casemanager: casemanager,
-            users: users,
-            departments: departments,
-            caseStatus: caseStatus,
-            casePriority: casePriority,
-            caseOrigin: caseOrigin,
-            caseType: caseType,
-            caseResponseStatus: caseResponseStatus,
-            caseRequestType: caseRequestType,
-            assignedTo: assignedTo,
-            functioName: 'GET CASE UPDATE',
-            layout: 'layout'
-        });
-        console.log("Casemanager update get successful");
+    res.json({
+        status: true,
+        data: {casemanager, users, departments, caseStatus, casePriority, caseOrigin, caseType, caseResponseStatus, caseRequestType, assignedTo}
+    })
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
-        console.log("There was an error " + error);
-        res.render('pages/error', {
-            title: 'Error',
-            message: error,
-            error: error
-        });
+        return res.status(500).json({ status: false, message: `There was an error - ${error}` });
     }
 };
 
@@ -335,17 +304,15 @@ exports.postCasemanagerUpdate = async function(req, res, next) {
         ).then(function() {
             // If an casemanager gets updated successfully, we just redirect to casemanagers Details
             // no need to render a page
-            res.redirect("/casemanager/"+req.params.casemanager_id);
-            console.log("Casemanager updated successfully");
+            res.json({
+                status: true,
+                // data: casemanager, 
+                message: 'Case Updated successfully'
+              })
         });
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
-        console.log("There was an error " + error);
-        res.render('pages/error', {
-            title: 'Error',
-            message: error,
-            error: error
-        });
+        return res.status(500).json({ status: false, message: `There was an error - ${error}` });
     }
 };
 
@@ -371,17 +338,15 @@ exports.getStatusUpdate = async function(req, res, next) {
         ).then(function() {
             // If an casemanager status gets updated successfully, we just redirect to casemanagers detail
             // no need to render a page
-            res.redirect("/casemanager/"+req.params.casemanager_id);
-            console.log("Status updated successfully");
+            res.json({
+                status: true,
+                // data: casemanager, 
+                message: 'Case Status Updated successfully'
+              })
         });
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
-        console.log("There was an error " + error);
-        res.render('pages/error', {
-            title: 'Error',
-            message: error,
-            error: error
-        });
+        return res.status(500).json({ status: false, message: `There was an error - ${error}` });
     }
 };
 
@@ -430,73 +395,51 @@ exports.getCasemanagerDetails = async function(req, res, next) {
         );
 
         const assignedTo = await models.User.findByPk(casemanager.assigned_to);
+        const date = moment(casemanager.createdAt).format('MMMM Do YYYY, h:mm:ss a')
 
-        console.log(casemanager);
-        // const assignedTo = await models.Department.findByPk(casemanager.assigned_to);
-        res.render('pages/content', {
-            title: 'Casemanager Details',
-            functioName: 'GET CASE DETAILS',
-            casemanager: casemanager,
-            assignedTo: assignedTo,
-            casecomments: casecomments,
-            date: moment(casemanager.createdAt).format('MMMM Do YYYY, h:mm:ss a'),
-            layout: 'layout'
-        });
-        console.log("Casemanager details renders successfully");
+        res.json({
+            status: true,
+            data: {casemanager, assignedTo,casecomments, date}
+        })
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
-        console.log("There was an error " + error);
-        res.render('pages/error', {
-            title: 'Error',
-            message: error,
-            error: error
-        });
+        return res.status(500).json({ status: false, message: `There was an error - ${error}` });
     }
 };
-
-     
-                        
+             
 // Display list of all casemanagers.
 exports.getCasemanagerList = function(req, res, next) {
-    // controller logic to display all casemanagers
-    models.Casemanager.findAll({where: {
-        CurrentBusinessId: req.user.CurrentBusinessId
-    }}).then(function(casemanagers) {
-        // renders a casemanager list page
-        console.log("rendering casemanager list");
-        res.render('pages/content', {
-            title: 'Cases List',
-            functioName: 'GET CASE LIST',
-            casemanagers: casemanagers,
-            caseStatus: caseStatus,
-            layout: 'layout'
+    try {
+        // controller logic to display all casemanagers
+        models.Casemanager.findAll({where: {
+            CurrentBusinessId: req.user.CurrentBusinessId
+        }}).then(function(casemanagers) {
+            res.json({
+                status: true,
+                data: {casemanagers, caseStatus}
+            })
         });
-        console.log("Casemanagers list renders successfully");
-    });
-
+    } catch (error) {
+        // we have an error during the process, then catch it and redirect to error page
+        return res.status(500).json({ status: false, message: `There was an error - ${error}` });
+    }
 };
 
 // Display list of all casemanagers.
 exports.getCasemanagerDashboard = async function(req, res, next) {
-    // controller logic to display all casemanagers
-    const business = await models.Casemanager.count({where: {CurrentBusinessId: req.user.CurrentBusinessId}});
-    const department = await models.Casemanager.count({where: {CurrentBusinessId: req.user.CurrentBusinessId, DepartmentId: req.user.DepartmentId}});
-    const user = await models.Casemanager.count({where: {CurrentBusinessId: req.user.CurrentBusinessId, UserId: req.user.id}});
-    // .then(function(casemanagers) {
-        // renders a casemanager list page
-        // console.log(casemanagers);
-        console.log("rendering casemanager dashboard");
-        res.render('pages/content', {
-            title: 'Casemanager Dashboard',
-            functioName: 'GET CASE DASHBOARD',
-            business: business,
-            department: department,
-            user: user,
-            layout: 'layout'
-        });
-        console.log("Casemanagers list renders successfully");
-    // });
-
+    try {
+        // controller logic to display all casemanagers
+        const business = await models.Casemanager.count({where: {CurrentBusinessId: req.user.CurrentBusinessId}});
+        const department = await models.Casemanager.count({where: {CurrentBusinessId: req.user.CurrentBusinessId, DepartmentId: req.user.DepartmentId}});
+        const user = await models.Casemanager.count({where: {CurrentBusinessId: req.user.CurrentBusinessId, UserId: req.user.id}});
+        res.json({
+            status: true,
+            data: {business, department, user}
+        })
+    } catch (error) {
+        // we have an error during the process, then catch it and redirect to error page
+        return res.status(500).json({ status: false, message: `There was an error - ${error}` });
+    }
 };
 
 exports.getCasemanagerListByDepartment = async function(req, res, next) {
