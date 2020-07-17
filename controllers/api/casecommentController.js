@@ -25,7 +25,7 @@ var models = require('../../models');
 // Handle casecomment create on POST.
 exports.postCasecommentCreate = async function(req, res, next) {
     try{
-        var caseCheck = await  models.Casemanager.findByPk(req.body.caseId);
+        var caseCheck = await  models.Casemanager.findByPk(req.params.casemanager_id);
         if (!caseCheck){
             return res.status(400).json({ status: false, message: 'Case Does not Exist !' });
         }
