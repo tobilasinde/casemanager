@@ -128,6 +128,10 @@ exports.postCasecommentUpdate = async function(req, res, next) {
 // Display detail page for a specific casecomment.
 exports.getCasecommentDetails = async function(req, res, next) {
     try{
+        const comment = await models.Casecomment.findByPk(req.params.casecomment_id);
+        if (!comment){
+            return res.status(400).json({ status: false, message: 'Comment Does not Exist !' });
+        }
         models.Casecomment.findByPk(
             req.params.casecomment_id 
         ).then(function(casecomment) {
