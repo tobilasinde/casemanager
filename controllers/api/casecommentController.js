@@ -23,21 +23,25 @@ var models = require('../../models');
 // };
 
 // Handle casecomment create on POST.
-exports.postCasecommentCreate = function(req, res, next) {
+exports.postCasecommentCreate = async function(req, res, next) {
     try{
+        var caseCheck = await  models.Casemanager.findByPk(req.body.caseId);
+        if (!caseCheck){
+            return res.status(400).json({ status: false, message: 'Case Does not Exist !' });
+        }
         // no need to render a page
-    models.Casecomment.create({
-        title: req.body.title,
-        body: req.body.description,
-        CasemanagerId: req.body.caseId,
-        UserId: req.user.id
-    }).then(function() {
-        res.json({
-            status: true,
-            // data: casemanager, 
-            message: 'Comment Created successfully'
-          })
-    });
+        models.Casecomment.create({
+            title: req.body.title,
+            body: req.body.description,
+            CasemanagerId: req.body.caseId,
+            UserId: req.user.id
+        }).then(function() {
+            res.json({
+                status: true,
+                // data: casemanager, 
+                message: 'Comment Created successfully'
+            })
+        });
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
         return res.status(500).json({ status: false, message: `There was an error - ${error}` });
