@@ -94,7 +94,8 @@ exports.postCasecommentUpdate = function(req, res, next) {
     models.Casecomment.update(
         // Values to update
         {
-            casecomment_name: req.body.casecomment_name
+            title: req.body.title,
+            body: req.body.description,
         }, { // Clause
             where: {
                 id: req.params.casecomment_id
