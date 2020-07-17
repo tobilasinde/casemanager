@@ -71,7 +71,7 @@ exports.postCasemanagerCreate = [
     body('description').trim(),
     body('contact_name').isLength({
         min: 1
-    }).trim().escape().isAlphanumeric(),
+    }).trim(),
     body('note').trim(),
     body('contact_email').trim().isEmail().withMessage('Enter a valid Email'),
     async (req, res) => {
