@@ -33,7 +33,7 @@ exports.postCasecommentCreate = async function(req, res, next) {
         models.Casecomment.create({
             title: req.body.title,
             body: req.body.description,
-            CasemanagerId: req.body.caseId,
+            CasemanagerId: req.params.casemanager_id,
             UserId: req.user.id
         }).then(function() {
             res.json({
@@ -111,7 +111,7 @@ exports.postCasecommentUpdate = function(req, res, next) {
     ).then(function() {
         res.json({
             status: true,
-            data: casecomment, 
+            // data: casecomment, 
             message: 'Comment Updated successfully'
           })
     });

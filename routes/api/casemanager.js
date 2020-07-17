@@ -49,7 +49,7 @@ router.get('/', casemanagerController.getCasemanagerDashboard);
 // router.get('/create', casecommentController.getCasecommentCreate); 
 
 // POST CASECOMMENT CREATE
-router.post('/comment/create', casecommentController.postCasecommentCreate); 
+router.post('/:casemanager_id/comment/create', casecommentController.postCasecommentCreate); 
 
 // GET CASECOMMENT UPDATE
 // router.get('/comment/:casecomment_id/update', casecommentController.getCasecommentUpdate); 

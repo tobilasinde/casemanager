@@ -137,7 +137,7 @@
                     <!-- </div> -->
                     <!-- <div class="kt-invoice__container"> -->
                         <!--begin::Form-->
-                        <form class="kt-form" action="/casemanager/comment/create" method="post">
+                        <form class="kt-form" action="/casemanager/<%= casemanager.id %>/comment/create" method="post">
                             <div class="kt-portlet__body">
                                 
                                 <div class="form-group">
@@ -149,7 +149,7 @@
                                     <textarea class="form-control" name="description" id="exampleTextarea" rows="3" placeholder="Enter Comment Title here..."></textarea>
                                 </div>
                             </div>
-                            <input type="hidden" name="caseId" value="<%= casemanager.id %>">
+                            <!-- <input type="hidden" name="caseId" value="<%= casemanager.id %>"> -->
                             <div class="kt-portlet__foot">
                                 <div class="kt-form__actions">
                                     <button type="submit" class="btn btn-primary">Submit</button>

@@ -113,7 +113,7 @@ exports.postCasemanagerCreate = [
                 );
                 res.json({
                     status: true,
-                    data: casemanager, 
+                    // data: casemanager, 
                     message: 'Case Created successfully'
                   })
                 // // everything done, now redirect....to casemanager detail.
