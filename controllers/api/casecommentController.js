@@ -97,6 +97,10 @@ exports.getCasecommentDelete = async function(req, res, next) {
 
 exports.postCasecommentUpdate = function(req, res, next) {
     try{
+        const comment = await models.Casecomment.findByPk(req.params.casecomment_id);
+        if (!comment){
+            return res.status(400).json({ status: false, message: 'Case Does not Exist !' });
+        }
         console.log("ID is " + req.params.casecomment_id);
     models.Casecomment.update(
         // Values to update
