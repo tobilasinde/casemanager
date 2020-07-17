@@ -16,29 +16,29 @@ var casecommentController = require('../../controllers/api/casecommentController
 
 
 // CASE ROUTES
-router.get('/create', casemanagerController.getCasemanagerCreate); 
+router.get('/case/create', casemanagerController.getCasemanagerCreate); 
 
 // POST CASE CREATE
-router.post('/create', casemanagerController.postCasemanagerCreate); 
+router.post('/case/create', casemanagerController.postCasemanagerCreate); 
 
 // GET CASE UPDATE
 // casemanager/:casemanager_id/update
-router.get('/:casemanager_id/update', casemanagerController.getCasemanagerUpdate); 
+// router.get('/:casemanager_id/update', casemanagerController.getCasemanagerUpdate); 
 
 // POST CASE UPDATE
-router.post('/:casemanager_id/update', casemanagerController.postCasemanagerUpdate); 
+router.post('/case/:casemanager_id/update', casemanagerController.postCasemanagerUpdate); 
 
 // GET CASE DELETE
-router.get('/:casemanager_id/delete', casemanagerController.getCasemanagerDelete); 
+router.get('/case/:casemanager_id/delete', casemanagerController.getCasemanagerDelete); 
 
 // GET CASE LIST
 router.get('/cases', casemanagerController.getCasemanagerList); 
 
 // GET CASE DETAIL 
-router.get('/:casemanager_id', casemanagerController.getCasemanagerDetails); 
+router.get('/case/:casemanager_id', casemanagerController.getCasemanagerDetails); 
 
 // UPDATE CASE STATUS
-router.get('/:casemanager_id/status/:status', casemanagerController.getStatusUpdate); 
+router.get('/case/:casemanager_id/status/:status', casemanagerController.getStatusUpdate); 
 
 // GET CASE LIST
 router.get('/', casemanagerController.getCasemanagerDashboard); 
@@ -64,6 +64,6 @@ router.get('/comment/:casecomment_id/delete', casecommentController.getCasecomme
 // router.get('/', casecommentController.getCasecommentList); 
 
 // GET CASECOMMENT DETAIL 
-// router.get('/comment/:casecomment_id', casecommentController.getCasecommentDetails); 
+router.get('/comment/:casecomment_id', casecommentController.getCasecommentDetails); 
 
 module.exports = router;

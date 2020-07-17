@@ -222,52 +222,52 @@ exports.getCasemanagerDelete = async function(req, res, next) {
 };
 
 // Display casemanager update form on GET.
-exports.getCasemanagerUpdate = async function(req, res, next) {
-    try {
-        // find the case
-        const casemanagerCheck = await models.Casemanager.findByPk(req.params.casemanager_id);
-        // Check if case exist
-        if (!casemanagerCheck) {
-            return res.status(400).json({ status: false, message: 'Case Does not Exist !' });
-        }
+// exports.getCasemanagerUpdate = async function(req, res, next) {
+//     try {
+//         // find the case
+//         const casemanagerCheck = await models.Casemanager.findByPk(req.params.casemanager_id);
+//         // Check if case exist
+//         if (!casemanagerCheck) {
+//             return res.status(400).json({ status: false, message: 'Case Does not Exist !' });
+//         }
         
-        // create User GET controller logic here 
-        const users = await models.User.findAll({
-            where: {
-                CurrentBusinessId: req.user.CurrentBusinessId
-            }
-        });
-        const departments = await models.Department.findAll({
-            include: [{
-                model: models.User,
-                where: {
-                    CurrentBusinessId: req.user.CurrentBusinessId
-                },
-            }],
-        });
+//         // create User GET controller logic here 
+//         const users = await models.User.findAll({
+//             where: {
+//                 CurrentBusinessId: req.user.CurrentBusinessId
+//             }
+//         });
+//         const departments = await models.Department.findAll({
+//             include: [{
+//                 model: models.User,
+//                 where: {
+//                     CurrentBusinessId: req.user.CurrentBusinessId
+//                 },
+//             }],
+//         });
 
-        // Find the casemanager you want to update
-        const casemanager = await  models.Casemanager.findByPk(
-        req.params.casemanager_id,
-        {
-            include:
-            [
-                {
-                    model: models.Department 
-                }      
-            ]
-        });
-    // Find the person the case was assigned to
-    const assignedTo = await models.User.findByPk(casemanager.assigned_to);
-    res.json({
-        status: true,
-        data: {casemanager, users, departments, caseStatus, casePriority, caseOrigin, caseType, caseResponseStatus, caseRequestType, assignedTo}
-    })
-    } catch (error) {
-        // we have an error during the process, then catch it and redirect to error page
-        return res.status(500).json({ status: false, message: `There was an error - ${error}` });
-    }
-};
+//         // Find the casemanager you want to update
+//         const casemanager = await  models.Casemanager.findByPk(
+//         req.params.casemanager_id,
+//         {
+//             include:
+//             [
+//                 {
+//                     model: models.Department 
+//                 }      
+//             ]
+//         });
+//     // Find the person the case was assigned to
+//     const assignedTo = await models.User.findByPk(casemanager.assigned_to);
+//     res.json({
+//         status: true,
+//         data: {casemanager, users, departments, caseStatus, casePriority, caseOrigin, caseType, caseResponseStatus, caseRequestType, assignedTo}
+//     })
+//     } catch (error) {
+//         // we have an error during the process, then catch it and redirect to error page
+//         return res.status(500).json({ status: false, message: `There was an error - ${error}` });
+//     }
+// };
 
 // Handle casemanager update on CASEMANAGER.
 exports.postCasemanagerUpdate = async function(req, res, next) {

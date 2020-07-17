@@ -52,13 +52,16 @@ exports.postCasecommentCreate = async function(req, res, next) {
 exports.getCasecommentDelete = async function(req, res, next) {
     try{
         const comment = await models.Casecomment.findByPk(req.params.casecomment_id);
-    // console.log(comment.id);
-    // const commentId = comment.;
-    await models.Casecomment.destroy({
-        where: {
-            id: req.params.casecomment_id
+        if (!comment){
+            return res.status(400).json({ status: false, message: 'Case Does not Exist !' });
         }
-    });
+        // console.log(comment.id);
+        // const commentId = comment.;
+        await models.Casecomment.destroy({
+            where: {
+                id: req.params.casecomment_id
+            }
+        });
     res.json({
         status: true,
         // data: casemanager, 
@@ -73,24 +76,24 @@ exports.getCasecommentDelete = async function(req, res, next) {
  
 
 // Display casecomment update form on GET.
-exports.getCasecommentUpdate = function(req, res, next) {
-    try{
-        // Find the post you want to update
-    console.log("ID is " + req.params.casecomment_id);
-    models.Casecomment.findByPk(
-        req.params.casecomment_id
-    ).then(function(casecomment) {
-        res.json({
-            status: true,
-            data: casecomment, 
-            // message: 'Comment Deleted successfully'
-          })
-    });
-    } catch (error) {
-        // we have an error during the process, then catch it and redirect to error page
-        return res.status(500).json({ status: false, message: `There was an error - ${error}` });
-    }  
-};
+// exports.getCasecommentUpdate = function(req, res, next) {
+//     try{
+//         // Find the post you want to update
+//     console.log("ID is " + req.params.casecomment_id);
+//     models.Casecomment.findByPk(
+//         req.params.casecomment_id
+//     ).then(function(casecomment) {
+//         res.json({
+//             status: true,
+//             data: casecomment, 
+//             // message: 'Comment Deleted successfully'
+//           })
+//     });
+//     } catch (error) {
+//         // we have an error during the process, then catch it and redirect to error page
+//         return res.status(500).json({ status: false, message: `There was an error - ${error}` });
+//     }  
+// };
 
 exports.postCasecommentUpdate = function(req, res, next) {
     try{
@@ -108,7 +111,7 @@ exports.postCasecommentUpdate = function(req, res, next) {
     ).then(function() {
         res.json({
             status: true,
-            // data: casecomment, 
+            data: casecomment, 
             message: 'Comment Updated successfully'
           })
     });
@@ -118,25 +121,23 @@ exports.postCasecommentUpdate = function(req, res, next) {
     }
 };
 
-// // Display detail page for a specific casecomment.
-// exports.getCasecommentDetails = async function(req, res, next) {
-
-//     const categories = await models.Category.findAll();
-
-//     models.Casecomment.findByPk(
-//         req.params.casecomment_id 
-//     ).then(function(casecomment) {
-//         console.log(casecomment);
-//         res.render('pages/content', {
-//             title: 'Casecomment Details',
-//             categories: categories,
-//             functioName: 'GET CASECOMMENT DETAILS',
-//             casecomment: casecomment,
-//             layout: 'layouts/detail'
-//         });
-//         console.log("Casecomment details renders successfully");
-//     });
-// };
+// Display detail page for a specific casecomment.
+exports.getCasecommentDetails = async function(req, res, next) {
+    try{
+        models.Casecomment.findByPk(
+            req.params.casecomment_id 
+        ).then(function(casecomment) {
+            res.json({
+                status: true,
+                data: casecomment, 
+                message: 'Comment Updated successfully'
+              })
+        });
+        } catch (error) {
+        // we have an error during the process, then catch it and redirect to error page
+        return res.status(500).json({ status: false, message: `There was an error - ${error}` });
+    }
+};
 
 // // Display list of all casecomments.
 // exports.getCasecommentList = async function(req, res, next) {
