@@ -95,30 +95,30 @@ exports.getCasecommentDelete = async function(req, res, next) {
 //     }  
 // };
 
-exports.postCasecommentUpdate = function(req, res, next) {
+exports.postCasecommentUpdate = async function(req, res, next) {
     try{
         const comment = await models.Casecomment.findByPk(req.params.casecomment_id);
         if (!comment){
             return res.status(400).json({ status: false, message: 'Case Does not Exist !' });
         }
         console.log("ID is " + req.params.casecomment_id);
-    models.Casecomment.update(
-        // Values to update
-        {
-            title: req.body.title,
-            body: req.body.description,
-        }, { // Clause
-            where: {
-                id: req.params.casecomment_id
+        models.Casecomment.update(
+            // Values to update
+            {
+                title: req.body.title,
+                body: req.body.description,
+            }, { // Clause
+                where: {
+                    id: req.params.casecomment_id
+                }
             }
-        }
-    ).then(function() {
-        res.json({
-            status: true,
-            // data: casecomment, 
-            message: 'Comment Updated successfully'
-          })
-    });
+        ).then(function() {
+            res.json({
+                status: true,
+                // data: casecomment, 
+                message: 'Comment Updated successfully'
+            })
+        });
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
         return res.status(500).json({ status: false, message: `There was an error - ${error}` });
