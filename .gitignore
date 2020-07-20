@@ -36,3 +36,4 @@ npm-debug.log
 
 # Do not store sqlite databases in GIT
 *.sqlite
+.env
