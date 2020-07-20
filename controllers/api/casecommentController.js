@@ -10,6 +10,7 @@
  * Module dependencies.
  */
 var models = require('../../models');
+const { body, validationResult } = require('express-validator');
 
 // // Display casecomment create form on GET.
 // exports.getCasecommentCreate = function(req, res, next) {
@@ -23,37 +24,49 @@ var models = require('../../models');
 // };
 
 // Handle casecomment create on POST.
-exports.postCasecommentCreate = async function(req, res, next) {
-    try{
-        var caseCheck = await  models.Casemanager.findByPk(req.params.casemanager_id);
-        if (!caseCheck){
-            return res.status(400).json({ status: false, message: 'Case Does not Exist !' });
+exports.postCasecommentCreate = [
+    body('title').isLength({
+        min: 1, max: 255
+    }).trim().isEmpty().escape(),
+    body('description').trim().isEmpty(),
+    async (req, res, next) => {
+        try{
+            // Check if there are validation errors
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(422).json({ errors: errors.array() });
+            }
+
+            var caseCheck = await  models.Casemanager.findByPk(req.params.casemanager_id);
+            if (!caseCheck){
+                return res.status(400).json({ status: false, code: 400, message: 'Case Does not Exist !' });
+            }
+            // no need to render a page
+            models.Casecomment.create({
+                title: req.body.title,
+                body: req.body.description,
+                CasemanagerId: req.params.casemanager_id,
+                UserId: req.user.id
+            }).then(function() {
+                res.json({
+                    status: true,
+                    // data: casemanager, 
+                    message: 'Comment Created successfully'
+                })
+            });
+        } catch (error) {
+            // we have an error during the process, then catch it and redirect to error page
+            return res.status(500).json({ status: false, code: 500, message: `There was an error - ${error}` });
         }
-        // no need to render a page
-        models.Casecomment.create({
-            title: req.body.title,
-            body: req.body.description,
-            CasemanagerId: req.params.casemanager_id,
-            UserId: req.user.id
-        }).then(function() {
-            res.json({
-                status: true,
-                // data: casemanager, 
-                message: 'Comment Created successfully'
-            })
-        });
-    } catch (error) {
-        // we have an error during the process, then catch it and redirect to error page
-        return res.status(500).json({ status: false, message: `There was an error - ${error}` });
     }
-};
+]
 
 // Display casecomment delete form on GET.
 exports.getCasecommentDelete = async function(req, res, next) {
     try{
         const comment = await models.Casecomment.findByPk(req.params.casecomment_id);
         if (!comment){
-            return res.status(400).json({ status: false, message: 'Case Does not Exist !' });
+            return res.status(400).json({ status: false, code: 400, message: 'Case Does not Exist !' });
         }
         // console.log(comment.id);
         // const commentId = comment.;
@@ -69,7 +82,7 @@ exports.getCasecommentDelete = async function(req, res, next) {
       })
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
-        return res.status(500).json({ status: false, message: `There was an error - ${error}` });
+        return res.status(500).json({ status: false, code: 500, message: `There was an error - ${error}` });
     }
 };
 
@@ -95,42 +108,54 @@ exports.getCasecommentDelete = async function(req, res, next) {
 //     }  
 // };
 
-exports.postCasecommentUpdate = async function(req, res, next) {
-    try{
-        const comment = await models.Casecomment.findByPk(req.params.casecomment_id);
-        if (!comment){
-            return res.status(400).json({ status: false, message: 'Comment Does not Exist !' });
-        }
-        console.log("ID is " + req.params.casecomment_id);
-        models.Casecomment.update(
-            // Values to update
-            {
-                title: req.body.title,
-                body: req.body.description,
-            }, { // Clause
-                where: {
-                    id: req.params.casecomment_id
-                }
+exports.postCasecommentUpdate = [
+    body('title').isLength({
+        min: 1, max: 255
+    }).trim().isEmpty().escape(),
+    body('description').trim().isEmpty(),
+    async (req, res, next) => {
+        try{
+            // Check if there are validation errors
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(422).json({ errors: errors.array() });
             }
-        ).then(function() {
-            res.json({
-                status: true,
-                // data: casecomment, 
-                message: 'Comment Updated successfully'
-            })
-        });
-    } catch (error) {
-        // we have an error during the process, then catch it and redirect to error page
-        return res.status(500).json({ status: false, message: `There was an error - ${error}` });
+            
+            const comment = await models.Casecomment.findByPk(req.params.casecomment_id);
+            if (!comment){
+                return res.status(400).json({ status: false, code: 400, message: 'Comment Does not Exist !' });
+            }
+            console.log("ID is " + req.params.casecomment_id);
+            models.Casecomment.update(
+                // Values to update
+                {
+                    title: req.body.title,
+                    body: req.body.description,
+                }, { // Clause
+                    where: {
+                        id: req.params.casecomment_id
+                    }
+                }
+            ).then(function() {
+                res.json({
+                    status: true,
+                    // data: casecomment, 
+                    message: 'Comment Updated successfully'
+                })
+            });
+        } catch (error) {
+            // we have an error during the process, then catch it and redirect to error page
+            return res.status(500).json({ status: false, code: 500, message: `There was an error - ${error}` });
+        }
     }
-};
+];
 
 // Display detail page for a specific casecomment.
 exports.getCasecommentDetails = async function(req, res, next) {
     try{
         const comment = await models.Casecomment.findByPk(req.params.casecomment_id);
         if (!comment){
-            return res.status(400).json({ status: false, message: 'Comment Does not Exist !' });
+            return res.status(400).json({ status: false, code: 400, message: 'Comment Does not Exist !' });
         }
         models.Casecomment.findByPk(
             req.params.casecomment_id 
@@ -143,7 +168,7 @@ exports.getCasecommentDetails = async function(req, res, next) {
         });
         } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
-        return res.status(500).json({ status: false, message: `There was an error - ${error}` });
+        return res.status(500).json({ status: false, code: 500, message: `There was an error - ${error}` });
     }
 };
 

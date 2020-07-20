@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM('Support', 'Request')
       },
       case_number: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.STRING,
       allowNull: false,
       },
       status: {

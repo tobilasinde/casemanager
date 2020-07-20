@@ -9,10 +9,11 @@
 /**
  * Module dependencies.
  */
-var express = require('express');
-var router = express.Router();
-var casemanagerController = require('../../controllers/api/casemanagerController');
-var casecommentController = require('../../controllers/api/casecommentController');
+const express = require('express');
+const router = express.Router();
+const { updateCase, createComment, getDepartment } = require('../../middlewares/case')
+const casemanagerController = require('../../controllers/api/casemanagerController');
+const casecommentController = require('../../controllers/api/casecommentController');
 
 
 // CASE ROUTES
@@ -26,7 +27,7 @@ router.post('/case/create', casemanagerController.postCasemanagerCreate);
 // router.get('/:casemanager_id/update', casemanagerController.getCasemanagerUpdate); 
 
 // POST CASE UPDATE
-router.post('/case/:casemanager_id/update', casemanagerController.postCasemanagerUpdate); 
+router.post('/case/:casemanager_id/update', updateCase, casemanagerController.postCasemanagerUpdate); 
 
 // GET CASE DELETE
 router.get('/case/:casemanager_id/delete', casemanagerController.getCasemanagerDelete); 
@@ -38,18 +39,23 @@ router.get('/cases', casemanagerController.getCasemanagerList);
 router.get('/case/:casemanager_id', casemanagerController.getCasemanagerDetails); 
 
 // UPDATE CASE STATUS
-router.get('/case/:casemanager_id/status/:status', casemanagerController.getStatusUpdate); 
+router.get('/case/:casemanager_id/status/:status', updateCase, casemanagerController.getStatusUpdate); 
 
 // GET CASE LIST
 router.get('/', casemanagerController.getCasemanagerDashboard); 
 
+// GET USER BY DEPARTMENT
+router.get('/case/department/:depatment_id', casemanagerController.getUsersByDepartment);
+
+//GET DEPARTMENT BY CURRENTBUSINESS
+router.get('/case/business/:business_id/department', getDepartment, casemanagerController.getDepartmentByCurrentbusiness);
 
 // CASE COMMENT ROUTES
 // // CASECOMMENT CREATE GET
-// router.get('/create', casecommentController.getCasecommentCreate); 
+// router.get('/create', createComment casecommentController.getCasecommentCreate); 
 
 // POST CASECOMMENT CREATE
-router.post('/:casemanager_id/comment/create', casecommentController.postCasecommentCreate); 
+router.post('/:casemanager_id/comment/create', createComment, casecommentController.postCasecommentCreate); 
 
 // GET CASECOMMENT UPDATE
 // router.get('/comment/:casecomment_id/update', casecommentController.getCasecommentUpdate); 
