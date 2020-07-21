@@ -469,8 +469,9 @@ exports.getUsersByDepartment = async function(req, res, next) {
 // Get users by department
 exports.getDepartmentByCurrentbusiness = async function(req, res, next) {
     try {
+        console.log(req.user);
         // find the department
-        const businessCheck = await CurrentBusiness.findByPk(req.params.business_id);
+        const businessCheck = await CurrentBusiness.findByPk(req.user.CurrentBusinessId);
         // Check if department exist
         if (!businessCheck) {
             return res.status(400).json({ status: false, code: 400, message: 'Business Does not Exist !' });
@@ -481,7 +482,7 @@ exports.getDepartmentByCurrentbusiness = async function(req, res, next) {
                 include: [{
                     model: User,
                     where: {
-                        CurrentBusinessId: req.params.business_id,
+                        CurrentBusinessId: req.user.CurrentBusinessId,
                     }
                 }]
             }

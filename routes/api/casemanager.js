@@ -11,7 +11,7 @@
  */
 const express = require('express');
 const router = express.Router();
-const { updateCase, createComment, getDepartment } = require('../../middlewares/case')
+const { updateCase, createComment, } = require('../../middlewares/case')
 const casemanagerController = require('../../controllers/api/casemanagerController');
 const casecommentController = require('../../controllers/api/casecommentController');
 
@@ -48,7 +48,7 @@ router.get('/', casemanagerController.getCasemanagerDashboard);
 router.get('/case/department/:department_id', casemanagerController.getUsersByDepartment);
 
 //GET DEPARTMENT BY CURRENTBUSINESS
-router.get('/case/business/:business_id/department', getDepartment, casemanagerController.getDepartmentByCurrentbusiness);
+router.get('/case/business/department', casemanagerController.getDepartmentByCurrentbusiness);
 
 // CASE COMMENT ROUTES
 // // CASECOMMENT CREATE GET

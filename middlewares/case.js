@@ -19,13 +19,13 @@ module.exports = {
         }
         next();
     },
-    getDepartment: async (req, res, next) => {
-        const user = req.user;
-        console.log(user);
-        const businessCheck = await CurrentBusiness.findByPk(req.params.business_id);
-        if (!businessCheck || req.params.business_id != user.CurrentBusinessId) {
-            return res.status(401).json({ status: false, code: 401, message: 'Unauthorized access - User does not belong to this Business' });
-        }
-        next();
-    },
+    // getDepartment: async (req, res, next) => {
+    //     const user = req.user;
+    //     console.log(user);
+    //     const businessCheck = await CurrentBusiness.findByPk(req.params.business_id);
+    //     if (!businessCheck || req.params.business_id != user.CurrentBusinessId) {
+    //         return res.status(401).json({ status: false, code: 401, message: 'Unauthorized access - User does not belong to this Business' });
+    //     }
+    //     next();
+    // },
 };
