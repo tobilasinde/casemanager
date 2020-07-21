@@ -438,7 +438,7 @@ exports.getCasemanagerDetails = async function(req, res, next) {
 // Get users by department
 exports.getUsersByDepartment = async function(req, res, next) {
     try {
-        // find the department
+        // find the departments
         const departmentCheck = await models.Department.findByPk(req.params.department_id);
         // Check if department exist
         if (departmentCheck.length == 0) {
