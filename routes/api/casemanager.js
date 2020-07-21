@@ -45,7 +45,7 @@ router.get('/case/:casemanager_id/status/:status', updateCase, casemanagerContro
 router.get('/', casemanagerController.getCasemanagerDashboard); 
 
 // GET USER BY DEPARTMENT
-router.get('/case/department/:depatment_id', casemanagerController.getUsersByDepartment);
+router.get('/case/department/:department_id', casemanagerController.getUsersByDepartment);
 
 //GET DEPARTMENT BY CURRENTBUSINESS
 router.get('/case/business/:business_id/department', getDepartment, casemanagerController.getDepartmentByCurrentbusiness);

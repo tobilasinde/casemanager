@@ -410,16 +410,13 @@ exports.getCasemanagerDetails = async function(req, res, next) {
             req.params.casemanager_id, {
                 include: [
                     {
-                        model: User,
-                        attributes: ['id', 'first_name', 'last_name']
+                        model: User
                     },
                     {
-                        model: Department,
-                        attributes: ['id', 'department_name']
+                        model: Department
                     },
                     {
-                        model: CurrentBusiness,
-                        attributes: ['id', 'current_business_name']
+                        model: CurrentBusiness
                     }
                 ]
             }
@@ -442,9 +439,9 @@ exports.getCasemanagerDetails = async function(req, res, next) {
 exports.getUsersByDepartment = async function(req, res, next) {
     try {
         // find the department
-        const departmentCheck = await Department.findByPk(req.params.department_id);
+        const departmentCheck = await models.Department.findByPk(req.params.department_id);
         // Check if department exist
-        if (!departmentCheck) {
+        if (departmentCheck.length == 0) {
             return res.status(400).json({ status: false, code: 400, message: 'Department Does not Exist !' });
         }
         // find all users in the department
