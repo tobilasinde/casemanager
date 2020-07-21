@@ -447,12 +447,10 @@ exports.getUsersByDepartment = async function(req, res, next) {
         // find all users in the department
         const users = await User.findAll(
             {
-                include: [{
-                    model: Department,
-                    where: {
-                        id: req.params.department_id,
-                    }
-                }]
+                where: {
+                    CurrentBusinessId: req.user.CurrentBusinessId,
+                    DepartmentId: req.params.department_id
+                }
             }
         );
 
