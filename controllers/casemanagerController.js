@@ -13,8 +13,8 @@ const { body, validationResult } = require('express-validator');
 
 // initiate s3 library from AWS
 const s3 = new AWS.S3({
-  accessKeyId: 'AKIAILMCS5HIXGNLLBJA',
-  secretAccessKey: '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'
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 });
 
 // Mock Data for Casemanager
