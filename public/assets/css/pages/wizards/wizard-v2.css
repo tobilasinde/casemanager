@@ -61,9 +61,9 @@
         justify-content: center;
         margin: 0 1rem; }
       .kt-wizard-v2 .kt-wizard-v2__nav .kt-wizard-v2__nav-items .kt-wizard-v2__nav-item[data-ktwizard-state="current"] {
-        color: #385aeb; }
+        color: #5d78ff; }
         .kt-wizard-v2 .kt-wizard-v2__nav .kt-wizard-v2__nav-items .kt-wizard-v2__nav-item[data-ktwizard-state="current"] span {
-          background-color: #385aeb;
+          background-color: #5d78ff;
           color: #ffffff; }
       .kt-wizard-v2 .kt-wizard-v2__nav .kt-wizard-v2__nav-items .kt-wizard-v2__nav-item[data-ktwizard-state="pending"] {
         color: #918ea7; }

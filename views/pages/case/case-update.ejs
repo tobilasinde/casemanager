@@ -1,84 +1,147 @@
-<div class="col-sm-8">    
-  <div class="jumbotron">
-      <form action="" method="post">
-        Status: 
-         <select name = "status">
-          <option  value="<%= casemanager.status %>"><%= casemanager.status %></option>
-            <% caseStatus.forEach(function(dropdown) { %>
-            <option  value="<%= dropdown %>"><%= dropdown %></option>
-          <br/>
-         <% }); %>
-          </select>
-      <br><br>
-      Priority: 
-         <select name = "priority">
-          <option  value="<%= casemanager.priority %>"><%= casemanager.priority %></option>
-              <% casePriority.forEach(function(dropdown) { %>
-              <option  value="<%= dropdown %>"><%= dropdown %></option>
-          <br/>
-         <% }); %>
-          </select>
-      <br><br>
-      Origin: 
-         <select name = "origin">
-          <option  value="<%= casemanager.case_origin %>"><%= casemanager.case_origin %></option>
-              <% caseOrigin.forEach(function(dropdown) { %>
-              <option  value="<%= dropdown %>"><%= dropdown %></option>
-          <br/>
-         <% }); %>
-          </select>
-      <br><br>
-      Request Type: 
-         <select name = "request_type">
-          <option  value="<%= casemanager.request_type %>"><%= casemanager.request_type %></option>
-              <% caseRequestType.forEach(function(dropdown) { %>
-              <option  value="<%= dropdown %>"><%= dropdown %></option>
-          <br/>
-         <% }); %>
-          </select>
-      <br><br>
-      Case Type: 
-         <select name = "case_type">
-          <option  value="<%= casemanager.case_type %>"><%= casemanager.case_type %></option>
-              <% caseType.forEach(function(dropdown) { %>
-              <option  value="<%= dropdown %>"><%= dropdown %></option>
-          <br/>
-         <% }); %>
-          </select>
-      <br><br>
-      Department: 
-               <select name = "department">
-                    <% departments.forEach(function(dropdown) { %>
-                    <option  value="<%= dropdown.id %>"><%= dropdown.department_name %></option>
-                <br/>
-               <% }); %>
-                </select>
-            <br><br>
-      Assigned To: 
-         <select required name = "assigned">
-          <option  value="<%= assignedTo.id %>"><%= assignedTo.username %></option>
-              <% users.forEach(function(dropdown) { %>
-              <option  value="<%= dropdown.id %>"><%= dropdown.username %></option>
-          <br/>
-         <% }); %>
-          </select>
-      <br><br>
-      Subject: 
-      <input type="text" name="subject" placeholder="Enter Case Subject here..." value="<%= casemanager.subject %>">
-      <br><br>
-      Description: 
-      <textarea name="description" placeholder="Enter Case Description here..."><%= casemanager.description %></textarea>
-      <br><br>
-      Primary Contact Name: 
-      <input type="text" name="contact_name" placeholder="Contact Name" value="<%= casemanager.contact_name %>">
-      <br><br/>
-      Contact Email: 
-      <input type="email" name="contact_email" placeholder="Email" value="<%= casemanager.contact_email %>">
-      <br><br/>
-      Additional Information: 
-      <textarea name="note" placeholder="Enter Additional Information here..."><%= casemanager.note %></textarea>
-      <br><br>
-         <input type="submit" value="Update Case"  >
-        </form>
-  </div>
+<!--begin::Portlet-->
+<div class="kt-portlet">
+    <div class="kt-portlet__head">
+        <div class="kt-portlet__head-label">
+            <h3 class="kt-portlet__head-title"><%= title %></h3>
+        </div>
+    </div>
+
+    <!--begin::Form-->
+    <form action="" method="post" enctype="multipart/form-data" class="kt-form kt-form--fit kt-form--label-right">
+        <div class="kt-portlet__body">
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Subject:</label>
+                <div class="col-lg-3">
+                    <input type="text" name="subject"required class="form-control" value="<%= casemanager.subject %>">
+                </div>
+                <label class="col-lg-2 col-form-label">Description:</label>
+                <div class="col-lg-3">
+                    <textarea class="form-control" required name="description"><%= casemanager.description %></textarea>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Contact Name:</label>
+                <div class="col-lg-3">
+                    <div class="kt-input-icon">
+                        <input name="contact_name" required type="text" class="form-control" value="<%= casemanager.contact_name %>">
+                    </div>
+                </div>
+                <label class="col-lg-2 col-form-label">Contact Email:</label>
+                <div class="col-lg-3">
+                    <div class="kt-input-icon">
+                        <input name="contact_email" required type="text" class="form-control" value="<%= casemanager.contact_email %>">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Department:</label>
+                <div class="col-lg-3">
+                    <div class="kt-input-icon">
+                        <select class="form-control" required name="department">
+                            <option value="<%= casemanager.Department.id %>"><%= casemanager.Department.department_name %></option>
+                            <% departments.forEach(function(dropdown) { %>
+                                <option  value="<%= dropdown.id %>"><%= dropdown.department_name %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                </div>
+                <label class="col-lg-2 col-form-label">Assign To:</label>
+                <div class="col-lg-3">
+                    <div class="kt-input-icon">
+                        <select class="form-control" required name="assigned">
+                            <option value="<%= assignedTo.id %>"><%= assignedTo.username %></option>
+                            <% users.forEach(function(dropdown) { %>
+                                <option  value="<%= dropdown.id %>"><%= dropdown.username %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Case Type:</label>
+                <div class="col-lg-3">
+                    <div class="kt-radio-inline">
+                        <% caseType.forEach(function(dropdown) { %>
+                        <label class="kt-radio kt-radio--solid">
+                                <input type="radio" required name="case_type" value="<%= dropdown %>" <% if (dropdown == casemanager.case_type ) { %>  checked <% } %> >  <%= dropdown %>
+                            <span></span>
+                        </label>
+                        <% }); %>
+                    </div>
+                </div>
+                <label class="col-lg-2 col-form-label">Request Type:</label>
+                <div class="col-lg-3">
+                    <div class="kt-radio-inline">
+                        <% caseRequestType.forEach(function(dropdown) { %>
+                        <label class="kt-radio kt-radio--solid">
+                                <input type="radio" required name="request_type" value="<%= dropdown %>" <% if (dropdown == casemanager.request_type ) { %>  checked <% } %> > <%= dropdown %>
+                            <span></span>
+                        </label>
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Priority:</label>
+                <div class="col-lg-3">
+                    <div class="kt-radio-inline">
+                        <% casePriority.forEach(function(dropdown) { %>
+                        <label class="kt-radio kt-radio--solid">
+                                <input type="radio" required name="priority" value="<%= dropdown %>" <% if (dropdown == casemanager.priority ) { %>  checked <% } %> > <%= dropdown %>
+                            <span></span>
+                        </label>
+                        <% }); %>
+                    </div>
+                </div>
+                <label class="col-lg-2 col-form-label">Origin:</label>
+                <div class="col-lg-3">
+                    <div class="kt-radio-inline">
+                        <% caseOrigin.forEach(function(dropdown) { %>
+                        <label class="kt-radio kt-radio--solid">
+                                <input type="radio" required name="priority" value="<%= dropdown %>" <% if (dropdown == casemanager.case_origin ) { %>  checked <% } %> > <%= dropdown %>
+                            <span></span>
+                        </label>
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Status:</label>
+                <div class="col-lg-3">
+                    <div class="kt-radio-inline">
+                        <% caseStatus.forEach(function(dropdown) { %>
+                        <label class="kt-radio kt-radio--solid">
+                                <input type="radio" required name="priority" value="<%= dropdown %>" <% if (dropdown == casemanager.status ) { %>  checked <% } %> > <%= dropdown %>
+                            <span></span>
+                        </label>
+                        <% }); %>
+                    </div>
+                </div>
+                <label class="col-lg-2 col-form-label">Status:</label>
+                <div class="col-lg-3">
+                    <div class="kt-radio-inline">
+                        <% caseStatus.forEach(function(dropdown) { %>
+                        <label class="kt-radio kt-radio--solid">
+                                <input type="radio" required name="priority" value="<%= dropdown %>" <% if (dropdown == casemanager.status ) { %>  checked <% } %> > <%= dropdown %>
+                            <span></span>
+                        </label>
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="kt-portlet__foot">
+            <div class="kt-form__actions">
+                <div class="row">
+                    <div class="col-lg-2"></div>
+                    <div class="col-lg-10">
+                        <button type="submit" class="btn btn-success">Submit</button>
+                        <button type="reset" class="btn btn-secondary">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!--end::Form-->
 </div>

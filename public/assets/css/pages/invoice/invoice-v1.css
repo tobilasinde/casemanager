@@ -113,7 +113,7 @@
         .kt-invoice-1 .kt-invoice__body table tbody tr td:not(:first-child) {
           text-align: right; }
         .kt-invoice-1 .kt-invoice__body table tbody tr td:last-child {
-          color: #385aeb;
+          color: #5d78ff;
           font-size: 1.2rem;
           padding-right: 0; }
       .kt-invoice-1 .kt-invoice__body table tbody tr:first-child td {
@@ -187,7 +187,7 @@
         font-weight: 600;
         color: #74788d; }
       .kt-invoice-1 .kt-invoice__footer .kt-invoice__total .kt-invoice__price {
-        color: #385aeb;
+        color: #5d78ff;
         font-weight: 700;
         font-size: 24px; }
       .kt-invoice-1 .kt-invoice__footer .kt-invoice__total .kt-invoice__notice {

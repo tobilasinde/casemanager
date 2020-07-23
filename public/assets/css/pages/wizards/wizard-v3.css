@@ -99,9 +99,9 @@
             text-align: left;
             margin-top: 0; } }
       .kt-wizard-v3 .kt-wizard-v3__nav .kt-wizard-v3__nav-items .kt-wizard-v3__nav-item[data-ktwizard-state="current"] {
-        color: #385aeb; }
+        color: #5d78ff; }
         .kt-wizard-v3 .kt-wizard-v3__nav .kt-wizard-v3__nav-items .kt-wizard-v3__nav-item[data-ktwizard-state="current"] span {
-          background-color: #385aeb;
+          background-color: #5d78ff;
           color: #ffffff; }
       .kt-wizard-v3 .kt-wizard-v3__nav .kt-wizard-v3__nav-items .kt-wizard-v3__nav-item[data-ktwizard-state="pending"] {
         color: #a2a5b9; }

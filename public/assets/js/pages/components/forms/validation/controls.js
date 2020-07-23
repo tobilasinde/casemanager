@@ -8,50 +8,50 @@ var KTFormControls = function () {
         $( "#kt_form_1" ).validate({
             // define validation rules
             rules: {
-                email: {
+                contact_email: {
                     required: true,
                     email: true 
                 },
-                url: {
-                    required: true 
-                },
-                digits: {
-                    required: true,
-                    digits: true
-                },
-                creditcard: {
-                    required: true,
-                    creditcard: true 
-                },
-                phone: {
-                    required: true,
-                    phoneUS: true 
-                },
-                option: {
-                    required: true
-                },
-                options: {
-                    required: true,
-                    minlength: 2,
-                    maxlength: 4
-                },
-                memo: {
-                    required: true,
-                    minlength: 10,
-                    maxlength: 100
-                },
+                // url: {
+                //     required: true 
+                // },
+                // digits: {
+                //     required: true,
+                //     digits: true
+                // },
+                // creditcard: {
+                //     required: true,
+                //     creditcard: true 
+                // },
+                // phone: {
+                //     required: true,
+                //     phoneUS: true 
+                // },
+                // option: {
+                //     required: true
+                // },
+                // options: {
+                //     required: true,
+                //     minlength: 2,
+                //     maxlength: 4
+                // },
+                // memo: {
+                //     required: true,
+                //     minlength: 10,
+                //     maxlength: 100
+                // },
 
-                checkbox: {
-                    required: true
-                },
-                checkboxes: {
-                    required: true,
-                    minlength: 1,
-                    maxlength: 2
-                },
-                radio: {
-                    required: true
-                }
+                // checkbox: {
+                //     required: true
+                // },
+                // checkboxes: {
+                //     required: true,
+                //     minlength: 1,
+                //     maxlength: 2
+                // },
+                // radio: {
+                //     required: true
+                // }
             },
             
             //display error alert on form submit  

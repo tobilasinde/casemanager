@@ -165,7 +165,7 @@
         .kt-profile .kt-profile__content .kt-profile__contact .kt-profile__contact-item:hover .kt-profile__contact-item-text {
           -webkit-transition: all 0.3s;
           transition: all 0.3s;
-          color: #385aeb; }
+          color: #5d78ff; }
   .kt-profile .kt-profile__content .kt-profile__stats {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -255,7 +255,7 @@
         .kt-profile .kt-profile__nav .nav.nav-tabs.nav-tabs-line .nav-item a.nav-link.active, .kt-profile .kt-profile__nav .nav.nav-tabs.nav-tabs-line .nav-item a.nav-link:hover {
           -webkit-transition: all 0.3s;
           transition: all 0.3s;
-          color: #385aeb;
+          color: #5d78ff;
           border-bottom-width: 2px; }
   @media (max-width: 1024px) {
     .kt-profile .kt-profile__nav {

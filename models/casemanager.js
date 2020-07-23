@@ -2,7 +2,8 @@
 module.exports = (sequelize, DataTypes) => {
   var Casemanager = sequelize.define('Casemanager', {
       case_type: {
-        type: DataTypes.ENUM('Support', 'Request')
+        type: DataTypes.ENUM('Support', 'Request'),
+        defaultValue: 'Support'
       },
       case_number: {
       type: DataTypes.STRING,
@@ -44,7 +45,8 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: 'Awaiting Business Reply'
       },
       request_type: {
-        type: DataTypes.ENUM('Issues', 'Complaints')
+        type: DataTypes.ENUM('Issues', 'Complaints'),
+        defaultValue: 'Issues'
       },
       description: {
       type: DataTypes.TEXT

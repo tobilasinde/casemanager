@@ -12,8 +12,10 @@
 var express = require('express');
 var router = express.Router();
 var indexController = require('../controllers/indexController');
+const casemanagerController = require('../controllers/casemanagerController');
 
-router.get('/', indexController.getIndex);
+// GET CASE LIST
+router.get('/', casemanagerController.getCasemanagerDashboard); 
 router.get('/about', indexController.getAbout);
  
 

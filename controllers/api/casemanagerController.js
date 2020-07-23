@@ -57,17 +57,17 @@ exports.getCasemanagerCreate = async function(req, res, next) {
 // Handle post create on CASEMANAGER.
 exports.postCasemanagerCreate = [
     // Validate fields.
-    body('priority').trim().isEmpty().isAlpha().escape(),
-    body('request_type').trim().isEmpty().isAlpha().escape(),
-    body('assigned').trim().isEmpty().isInt().escape(),
-    body('case_type').trim().isEmpty().isAlpha().escape(),
+    body('priority').trim().not().isEmpty().isAlpha().escape(),
+    body('request_type').trim().not().isEmpty().isAlpha().escape(),
+    body('assigned').trim().not().isEmpty().isInt().escape(),
+    body('case_type').trim().not().isEmpty().isAlpha().escape(),
     body('subject').isLength({
         min: 1, max: 255
-    }).trim().isEmpty().escape(),
-    body('description').trim().isEmpty(),
+    }).trim().not().isEmpty().escape(),
+    body('description').trim().not().isEmpty(),
     body('contact_name').isLength({
         min: 1, max: 255
-    }).trim().isEmpty().escape(),
+    }).trim().not().isEmpty().escape(),
     body('note').trim().escape(),
     body('contact_email').trim().isEmail().withMessage('Enter a valid Email').escape(),
     async (req, res) => {
@@ -99,7 +99,7 @@ exports.postCasemanagerCreate = [
             const userDepartmentCheck = await User.count({
                 where: {
                     id: req.body.assigned,
-                    DepartmentId: req.body.department_id,
+                    DepartmentId: req.body.department,
                 }
             });
             console.log(userDepartmentCheck);
@@ -118,7 +118,7 @@ exports.postCasemanagerCreate = [
                         assigned_to: req.body.assigned,
                         case_type: req.body.case_type,
                         UserId: req.user.id,
-                        DepartmentId: req.body.department_id,
+                        DepartmentId: req.body.department,
                         CurrentBusinessId: req.user.CurrentBusinessId,
                         subject: req.body.subject,
                         description: req.body.description,
@@ -178,7 +178,7 @@ exports.postCasemanagerCreate = [
                         assigned_to: req.body.assigned,
                         case_type: req.body.case_type,
                         UserId: req.user.id,
-                        DepartmentId: req.body.department_id,
+                        DepartmentId: req.body.department,
                         CurrentBusinessId: req.user.CurrentBusinessId,
                         subject: req.body.subject,
                         description: req.body.description,
@@ -281,18 +281,18 @@ exports.getCasemanagerDelete = async function(req, res, next) {
 // Handle casemanager update on CASEMANAGER.
 exports.postCasemanagerUpdate = [
     // Validate fields.
-    body('priority').trim().isEmpty().isAlpha().escape(),
-    body('origin').trim().isEmpty().isAlpha().escape(),
-    body('request_type').trim().isEmpty().isAlpha().escape(),
-    body('assigned').trim().isEmpty().isInt().escape(),
-    body('case_type').trim().isEmpty().isAlpha().escape(),
+    body('priority').trim().not().isEmpty().isAlpha().escape(),
+    body('origin').trim().not().isEmpty().isAlpha().escape(),
+    body('request_type').trim().not().isEmpty().isAlpha().escape(),
+    body('assigned').trim().not().isEmpty().isInt().escape(),
+    body('case_type').trim().not().isEmpty().isAlpha().escape(),
     body('subject').isLength({
         min: 1, max: 255
-    }).trim().isEmpty().escape(),
-    body('description').trim().isEmpty(),
+    }).trim().not().isEmpty().escape(),
+    body('description').trim().not().isEmpty(),
     body('contact_name').isLength({
         min: 1, max: 255
-    }).trim().isEmpty().escape(),
+    }).trim().not().isEmpty().escape(),
     body('note').trim().escape(),
     body('contact_email').trim().isEmail().withMessage('Enter a valid Email').escape(),
 

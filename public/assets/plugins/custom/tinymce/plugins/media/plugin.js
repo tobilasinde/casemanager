@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.4.1 (2020-07-08)
+ * Version: 5.1.5 (2019-12-19)
  */
 (function () {
     'use strict';
@@ -48,7 +48,7 @@
         return n;
       };
       var me = {
-        fold: function (n, _s) {
+        fold: function (n, s) {
           return n();
         },
         is: never,
@@ -76,6 +76,9 @@
         },
         toString: constant('none()')
       };
+      if (Object.freeze) {
+        Object.freeze(me);
+      }
       return me;
     }();
     var some = function (a) {
@@ -141,16 +144,17 @@
     };
 
     var typeOf = function (x) {
-      var t = typeof x;
       if (x === null) {
         return 'null';
-      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
-        return 'array';
-      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
-        return 'string';
-      } else {
-        return t;
       }
+      var t = typeof x;
+      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      }
+      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      }
+      return t;
     };
     var isType = function (type) {
       return function (value) {
@@ -158,9 +162,10 @@
       };
     };
     var isString = isType('string');
-    var isObject = isType('object');
     var isArray = isType('array');
+    var isFunction = isType('function');
 
+    var nativeSlice = Array.prototype.slice;
     var nativePush = Array.prototype.push;
     var each = function (xs, f) {
       for (var i = 0, len = xs.length; i < len; i++) {
@@ -178,6 +183,9 @@
       }
       return r;
     };
+    var from$1 = isFunction(Array.from) ? Array.from : function (x) {
+      return nativeSlice.call(x);
+    };
 
     var Cell = function (initial) {
       var value = initial;
@@ -187,27 +195,49 @@
       var set = function (v) {
         value = v;
       };
+      var clone = function () {
+        return Cell(get());
+      };
       return {
         get: get,
-        set: set
+        set: set,
+        clone: clone
       };
     };
 
-    var keys = Object.keys;
-    var hasOwnProperty = Object.hasOwnProperty;
-    var each$1 = function (obj, f) {
-      var props = keys(obj);
-      for (var k = 0, len = props.length; k < len; k++) {
-        var i = props[k];
-        var x = obj[i];
-        f(x, i);
-      }
+    var hasOwnProperty = Object.prototype.hasOwnProperty;
+    var shallow = function (old, nu) {
+      return nu;
     };
+    var baseMerge = function (merger) {
+      return function () {
+        var objects = new Array(arguments.length);
+        for (var i = 0; i < objects.length; i++) {
+          objects[i] = arguments[i];
+        }
+        if (objects.length === 0) {
+          throw new Error('Can\'t merge zero objects');
+        }
+        var ret = {};
+        for (var j = 0; j < objects.length; j++) {
+          var curObject = objects[j];
+          for (var key in curObject) {
+            if (hasOwnProperty.call(curObject, key)) {
+              ret[key] = merger(ret[key], curObject[key]);
+            }
+          }
+        }
+        return ret;
+      };
+    };
+    var merge = baseMerge(shallow);
+
+    var hasOwnProperty$1 = Object.hasOwnProperty;
     var get = function (obj, key) {
       return has(obj, key) ? Option.from(obj[key]) : Option.none();
     };
     var has = function (obj, key) {
-      return hasOwnProperty.call(obj, key);
+      return hasOwnProperty$1.call(obj, key);
     };
 
     var getScripts = function (editor) {
@@ -237,12 +267,48 @@
     var hasDimensions = function (editor) {
       return editor.getParam('media_dimensions', true);
     };
+    var Settings = {
+      getScripts: getScripts,
+      getAudioTemplateCallback: getAudioTemplateCallback,
+      getVideoTemplateCallback: getVideoTemplateCallback,
+      hasLiveEmbeds: hasLiveEmbeds,
+      shouldFilterHtml: shouldFilterHtml,
+      getUrlResolver: getUrlResolver,
+      hasAltSource: hasAltSource,
+      hasPoster: hasPoster,
+      hasDimensions: hasDimensions
+    };
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
-    var global$2 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
+    var global$2 = tinymce.util.Tools.resolve('tinymce.html.SaxParser');
 
-    var global$3 = tinymce.util.Tools.resolve('tinymce.html.SaxParser');
+    var global$3 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
+
+    var trimPx = function (value) {
+      return value.replace(/px$/, '');
+    };
+    var addPx = function (value) {
+      return /^[0-9.]+$/.test(value) ? value + 'px' : value;
+    };
+    var getSize = function (name) {
+      return function (elm) {
+        return elm ? trimPx(elm.style[name]) : '';
+      };
+    };
+    var setSize = function (name) {
+      return function (elm, value) {
+        if (elm) {
+          elm.style[name] = addPx(value);
+        }
+      };
+    };
+    var Size = {
+      getMaxWidth: getSize('maxWidth'),
+      getMaxHeight: getSize('maxHeight'),
+      setMaxWidth: setSize('maxWidth'),
+      setMaxHeight: setSize('maxHeight')
+    };
 
     var getVideoScriptMatch = function (prefixes, src) {
       if (prefixes) {
@@ -254,72 +320,75 @@
       }
     };
 
-    var DOM = global$2.DOM;
-    var trimPx = function (value) {
-      return value.replace(/px$/, '');
+    var DOM = global$3.DOM;
+    var getEphoxEmbedIri = function (elm) {
+      return DOM.getAttrib(elm, 'data-ephox-embed-iri');
     };
-    var getEphoxEmbedData = function (attrs) {
-      var style = attrs.map.style;
-      var styles = style ? DOM.parseStyle(style) : {};
-      return {
-        type: 'ephox-embed-iri',
-        source: attrs.map['data-ephox-embed-iri'],
-        altsource: '',
-        poster: '',
-        width: get(styles, 'max-width').map(trimPx).getOr(''),
-        height: get(styles, 'max-height').map(trimPx).getOr('')
-      };
+    var isEphoxEmbed = function (html) {
+      var fragment = DOM.createFragment(html);
+      return getEphoxEmbedIri(fragment.firstChild) !== '';
     };
-    var htmlToData = function (prefixes, html) {
-      var isEphoxEmbed = Cell(false);
+    var htmlToDataSax = function (prefixes, html) {
       var data = {};
-      global$3({
+      global$2({
         validate: false,
         allow_conditional_comments: true,
         start: function (name, attrs) {
-          if (isEphoxEmbed.get()) ; else if (has(attrs.map, 'data-ephox-embed-iri')) {
-            isEphoxEmbed.set(true);
-            data = getEphoxEmbedData(attrs);
-          } else {
-            if (!data.source && name === 'param') {
-              data.source = attrs.map.movie;
+          if (!data.source1 && name === 'param') {
+            data.source1 = attrs.map.movie;
+          }
+          if (name === 'iframe' || name === 'object' || name === 'embed' || name === 'video' || name === 'audio') {
+            if (!data.type) {
+              data.type = name;
             }
-            if (name === 'iframe' || name === 'object' || name === 'embed' || name === 'video' || name === 'audio') {
-              if (!data.type) {
-                data.type = name;
-              }
-              data = global$1.extend(attrs.map, data);
+            data = global$1.extend(attrs.map, data);
+          }
+          if (name === 'script') {
+            var videoScript = getVideoScriptMatch(prefixes, attrs.map.src);
+            if (!videoScript) {
+              return;
             }
-            if (name === 'script') {
-              var videoScript = getVideoScriptMatch(prefixes, attrs.map.src);
-              if (!videoScript) {
-                return;
-              }
-              data = {
-                type: 'script',
-                source: attrs.map.src,
-                width: String(videoScript.width),
-                height: String(videoScript.height)
-              };
+            data = {
+              type: 'script',
+              source1: attrs.map.src,
+              width: String(videoScript.width),
+              height: String(videoScript.height)
+            };
+          }
+          if (name === 'source') {
+            if (!data.source1) {
+              data.source1 = attrs.map.src;
+            } else if (!data.source2) {
+              data.source2 = attrs.map.src;
             }
-            if (name === 'source') {
-              if (!data.source) {
-                data.source = attrs.map.src;
-              } else if (!data.altsource) {
-                data.altsource = attrs.map.src;
-              }
-            }
-            if (name === 'img' && !data.poster) {
-              data.poster = attrs.map.src;
-            }
+          }
+          if (name === 'img' && !data.poster) {
+            data.poster = attrs.map.src;
           }
         }
       }).parse(html);
-      data.source = data.source || data.src || data.data;
-      data.altsource = data.altsource || '';
+      data.source1 = data.source1 || data.src || data.data;
+      data.source2 = data.source2 || '';
       data.poster = data.poster || '';
       return data;
     };
+    var ephoxEmbedHtmlToData = function (html) {
+      var fragment = DOM.createFragment(html);
+      var div = fragment.firstChild;
+      return {
+        type: 'ephox-embed-iri',
+        source1: getEphoxEmbedIri(div),
+        source2: '',
+        poster: '',
+        width: Size.getMaxWidth(div),
+        height: Size.getMaxHeight(div)
+      };
+    };
+    var htmlToData = function (prefixes, html) {
+      return isEphoxEmbed(html) ? ephoxEmbedHtmlToData(html) : htmlToDataSax(prefixes, html);
+    };
+
+    var global$4 = tinymce.util.Tools.resolve('tinymce.util.Promise');
 
     var guess = function (url) {
       var mimes = {
@@ -335,22 +404,24 @@
       var mime = mimes[fileEnd];
       return mime ? mime : '';
     };
-
-    var global$4 = tinymce.util.Tools.resolve('tinymce.html.Schema');
+    var Mime = { guess: guess };
 
     var global$5 = tinymce.util.Tools.resolve('tinymce.html.Writer');
 
-    var DOM$1 = global$2.DOM;
-    var addPx = function (value) {
-      return /^[0-9.]+$/.test(value) ? value + 'px' : value;
-    };
+    var global$6 = tinymce.util.Tools.resolve('tinymce.html.Schema');
+
+    var DOM$1 = global$3.DOM;
     var setAttributes = function (attrs, updatedAttrs) {
-      each$1(updatedAttrs, function (val, name) {
-        var value = '' + val;
+      var name;
+      var i;
+      var value;
+      var attr;
+      for (name in updatedAttrs) {
+        value = '' + updatedAttrs[name];
         if (attrs.map[name]) {
-          var i = attrs.length;
+          i = attrs.length;
           while (i--) {
-            var attr = attrs[i];
+            attr = attrs[i];
             if (attr.name === name) {
               if (value) {
                 attrs.map[name] = value;
@@ -368,25 +439,19 @@
           });
           attrs.map[name] = value;
         }
-      });
+      }
     };
-    var updateEphoxEmbed = function (data, attrs) {
-      var style = attrs.map.style;
-      var styleMap = style ? DOM$1.parseStyle(style) : {};
-      styleMap['max-width'] = addPx(data.width);
-      styleMap['max-height'] = addPx(data.height);
-      setAttributes(attrs, { style: DOM$1.serializeStyle(styleMap) });
-    };
-    var sources = [
-      'source',
-      'altsource'
-    ];
-    var updateHtml = function (html, data, updateAll) {
+    var normalizeHtml = function (html) {
       var writer = global$5();
-      var isEphoxEmbed = Cell(false);
+      var parser = global$2(writer);
+      parser.parse(html);
+      return writer.getContent();
+    };
+    var updateHtmlSax = function (html, data, updateAll) {
+      var writer = global$5();
       var sourceCount = 0;
       var hasImage;
-      global$3({
+      global$2({
         validate: false,
         allow_conditional_comments: true,
         comment: function (text) {
@@ -399,94 +464,102 @@
           writer.text(text, raw);
         },
         start: function (name, attrs, empty) {
-          if (isEphoxEmbed.get()) ; else if (has(attrs.map, 'data-ephox-embed-iri')) {
-            isEphoxEmbed.set(true);
-            updateEphoxEmbed(data, attrs);
-          } else {
+          switch (name) {
+          case 'video':
+          case 'object':
+          case 'embed':
+          case 'img':
+          case 'iframe':
+            if (data.height !== undefined && data.width !== undefined) {
+              setAttributes(attrs, {
+                width: data.width,
+                height: data.height
+              });
+            }
+            break;
+          }
+          if (updateAll) {
             switch (name) {
             case 'video':
-            case 'object':
-            case 'embed':
-            case 'img':
-            case 'iframe':
-              if (data.height !== undefined && data.width !== undefined) {
-                setAttributes(attrs, {
-                  width: data.width,
-                  height: data.height
-                });
+              setAttributes(attrs, {
+                poster: data.poster,
+                src: ''
+              });
+              if (data.source2) {
+                setAttributes(attrs, { src: '' });
               }
               break;
-            }
-            if (updateAll) {
-              switch (name) {
-              case 'video':
+            case 'iframe':
+              setAttributes(attrs, { src: data.source1 });
+              break;
+            case 'source':
+              sourceCount++;
+              if (sourceCount <= 2) {
                 setAttributes(attrs, {
-                  poster: data.poster,
-                  src: ''
+                  src: data['source' + sourceCount],
+                  type: data['source' + sourceCount + 'mime']
                 });
-                if (data.altsource) {
-                  setAttributes(attrs, { src: '' });
-                }
-                break;
-              case 'iframe':
-                setAttributes(attrs, { src: data.source });
-                break;
-              case 'source':
-                if (sourceCount < 2) {
-                  setAttributes(attrs, {
-                    src: data[sources[sourceCount]],
-                    type: data[sources[sourceCount] + 'mime']
-                  });
-                  if (!data[sources[sourceCount]]) {
-                    return;
-                  }
-                }
-                sourceCount++;
-                break;
-              case 'img':
-                if (!data.poster) {
+                if (!data['source' + sourceCount]) {
                   return;
                 }
-                hasImage = true;
-                break;
               }
+              break;
+            case 'img':
+              if (!data.poster) {
+                return;
+              }
+              hasImage = true;
+              break;
             }
           }
           writer.start(name, attrs, empty);
         },
         end: function (name) {
-          if (!isEphoxEmbed.get()) {
-            if (name === 'video' && updateAll) {
-              for (var index = 0; index < 2; index++) {
-                if (data[sources[index]]) {
-                  var attrs = [];
-                  attrs.map = {};
-                  if (sourceCount < index) {
-                    setAttributes(attrs, {
-                      src: data[sources[index]],
-                      type: data[sources[index] + 'mime']
-                    });
-                    writer.start('source', attrs, true);
-                  }
+          if (name === 'video' && updateAll) {
+            for (var index = 1; index <= 2; index++) {
+              if (data['source' + index]) {
+                var attrs = [];
+                attrs.map = {};
+                if (sourceCount < index) {
+                  setAttributes(attrs, {
+                    src: data['source' + index],
+                    type: data['source' + index + 'mime']
+                  });
+                  writer.start('source', attrs, true);
                 }
               }
             }
-            if (data.poster && name === 'object' && updateAll && !hasImage) {
-              var imgAttrs = [];
-              imgAttrs.map = {};
-              setAttributes(imgAttrs, {
-                src: data.poster,
-                width: data.width,
-                height: data.height
-              });
-              writer.start('img', imgAttrs, true);
-            }
+          }
+          if (data.poster && name === 'object' && updateAll && !hasImage) {
+            var imgAttrs = [];
+            imgAttrs.map = {};
+            setAttributes(imgAttrs, {
+              src: data.poster,
+              width: data.width,
+              height: data.height
+            });
+            writer.start('img', imgAttrs, true);
           }
           writer.end(name);
         }
-      }, global$4({})).parse(html);
+      }, global$6({})).parse(html);
       return writer.getContent();
     };
+    var isEphoxEmbed$1 = function (html) {
+      var fragment = DOM$1.createFragment(html);
+      return DOM$1.getAttrib(fragment.firstChild, 'data-ephox-embed-iri') !== '';
+    };
+    var updateEphoxEmbed = function (html, data) {
+      var fragment = DOM$1.createFragment(html);
+      var div = fragment.firstChild;
+      Size.setMaxWidth(div, data.width);
+      Size.setMaxHeight(div, data.height);
+      return normalizeHtml(div.outerHTML);
+    };
+    var updateHtml = function (html, data, updateAll) {
+      return isEphoxEmbed$1(html) ? updateEphoxEmbed(html, data) : updateHtmlSax(html, data, updateAll);
+    };
+    var UpdateHtml = { updateHtml: updateHtml };
 
     var urlPatterns = [
       {
@@ -494,7 +567,7 @@
         type: 'iframe',
         w: 560,
         h: 314,
-        url: 'www.youtube.com/embed/$1',
+        url: '//www.youtube.com/embed/$1',
         allowFullscreen: true
       },
       {
@@ -502,7 +575,7 @@
         type: 'iframe',
         w: 560,
         h: 314,
-        url: 'www.youtube.com/embed/$2?$4',
+        url: '//www.youtube.com/embed/$2?$4',
         allowFullscreen: true
       },
       {
@@ -510,7 +583,7 @@
         type: 'iframe',
         w: 560,
         h: 314,
-        url: 'www.youtube.com/embed/$1',
+        url: '//www.youtube.com/embed/$1',
         allowFullscreen: true
       },
       {
@@ -518,7 +591,7 @@
         type: 'iframe',
         w: 425,
         h: 350,
-        url: 'player.vimeo.com/video/$1?title=0&byline=0&portrait=0&color=8dc7dc',
+        url: '//player.vimeo.com/video/$1?title=0&byline=0&portrait=0&color=8dc7dc',
         allowFullscreen: true
       },
       {
@@ -526,7 +599,7 @@
         type: 'iframe',
         w: 425,
         h: 350,
-        url: 'player.vimeo.com/video/$2?title=0&amp;byline=0',
+        url: '//player.vimeo.com/video/$2?title=0&amp;byline=0',
         allowFullscreen: true
       },
       {
@@ -534,7 +607,7 @@
         type: 'iframe',
         w: 425,
         h: 350,
-        url: 'maps.google.com/maps/ms?msid=$2&output=embed"',
+        url: '//maps.google.com/maps/ms?msid=$2&output=embed"',
         allowFullscreen: false
       },
       {
@@ -542,7 +615,7 @@
         type: 'iframe',
         w: 480,
         h: 270,
-        url: 'www.dailymotion.com/embed/video/$1',
+        url: '//www.dailymotion.com/embed/video/$1',
         allowFullscreen: true
       },
       {
@@ -550,22 +623,13 @@
         type: 'iframe',
         w: 480,
         h: 270,
-        url: 'www.dailymotion.com/embed/video/$1',
+        url: '//www.dailymotion.com/embed/video/$1',
         allowFullscreen: true
       }
     ];
-    var getProtocol = function (url) {
-      var protocolMatches = url.match(/^(https?:\/\/|www\.)(.+)$/i);
-      if (protocolMatches && protocolMatches.length > 1) {
-        return protocolMatches[1] === 'www.' ? 'https://' : protocolMatches[1];
-      } else {
-        return 'https://';
-      }
-    };
     var getUrl = function (pattern, url) {
-      var protocol = getProtocol(url);
       var match = pattern.regex.exec(url);
-      var newUrl = protocol + pattern.url;
+      var newUrl = pattern.url;
       var _loop_1 = function (i) {
         newUrl = newUrl.replace('$' + i, function () {
           return match[i] ? match[i] : '';
@@ -577,11 +641,11 @@
       return newUrl.replace(/\?$/, '');
     };
     var matchPattern = function (url) {
-      var patterns = urlPatterns.filter(function (pattern) {
+      var pattern = urlPatterns.filter(function (pattern) {
         return pattern.regex.test(url);
       });
-      if (patterns.length > 0) {
-        return global$1.extend({}, patterns[0], { url: getUrl(patterns[0], url) });
+      if (pattern.length > 0) {
+        return global$1.extend({}, pattern[0], { url: getUrl(pattern[0], url) });
       } else {
         return null;
       }
@@ -589,10 +653,10 @@
 
     var getIframeHtml = function (data) {
       var allowFullscreen = data.allowFullscreen ? ' allowFullscreen="1"' : '';
-      return '<iframe src="' + data.source + '" width="' + data.width + '" height="' + data.height + '"' + allowFullscreen + '></iframe>';
+      return '<iframe src="' + data.source1 + '" width="' + data.width + '" height="' + data.height + '"' + allowFullscreen + '></iframe>';
     };
     var getFlashHtml = function (data) {
-      var html = '<object data="' + data.source + '" width="' + data.width + '" height="' + data.height + '" type="application/x-shockwave-flash">';
+      var html = '<object data="' + data.source1 + '" width="' + data.width + '" height="' + data.height + '" type="application/x-shockwave-flash">';
       if (data.poster) {
         html += '<img src="' + data.poster + '" width="' + data.width + '" height="' + data.height + '" />';
       }
@@ -603,57 +667,57 @@
       if (audioTemplateCallback) {
         return audioTemplateCallback(data);
       } else {
-        return '<audio controls="controls" src="' + data.source + '">' + (data.altsource ? '\n<source src="' + data.altsource + '"' + (data.altsourcemime ? ' type="' + data.altsourcemime + '"' : '') + ' />\n' : '') + '</audio>';
+        return '<audio controls="controls" src="' + data.source1 + '">' + (data.source2 ? '\n<source src="' + data.source2 + '"' + (data.source2mime ? ' type="' + data.source2mime + '"' : '') + ' />\n' : '') + '</audio>';
       }
     };
     var getVideoHtml = function (data, videoTemplateCallback) {
       if (videoTemplateCallback) {
         return videoTemplateCallback(data);
       } else {
-        return '<video width="' + data.width + '" height="' + data.height + '"' + (data.poster ? ' poster="' + data.poster + '"' : '') + ' controls="controls">\n' + '<source src="' + data.source + '"' + (data.sourcemime ? ' type="' + data.sourcemime + '"' : '') + ' />\n' + (data.altsource ? '<source src="' + data.altsource + '"' + (data.altsourcemime ? ' type="' + data.altsourcemime + '"' : '') + ' />\n' : '') + '</video>';
+        return '<video width="' + data.width + '" height="' + data.height + '"' + (data.poster ? ' poster="' + data.poster + '"' : '') + ' controls="controls">\n' + '<source src="' + data.source1 + '"' + (data.source1mime ? ' type="' + data.source1mime + '"' : '') + ' />\n' + (data.source2 ? '<source src="' + data.source2 + '"' + (data.source2mime ? ' type="' + data.source2mime + '"' : '') + ' />\n' : '') + '</video>';
       }
     };
     var getScriptHtml = function (data) {
-      return '<script src="' + data.source + '"></script>';
+      return '<script src="' + data.source1 + '"></script>';
     };
     var dataToHtml = function (editor, dataIn) {
       var data = global$1.extend({}, dataIn);
-      if (!data.source) {
-        global$1.extend(data, htmlToData(getScripts(editor), data.embed));
-        if (!data.source) {
+      if (!data.source1) {
+        global$1.extend(data, htmlToData(Settings.getScripts(editor), data.embed));
+        if (!data.source1) {
           return '';
         }
       }
-      if (!data.altsource) {
-        data.altsource = '';
+      if (!data.source2) {
+        data.source2 = '';
       }
       if (!data.poster) {
         data.poster = '';
       }
-      data.source = editor.convertURL(data.source, 'source');
-      data.altsource = editor.convertURL(data.altsource, 'source');
-      data.sourcemime = guess(data.source);
-      data.altsourcemime = guess(data.altsource);
+      data.source1 = editor.convertURL(data.source1, 'source');
+      data.source2 = editor.convertURL(data.source2, 'source');
+      data.source1mime = Mime.guess(data.source1);
+      data.source2mime = Mime.guess(data.source2);
       data.poster = editor.convertURL(data.poster, 'poster');
-      var pattern = matchPattern(data.source);
+      var pattern = matchPattern(data.source1);
       if (pattern) {
-        data.source = pattern.url;
+        data.source1 = pattern.url;
         data.type = pattern.type;
         data.allowFullscreen = pattern.allowFullscreen;
         data.width = data.width || String(pattern.w);
         data.height = data.height || String(pattern.h);
       }
       if (data.embed) {
-        return updateHtml(data.embed, data, true);
+        return UpdateHtml.updateHtml(data.embed, data, true);
       } else {
-        var videoScript = getVideoScriptMatch(getScripts(editor), data.source);
+        var videoScript = getVideoScriptMatch(Settings.getScripts(editor), data.source1);
         if (videoScript) {
           data.type = 'script';
           data.width = String(videoScript.width);
           data.height = String(videoScript.height);
         }
-        var audioTemplateCallback = getAudioTemplateCallback(editor);
-        var videoTemplateCallback = getVideoTemplateCallback(editor);
+        var audioTemplateCallback = Settings.getAudioTemplateCallback(editor);
+        var videoTemplateCallback = Settings.getVideoTemplateCallback(editor);
         data.width = data.width || '300';
         data.height = data.height || '150';
         global$1.each(data, function (value, key) {
@@ -661,9 +725,9 @@
         });
         if (data.type === 'iframe') {
           return getIframeHtml(data);
-        } else if (data.sourcemime === 'application/x-shockwave-flash') {
+        } else if (data.source1mime === 'application/x-shockwave-flash') {
           return getFlashHtml(data);
-        } else if (data.sourcemime.indexOf('audio') !== -1) {
+        } else if (data.source1mime.indexOf('audio') !== -1) {
           return getAudioHtml(data, audioTemplateCallback);
         } else if (data.type === 'script') {
           return getScriptHtml(data);
@@ -673,32 +737,30 @@
       }
     };
 
-    var global$6 = tinymce.util.Tools.resolve('tinymce.util.Promise');
-
     var cache = {};
     var embedPromise = function (data, dataToHtml, handler) {
-      return new global$6(function (res, rej) {
+      return new global$4(function (res, rej) {
         var wrappedResolve = function (response) {
           if (response.html) {
-            cache[data.source] = response;
+            cache[data.source1] = response;
           }
           return res({
-            url: data.source,
+            url: data.source1,
             html: response.html ? response.html : dataToHtml(data)
           });
         };
-        if (cache[data.source]) {
-          wrappedResolve(cache[data.source]);
+        if (cache[data.source1]) {
+          wrappedResolve(cache[data.source1]);
         } else {
-          handler({ url: data.source }, wrappedResolve, rej);
+          handler({ url: data.source1 }, wrappedResolve, rej);
         }
       });
     };
     var defaultPromise = function (data, dataToHtml) {
-      return new global$6(function (res) {
+      return new global$4(function (res) {
         res({
           html: dataToHtml(data),
-          url: data.source
+          url: data.source1
         });
       });
     };
@@ -708,74 +770,43 @@
       };
     };
     var getEmbedHtml = function (editor, data) {
-      var embedHandler = getUrlResolver(editor);
+      var embedHandler = Settings.getUrlResolver(editor);
       return embedHandler ? embedPromise(data, loadedData(editor), embedHandler) : defaultPromise(data, loadedData(editor));
     };
     var isCached = function (url) {
       return cache.hasOwnProperty(url);
     };
+    var Service = {
+      getEmbedHtml: getEmbedHtml,
+      isCached: isCached
+    };
 
-    var extractMeta = function (sourceInput, data) {
-      return get(data, sourceInput).bind(function (mainData) {
-        return get(mainData, 'meta');
+    var unwrap = function (data) {
+      var unwrapped = merge(data, {
+        source1: data.source1.value,
+        source2: get(data, 'source2').bind(function (source2) {
+          return get(source2, 'value');
+        }).getOr(''),
+        poster: get(data, 'poster').bind(function (poster) {
+          return get(poster, 'value');
+        }).getOr('')
       });
-    };
-    var getValue = function (data, metaData, sourceInput) {
-      return function (prop) {
-        var _a;
-        var getFromData = function () {
-          return get(data, prop);
-        };
-        var getFromMetaData = function () {
-          return get(metaData, prop);
-        };
-        var getNonEmptyValue = function (c) {
-          return get(c, 'value').bind(function (v) {
-            return v.length > 0 ? Option.some(v) : Option.none();
-          });
-        };
-        var getFromValueFirst = function () {
-          return getFromData().bind(function (child) {
-            return isObject(child) ? getNonEmptyValue(child).orThunk(getFromMetaData) : getFromMetaData().orThunk(function () {
-              return Option.from(child);
-            });
-          });
-        };
-        var getFromMetaFirst = function () {
-          return getFromMetaData().orThunk(function () {
-            return getFromData().bind(function (child) {
-              return isObject(child) ? getNonEmptyValue(child) : Option.from(child);
-            });
-          });
-        };
-        return _a = {}, _a[prop] = (prop === sourceInput ? getFromValueFirst() : getFromMetaFirst()).getOr(''), _a;
-      };
-    };
-    var getDimensions = function (data, metaData) {
-      var dimensions = {};
-      get(data, 'dimensions').each(function (dims) {
+      get(data, 'dimensions').each(function (dimensions) {
         each([
           'width',
           'height'
         ], function (prop) {
-          get(metaData, prop).orThunk(function () {
-            return get(dims, prop);
-          }).each(function (value) {
-            return dimensions[prop] = value;
+          get(dimensions, prop).each(function (value) {
+            return unwrapped[prop] = value;
           });
         });
       });
-      return dimensions;
-    };
-    var unwrap = function (data, sourceInput) {
-      var metaData = sourceInput ? extractMeta(sourceInput, data).getOr({}) : {};
-      var get = getValue(data, metaData, sourceInput);
-      return __assign(__assign(__assign(__assign(__assign({}, get('source')), get('altsource')), get('poster')), get('embed')), getDimensions(data, metaData));
+      return unwrapped;
     };
     var wrap = function (data) {
-      var wrapped = __assign(__assign({}, data), {
-        source: { value: get(data, 'source').getOr('') },
-        altsource: { value: get(data, 'altsource').getOr('') },
+      var wrapped = merge(data, {
+        source1: { value: get(data, 'source1').getOr('') },
+        source2: { value: get(data, 'source2').getOr('') },
         poster: { value: get(data, 'poster').getOr('') }
       });
       each([
@@ -800,7 +831,7 @@
       };
     };
     var snippetToData = function (editor, embedSnippet) {
-      return htmlToData(getScripts(editor), embedSnippet);
+      return htmlToData(Settings.getScripts(editor), embedSnippet);
     };
     var isMediaElement = function (element) {
       return element.getAttribute('data-mce-object') || element.getAttribute('data-ephox-embed-iri');
@@ -808,7 +839,7 @@
     var getEditorData = function (editor) {
       var element = editor.selection.getNode();
       var snippet = isMediaElement(element) ? editor.serializer.serialize(element, { selection: true }) : '';
-      return __assign({ embed: snippet }, htmlToData(getScripts(editor), snippet));
+      return merge({ embed: snippet }, htmlToData(Settings.getScripts(editor), snippet));
     };
     var addEmbedHtml = function (api, editor) {
       return function (response) {
@@ -816,7 +847,7 @@
           var html = response.html;
           var snippetData = snippetToData(editor, html);
           var nuData = __assign(__assign({}, snippetData), {
-            source: response.url,
+            source1: response.url,
             embed: html
           });
           api.setData(wrap(nuData));
@@ -841,11 +872,11 @@
       editor.nodeChanged();
     };
     var submitForm = function (prevData, newData, editor) {
-      newData.embed = updateHtml(newData.embed, newData);
-      if (newData.embed && (prevData.source === newData.source || isCached(newData.source))) {
+      newData.embed = UpdateHtml.updateHtml(newData.embed, newData);
+      if (newData.embed && (prevData.source1 === newData.source1 || Service.isCached(newData.source1))) {
         handleInsert(editor, newData.embed);
       } else {
-        getEmbedHtml(editor, newData).then(function (response) {
+        Service.getEmbedHtml(editor, newData).then(function (response) {
           handleInsert(editor, response.html);
         }).catch(handleError(editor));
       }
@@ -854,14 +885,17 @@
       var editorData = getEditorData(editor);
       var currentData = Cell(editorData);
       var initialData = wrap(editorData);
-      var handleSource = function (prevData, api) {
-        var serviceData = unwrap(api.getData(), 'source');
-        if (prevData.source !== serviceData.source) {
+      var getSourceData = function (api) {
+        return unwrap(api.getData());
+      };
+      var handleSource1 = function (prevData, api) {
+        var serviceData = getSourceData(api);
+        if (prevData.source1 !== serviceData.source1) {
           addEmbedHtml(win, editor)({
-            url: serviceData.source,
+            url: serviceData.source1,
             html: ''
           });
-          getEmbedHtml(editor, serviceData).then(addEmbedHtml(win, editor)).catch(handleError(editor));
+          Service.getEmbedHtml(editor, serviceData).then(addEmbedHtml(win, editor)).catch(handleError(editor));
         }
       };
       var handleEmbed = function (api) {
@@ -869,18 +903,18 @@
         var dataFromEmbed = snippetToData(editor, data.embed);
         api.setData(wrap(dataFromEmbed));
       };
-      var handleUpdate = function (api, sourceInput) {
-        var data = unwrap(api.getData(), sourceInput);
+      var handleUpdate = function (api) {
+        var data = getSourceData(api);
         var embed = dataToHtml(editor, data);
         api.setData(wrap(__assign(__assign({}, data), { embed: embed })));
       };
       var mediaInput = [{
-          name: 'source',
+          name: 'source1',
           type: 'urlinput',
           filetype: 'media',
           label: 'Source'
         }];
-      var sizeInput = !hasDimensions(editor) ? [] : [{
+      var sizeInput = !Settings.hasDimensions(editor) ? [] : [{
           type: 'sizeinput',
           name: 'dimensions',
           label: 'Constrain proportions',
@@ -904,15 +938,15 @@
         items: [embedTextarea]
       };
       var advancedFormItems = [];
-      if (hasAltSource(editor)) {
+      if (Settings.hasAltSource(editor)) {
         advancedFormItems.push({
-          name: 'altsource',
+          name: 'source2',
           type: 'urlinput',
           filetype: 'media',
           label: 'Alternative source URL'
         });
       }
-      if (hasPoster(editor)) {
+      if (Settings.hasPoster(editor)) {
         advancedFormItems.push({
           name: 'poster',
           type: 'urlinput',
@@ -954,55 +988,59 @@
           }
         ],
         onSubmit: function (api) {
-          var serviceData = unwrap(api.getData());
+          var serviceData = getSourceData(api);
           submitForm(currentData.get(), serviceData, editor);
           api.close();
         },
         onChange: function (api, detail) {
           switch (detail.name) {
-          case 'source':
-            handleSource(currentData.get(), api);
+          case 'source1':
+            handleSource1(currentData.get(), api);
             break;
           case 'embed':
             handleEmbed(api);
             break;
           case 'dimensions':
-          case 'altsource':
           case 'poster':
-            handleUpdate(api, detail.name);
+            handleUpdate(api);
+            break;
+          default:
             break;
           }
-          currentData.set(unwrap(api.getData()));
+          currentData.set(getSourceData(api));
         },
         initialData: initialData
       });
     };
+    var Dialog = { showDialog: showDialog };
 
     var get$1 = function (editor) {
-      var showDialog$1 = function () {
-        showDialog(editor);
+      var showDialog = function () {
+        Dialog.showDialog(editor);
       };
-      return { showDialog: showDialog$1 };
+      return { showDialog: showDialog };
     };
+    var Api = { get: get$1 };
 
     var register = function (editor) {
-      var showDialog$1 = function () {
-        showDialog(editor);
+      var showDialog = function () {
+        Dialog.showDialog(editor);
       };
-      editor.addCommand('mceMedia', showDialog$1);
+      editor.addCommand('mceMedia', showDialog);
     };
+    var Commands = { register: register };
 
     var global$7 = tinymce.util.Tools.resolve('tinymce.html.Node');
 
     var global$8 = tinymce.util.Tools.resolve('tinymce.Env');
 
     var sanitize = function (editor, html) {
-      if (shouldFilterHtml(editor) === false) {
+      if (Settings.shouldFilterHtml(editor) === false) {
         return html;
       }
       var writer = global$5();
       var blocked;
-      global$3({
+      global$2({
         validate: false,
         allow_conditional_comments: false,
         comment: function (text) {
@@ -1016,16 +1054,14 @@
         },
         start: function (name, attrs, empty) {
           blocked = true;
-          if (name === 'script' || name === 'noscript' || name === 'svg') {
+          if (name === 'script' || name === 'noscript') {
             return;
           }
-          for (var i = attrs.length - 1; i >= 0; i--) {
-            var attrName = attrs[i].name;
-            if (attrName.indexOf('on') === 0) {
-              delete attrs.map[attrName];
-              attrs.splice(i, 1);
+          for (var i = 0; i < attrs.length; i++) {
+            if (attrs[i].name.indexOf('on') === 0) {
+              return;
             }
-            if (attrName === 'style') {
+            if (attrs[i].name === 'style') {
               attrs[i].value = editor.dom.serializeStyle(editor.dom.parseStyle(attrs[i].value), name);
             }
           }
@@ -1038,13 +1074,15 @@
           }
           writer.end(name);
         }
-      }, global$4({})).parse(html);
+      }, global$6({})).parse(html);
       return writer.getContent();
     };
+    var Sanitize = { sanitize: sanitize };
 
     var createPlaceholderNode = function (editor, node) {
+      var placeHolder;
       var name = node.name;
-      var placeHolder = new global$7('img', 1);
+      placeHolder = new global$7('img', 1);
       placeHolder.shortEnded = true;
       retainAttributesAndInnerHtml(editor, node, placeHolder);
       placeHolder.attr({
@@ -1058,8 +1096,11 @@
       return placeHolder;
     };
     var createPreviewIframeNode = function (editor, node) {
+      var previewWrapper;
+      var previewNode;
+      var shimNode;
       var name = node.name;
-      var previewWrapper = new global$7('span', 1);
+      previewWrapper = new global$7('span', 1);
       previewWrapper.attr({
         'contentEditable': 'false',
         'style': node.attr('style'),
@@ -1067,7 +1108,7 @@
         'class': 'mce-preview-object mce-object-' + name
       });
       retainAttributesAndInnerHtml(editor, node, previewWrapper);
-      var previewNode = new global$7(name, 1);
+      previewNode = new global$7(name, 1);
       previewNode.attr({
         src: node.attr('src'),
         allowfullscreen: node.attr('allowfullscreen'),
@@ -1077,7 +1118,7 @@
         height: node.attr('height'),
         frameborder: '0'
       });
-      var shimNode = new global$7('span', 1);
+      shimNode = new global$7('span', 1);
       shimNode.attr('class', 'mce-shim');
       previewWrapper.append(previewNode);
       previewWrapper.append(shimNode);
@@ -1086,8 +1127,10 @@
     var retainAttributesAndInnerHtml = function (editor, sourceNode, targetNode) {
       var attrName;
       var attrValue;
+      var attribs;
       var ai;
-      var attribs = sourceNode.attributes;
+      var innerHtml;
+      attribs = sourceNode.attributes;
       ai = attribs.length;
       while (ai--) {
         attrName = attribs[ai].name;
@@ -1099,9 +1142,9 @@
           targetNode.attr('data-mce-p-' + attrName, attrValue);
         }
       }
-      var innerHtml = sourceNode.firstChild && sourceNode.firstChild.value;
+      innerHtml = sourceNode.firstChild && sourceNode.firstChild.value;
       if (innerHtml) {
-        targetNode.attr('data-mce-html', escape(sanitize(editor, innerHtml)));
+        targetNode.attr('data-mce-html', escape(Sanitize.sanitize(editor, innerHtml)));
         targetNode.firstChild = null;
       }
     };
@@ -1131,7 +1174,7 @@
             continue;
           }
           if (node.name === 'script') {
-            videoScript = getVideoScriptMatch(getScripts(editor), node.attr('src'));
+            videoScript = getVideoScriptMatch(Settings.getScripts(editor), node.attr('src'));
             if (!videoScript) {
               continue;
             }
@@ -1144,7 +1187,7 @@
               node.attr('height', videoScript.height.toString());
             }
           }
-          if (node.name === 'iframe' && hasLiveEmbeds(editor) && global$8.ceFalse) {
+          if (node.name === 'iframe' && Settings.hasLiveEmbeds(editor) && global$8.ceFalse) {
             if (!isWithinEmbedWrapper(node)) {
               node.replace(createPreviewIframeNode(editor, node));
             }
@@ -1155,6 +1198,11 @@
           }
         }
       };
+    };
+    var Nodes = {
+      createPreviewIframeNode: createPreviewIframeNode,
+      createPlaceholderNode: createPlaceholderNode,
+      placeHolderConverter: placeHolderConverter
     };
 
     var setup = function (editor) {
@@ -1167,7 +1215,7 @@
         global$1.each('webkitallowfullscreen mozallowfullscreen allowfullscreen'.split(' '), function (name) {
           boolAttrs[name] = {};
         });
-        editor.parser.addNodeFilter('iframe,video,audio,object,embed,script', placeHolderConverter(editor));
+        editor.parser.addNodeFilter('iframe,video,audio,object,embed,script', Nodes.placeHolderConverter(editor));
         editor.serializer.addAttributeFilter('data-mce-object', function (nodes, name) {
           var i = nodes.length;
           var node;
@@ -1215,7 +1263,7 @@
             if (innerHtml) {
               innerNode = new global$7('#text', 3);
               innerNode.raw = true;
-              innerNode.value = sanitize(editor, unescape(innerHtml));
+              innerNode.value = Sanitize.sanitize(editor, unescape(innerHtml));
               realElm.append(innerNode);
             }
             node.replace(realElm);
@@ -1231,6 +1279,7 @@
         });
       });
     };
+    var FilterContent = { setup: setup };
 
     var setup$1 = function (editor) {
       editor.on('ResolveName', function (e) {
@@ -1240,6 +1289,7 @@
         }
       });
     };
+    var ResolveName = { setup: setup$1 };
 
     var setup$2 = function (editor) {
       editor.on('click keyup touchend', function () {
@@ -1263,7 +1313,7 @@
           html = target.getAttribute('data-mce-html');
           if (html) {
             html = unescape(html);
-            target.setAttribute('data-mce-html', escape(updateHtml(html, {
+            target.setAttribute('data-mce-html', escape(UpdateHtml.updateHtml(html, {
               width: String(e.width),
               height: String(e.height)
             })));
@@ -1271,6 +1321,7 @@
         }
       });
     };
+    var Selection = { setup: setup$2 };
 
     var stateSelectorAdapter = function (editor, selector) {
       return function (buttonApi) {
@@ -1298,15 +1349,16 @@
         }
       });
     };
+    var Buttons = { register: register$1 };
 
     function Plugin () {
       global.add('media', function (editor) {
-        register(editor);
-        register$1(editor);
-        setup$1(editor);
-        setup(editor);
-        setup$2(editor);
-        return get$1(editor);
+        Commands.register(editor);
+        Buttons.register(editor);
+        ResolveName.setup(editor);
+        FilterContent.setup(editor);
+        Selection.setup(editor);
+        return Api.get(editor);
       });
     }
 

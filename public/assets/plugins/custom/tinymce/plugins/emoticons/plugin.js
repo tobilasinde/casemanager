@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.4.1 (2020-07-08)
+ * Version: 5.1.5 (2019-12-19)
  */
 (function (domGlobals) {
     'use strict';
@@ -35,7 +35,7 @@
         return n;
       };
       var me = {
-        fold: function (n, _s) {
+        fold: function (n, s) {
           return n();
         },
         is: never,
@@ -63,6 +63,9 @@
         },
         toString: constant('none()')
       };
+      if (Object.freeze) {
+        Object.freeze(me);
+      }
       return me;
     }();
     var some = function (a) {
@@ -127,6 +130,27 @@
       from: from
     };
 
+    var typeOf = function (x) {
+      if (x === null) {
+        return 'null';
+      }
+      var t = typeof x;
+      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      }
+      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      }
+      return t;
+    };
+    var isType = function (type) {
+      return function (value) {
+        return typeOf(value) === type;
+      };
+    };
+    var isFunction = isType('function');
+
+    var nativeSlice = Array.prototype.slice;
     var exists = function (xs, pred) {
       for (var i = 0, len = xs.length; i < len; i++) {
         var x = xs[i];
@@ -144,6 +168,9 @@
         r[i] = f(x, i);
       }
       return r;
+    };
+    var from$1 = isFunction(Array.from) ? Array.from : function (x) {
+      return nativeSlice.call(x);
     };
 
     var contains = function (str, substr) {
@@ -207,9 +234,13 @@
       var set = function (v) {
         value = v;
       };
+      var clone = function () {
+        return Cell(get());
+      };
       return {
         get: get,
-        set: set
+        set: set,
+        clone: clone
       };
     };
 
@@ -242,19 +273,6 @@
 
     var insertEmoticon = function (editor, ch) {
       editor.insertContent(ch);
-    };
-
-    var __assign = function () {
-      __assign = Object.assign || function __assign(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-          s = arguments[i];
-          for (var p in s)
-            if (Object.prototype.hasOwnProperty.call(s, p))
-              t[p] = s[p];
-        }
-        return t;
-      };
-      return __assign.apply(this, arguments);
     };
 
     var hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -330,6 +348,11 @@
     var getAppendedEmoticons = function (editor) {
       return editor.getParam('emoticons_append', {}, 'object');
     };
+    var Settings = {
+      getEmoticonDatabaseUrl: getEmoticonDatabaseUrl,
+      getEmoticonDatabaseId: getEmoticonDatabaseId,
+      getAppendedEmoticons: getAppendedEmoticons
+    };
 
     var ALL_CATEGORY = 'All';
     var categoryNameMap = {
@@ -347,9 +370,9 @@
       return has(categories, name) ? categories[name] : name;
     };
     var getUserDefinedEmoticons = function (editor) {
-      var userDefinedEmoticons = getAppendedEmoticons(editor);
+      var userDefinedEmoticons = Settings.getAppendedEmoticons(editor);
       return map$1(userDefinedEmoticons, function (value) {
-        return __assign({
+        return merge({
           keywords: [],
           category: 'user'
         }, value);
@@ -505,7 +528,7 @@
           updateFilter.throttle(dialogApi);
           dialogApi.focus(patternName);
           dialogApi.unblock();
-        }).catch(function (_err) {
+        }).catch(function (err) {
           dialogApi.redial({
             title: 'Emoticons',
             body: {
@@ -532,10 +555,11 @@
         });
       }
     };
+    var Dialog = { open: open };
 
     var register = function (editor, database) {
       var onAction = function () {
-        return open(editor, database);
+        return Dialog.open(editor, database);
       };
       editor.ui.registry.addButton('emoticons', {
         tooltip: 'Emoticons',
@@ -548,13 +572,14 @@
         onAction: onAction
       });
     };
+    var Buttons = { register: register };
 
     function Plugin () {
       global.add('emoticons', function (editor, pluginUrl) {
-        var databaseUrl = getEmoticonDatabaseUrl(editor, pluginUrl);
-        var databaseId = getEmoticonDatabaseId(editor);
+        var databaseUrl = Settings.getEmoticonDatabaseUrl(editor, pluginUrl);
+        var databaseId = Settings.getEmoticonDatabaseId(editor);
         var database = initDatabase(editor, databaseUrl, databaseId);
-        register(editor, database);
+        Buttons.register(editor, database);
         init(editor, database);
       });
     }

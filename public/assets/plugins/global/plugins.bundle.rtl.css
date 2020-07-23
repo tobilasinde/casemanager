@@ -1604,7 +1604,7 @@ fieldset[disabled] .datepicker table tr td span.active.disabled:hover.focus {
     clear: none !important; } }
 
 /*
- *  Bootstrap TouchSpin - v4.3.0
+ *  Bootstrap TouchSpin - v4.2.5
  *  A mobile and touch friendly input spinner component for Bootstrap 3 & 4.
  *  http://www.virtuosoft.eu/code/bootstrap-touchspin/
  *
@@ -3270,15 +3270,6 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 .dropzone .dz-message {
   text-align: center;
   margin: 2em 0; }
-
-.dropzone .dz-message .dz-button {
-  background: none;
-  color: inherit;
-  border: none;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
-  outline: inherit; }
 
 .dropzone .dz-preview {
   position: relative;
@@ -14430,7 +14421,7 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
   content: "\f1e4"; }
 
 /*!
- * Font Awesome Free 5.13.1 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 5.12.0 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
 .fa, .fab, .fad, .fal, .far, .fas {
@@ -14853,12 +14844,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 .fa-bacon:before {
   content: "\f7e5"; }
 
-.fa-bacteria:before {
-  content: "\f959"; }
-
-.fa-bacterium:before {
-  content: "\f95a"; }
-
 .fa-bahai:before {
   content: "\f666"; }
 
@@ -15047,9 +15032,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 
 .fa-box-open:before {
   content: "\f49e"; }
-
-.fa-box-tissue:before {
-  content: "\f95b"; }
 
 .fa-boxes:before {
   content: "\f468"; }
@@ -15624,9 +15606,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 .fa-d-and-d-beyond:before {
   content: "\f6ca"; }
 
-.fa-dailymotion:before {
-  content: "\f952"; }
-
 .fa-dashcube:before {
   content: "\f210"; }
 
@@ -15635,9 +15614,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 
 .fa-deaf:before {
   content: "\f2a4"; }
-
-.fa-deezer:before {
-  content: "\f977"; }
 
 .fa-delicious:before {
   content: "\f1a5"; }
@@ -15716,9 +15692,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 
 .fa-discourse:before {
   content: "\f393"; }
-
-.fa-disease:before {
-  content: "\f7fa"; }
 
 .fa-divide:before {
   content: "\f529"; }
@@ -15821,9 +15794,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 
 .fa-edge:before {
   content: "\f282"; }
-
-.fa-edge-legacy:before {
-  content: "\f978"; }
 
 .fa-edit:before {
   content: "\f044"; }
@@ -15953,9 +15923,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 
 .fa-fast-forward:before {
   content: "\f050"; }
-
-.fa-faucet:before {
-  content: "\f905"; }
 
 .fa-fax:before {
   content: "\f1ac"; }
@@ -16317,9 +16284,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 .fa-google-drive:before {
   content: "\f3aa"; }
 
-.fa-google-pay:before {
-  content: "\f979"; }
-
 .fa-google-play:before {
   content: "\f3ab"; }
 
@@ -16446,14 +16410,8 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 .fa-hand-holding-heart:before {
   content: "\f4be"; }
 
-.fa-hand-holding-medical:before {
-  content: "\f95c"; }
-
 .fa-hand-holding-usd:before {
   content: "\f4c0"; }
-
-.fa-hand-holding-water:before {
-  content: "\f4c1"; }
 
 .fa-hand-lizard:before {
   content: "\f258"; }
@@ -16488,9 +16446,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 .fa-hand-scissors:before {
   content: "\f257"; }
 
-.fa-hand-sparkles:before {
-  content: "\f95d"; }
-
 .fa-hand-spock:before {
   content: "\f259"; }
 
@@ -16500,17 +16455,8 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 .fa-hands-helping:before {
   content: "\f4c4"; }
 
-.fa-hands-wash:before {
-  content: "\f95e"; }
-
 .fa-handshake:before {
   content: "\f2b5"; }
-
-.fa-handshake-alt-slash:before {
-  content: "\f95f"; }
-
-.fa-handshake-slash:before {
-  content: "\f960"; }
 
 .fa-hanukiah:before {
   content: "\f6e6"; }
@@ -16532,18 +16478,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 
 .fa-hdd:before {
   content: "\f0a0"; }
-
-.fa-head-side-cough:before {
-  content: "\f961"; }
-
-.fa-head-side-cough-slash:before {
-  content: "\f962"; }
-
-.fa-head-side-mask:before {
-  content: "\f963"; }
-
-.fa-head-side-virus:before {
-  content: "\f964"; }
 
 .fa-heading:before {
   content: "\f1dc"; }
@@ -16617,9 +16551,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 .fa-hospital-symbol:before {
   content: "\f47e"; }
 
-.fa-hospital-user:before {
-  content: "\f80d"; }
-
 .fa-hot-tub:before {
   content: "\f593"; }
 
@@ -16646,9 +16577,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 
 .fa-house-damage:before {
   content: "\f6f1"; }
-
-.fa-house-user:before {
-  content: "\f965"; }
 
 .fa-houzz:before {
   content: "\f27c"; }
@@ -16718,9 +16646,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 
 .fa-instagram:before {
   content: "\f16d"; }
-
-.fa-instagram-square:before {
-  content: "\f955"; }
 
 .fa-intercom:before {
   content: "\f7af"; }
@@ -16835,9 +16760,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 
 .fa-laptop-code:before {
   content: "\f5fc"; }
-
-.fa-laptop-house:before {
-  content: "\f966"; }
 
 .fa-laptop-medical:before {
   content: "\f812"; }
@@ -16955,12 +16877,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 
 .fa-luggage-cart:before {
   content: "\f59d"; }
-
-.fa-lungs:before {
-  content: "\f604"; }
-
-.fa-lungs-virus:before {
-  content: "\f967"; }
 
 .fa-lyft:before {
   content: "\f3c3"; }
@@ -17129,9 +17045,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 
 .fa-mixcloud:before {
   content: "\f289"; }
-
-.fa-mixer:before {
-  content: "\f956"; }
 
 .fa-mizuni:before {
   content: "\f3cc"; }
@@ -17370,9 +17283,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 .fa-penny-arcade:before {
   content: "\f704"; }
 
-.fa-people-arrows:before {
-  content: "\f968"; }
-
 .fa-people-carry:before {
   content: "\f4ce"; }
 
@@ -17469,9 +17379,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 .fa-plane-departure:before {
   content: "\f5b0"; }
 
-.fa-plane-slash:before {
-  content: "\f969"; }
-
 .fa-play:before {
   content: "\f04b"; }
 
@@ -17546,12 +17453,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 
 .fa-project-diagram:before {
   content: "\f542"; }
-
-.fa-pump-medical:before {
-  content: "\f96a"; }
-
-.fa-pump-soap:before {
-  content: "\f96b"; }
 
 .fa-pushed:before {
   content: "\f3e1"; }
@@ -17742,9 +17643,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 .fa-rupee-sign:before {
   content: "\f156"; }
 
-.fa-rust:before {
-  content: "\f97a"; }
-
 .fa-sad-cry:before {
   content: "\f5b3"; }
 
@@ -17841,9 +17739,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 .fa-shield-alt:before {
   content: "\f3ed"; }
 
-.fa-shield-virus:before {
-  content: "\f96c"; }
-
 .fa-ship:before {
   content: "\f21a"; }
 
@@ -17855,9 +17750,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 
 .fa-shoe-prints:before {
   content: "\f54b"; }
-
-.fa-shopify:before {
-  content: "\f957"; }
 
 .fa-shopping-bag:before {
   content: "\f290"; }
@@ -17900,9 +17792,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 
 .fa-simplybuilt:before {
   content: "\f215"; }
-
-.fa-sink:before {
-  content: "\f96d"; }
 
 .fa-sistrix:before {
   content: "\f3ee"; }
@@ -17996,9 +17885,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 
 .fa-snowplow:before {
   content: "\f7d2"; }
-
-.fa-soap:before {
-  content: "\f96e"; }
 
 .fa-socks:before {
   content: "\f696"; }
@@ -18165,20 +18051,11 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 .fa-stopwatch:before {
   content: "\f2f2"; }
 
-.fa-stopwatch-20:before {
-  content: "\f96f"; }
-
 .fa-store:before {
   content: "\f54e"; }
 
 .fa-store-alt:before {
   content: "\f54f"; }
-
-.fa-store-alt-slash:before {
-  content: "\f970"; }
-
-.fa-store-slash:before {
-  content: "\f971"; }
 
 .fa-strava:before {
   content: "\f428"; }
@@ -18390,9 +18267,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 .fa-ticket-alt:before {
   content: "\f3ff"; }
 
-.fa-tiktok:before {
-  content: "\f97b"; }
-
 .fa-times:before {
   content: "\f00d"; }
 
@@ -18419,9 +18293,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 
 .fa-toilet-paper:before {
   content: "\f71e"; }
-
-.fa-toilet-paper-slash:before {
-  content: "\f972"; }
 
 .fa-toolbox:before {
   content: "\f552"; }
@@ -18579,9 +18450,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 .fa-unlock-alt:before {
   content: "\f13e"; }
 
-.fa-unsplash:before {
-  content: "\f97c"; }
-
 .fa-untappd:before {
   content: "\f405"; }
 
@@ -18672,9 +18540,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 .fa-users-cog:before {
   content: "\f509"; }
 
-.fa-users-slash:before {
-  content: "\f973"; }
-
 .fa-usps:before {
   content: "\f7e1"; }
 
@@ -18740,15 +18605,6 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 
 .fa-vine:before {
   content: "\f1ca"; }
-
-.fa-virus:before {
-  content: "\f974"; }
-
-.fa-virus-slash:before {
-  content: "\f975"; }
-
-.fa-viruses:before {
-  content: "\f976"; }
 
 .fa-vk:before {
   content: "\f189"; }
@@ -18966,8 +18822,8 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
 @font-face {
   font-family: "Font Awesome 5 Brands";
   font-style: normal;
-  font-weight: 400;
-  font-display: block;
+  font-weight: normal;
+  font-display: auto;
   src: url("fonts/@fortawesome/fa-brands-400.eot");
   src: url("fonts/@fortawesome/fa-brands-400.eot?#iefix") format("embedded-opentype"), url("fonts/@fortawesome/fa-brands-400.woff2") format("woff2"), url("fonts/@fortawesome/fa-brands-400.woff") format("woff"), url("fonts/@fortawesome/fa-brands-400.ttf") format("truetype"), url("fonts/@fortawesome/fa-brands-400.svg#fontawesome") format("svg"); }
 
@@ -18978,18 +18834,18 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
   font-family: "Font Awesome 5 Free";
   font-style: normal;
   font-weight: 400;
-  font-display: block;
+  font-display: auto;
   src: url("fonts/@fortawesome/fa-regular-400.eot");
   src: url("fonts/@fortawesome/fa-regular-400.eot?#iefix") format("embedded-opentype"), url("fonts/@fortawesome/fa-regular-400.woff2") format("woff2"), url("fonts/@fortawesome/fa-regular-400.woff") format("woff"), url("fonts/@fortawesome/fa-regular-400.ttf") format("truetype"), url("fonts/@fortawesome/fa-regular-400.svg#fontawesome") format("svg"); }
 
-.fab, .far {
+.far {
   font-weight: 400; }
 
 @font-face {
   font-family: "Font Awesome 5 Free";
   font-style: normal;
   font-weight: 900;
-  font-display: block;
+  font-display: auto;
   src: url("fonts/@fortawesome/fa-solid-900.eot");
   src: url("fonts/@fortawesome/fa-solid-900.eot?#iefix") format("embedded-opentype"), url("fonts/@fortawesome/fa-solid-900.woff2") format("woff2"), url("fonts/@fortawesome/fa-solid-900.woff") format("woff"), url("fonts/@fortawesome/fa-solid-900.ttf") format("truetype"), url("fonts/@fortawesome/fa-solid-900.svg#fontawesome") format("svg"); }
 

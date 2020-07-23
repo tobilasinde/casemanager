@@ -1,66 +1,139 @@
-    <div class="col-sm-8">    
-        <div class="jumbotron">
-            <form action="" method="post" enctype="multipart/form-data">
-            Priority: 
-               <select name = "priority">
-                    <% casePriority.forEach(function(dropdown) { %>
-                    <option  value="<%= dropdown %>"><%= dropdown %></option>
-                <br/>
-               <% }); %>
-                </select>
-            <br><br>
-            Request Type: 
-               <select name = "request_type">
-                    <% caseRequestType.forEach(function(dropdown) { %>
-                    <option  value="<%= dropdown %>"><%= dropdown %></option>
-                <br/>
-               <% }); %>
-                </select>
-            <br><br>
-            Case Type: 
-               <select name = "case_type">
-                    <% caseType.forEach(function(dropdown) { %>
-                    <option  value="<%= dropdown %>"><%= dropdown %></option>
-                <br/>
-               <% }); %>
-                </select>
-            <br><br>
-            Department: 
-               <select name = "department">
-                    <% departments.forEach(function(dropdown) { %>
-                    <option  value="<%= dropdown.id %>"><%= dropdown.department_name %></option>
-                <br/>
-               <% }); %>
-                </select>
-            <br><br>
-            Assigned To: 
-               <select required name = "assigned">
-                    <% users.forEach(function(dropdown) { %>
-                    <option  value="<%= dropdown.id %>"><%= dropdown.username %></option>
-                <br/>
-               <% }); %>
-                </select>
-            <br><br>
-            Subject: 
-            <input type="text" name="subject" placeholder="Enter Case Subject here..." value="">
-            <br><br>
-            Description: 
-            <textarea name="description" placeholder="Enter Case Description here..."></textarea>
-            <br><br>
-            Primary Contact Name: 
-            <input type="text" name="contact_name" placeholder="Contact Name" value="">
-            <br><br/>
-            Contact Email: 
-            <input type="email" name="contact_email" placeholder="Email" value="">
-            <br><br/>
-            Additional Information: 
-            <textarea name="note" placeholder="Enter Additional Information here..."></textarea>
-            <br><br>
-            <input type="file" name="file">
-            <br><br>
-               <input type="submit" value="Create Case"  >
-             </form>
-
+<!--begin::Portlet-->
+<div class="kt-portlet">
+    <div class="kt-portlet__head">
+        <div class="kt-portlet__head-label">
+            <h3 class="kt-portlet__head-title"><%= title %></h3>
         </div>
     </div>
-    
+
+    <!--begin::Form-->
+    <form action="" method="post" enctype="multipart/form-data" class="kt-form kt-form--fit kt-form--label-right">
+        <div class="kt-portlet__body">
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Subject:</label>
+                <div class="col-lg-3">
+                    <input type="text" name="subject"required class="form-control" placeholder="Enter Case Subject">
+                </div>
+                <label class="col-lg-2 col-form-label">Description:</label>
+                <div class="col-lg-3">
+                    <textarea class="form-control" required name="description" placeholder="Enter Case Description here..."></textarea>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Contact Name:</label>
+                <div class="col-lg-3">
+                    <div class="kt-input-icon">
+                        <input name="contact_name" required type="text" class="form-control" placeholder="Contact Name">
+                    </div>
+                </div>
+                <label class="col-lg-2 col-form-label">Contact Email:</label>
+                <div class="col-lg-3">
+                    <div class="kt-input-icon">
+                        <input name="contact_email" required type="text" class="form-control" placeholder="Contact Email">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Department:</label>
+                <div class="col-lg-3">
+                    <div class="kt-input-icon">
+                        <select class="form-control" required name="department">
+                            <option value="">Select</option>
+                            <% departments.forEach(function(dropdown) { %>
+                                <option  value="<%= dropdown.id %>"><%= dropdown.department_name %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                </div>
+                <label class="col-lg-2 col-form-label">Assign To:</label>
+                <div class="col-lg-3">
+                    <div class="kt-input-icon">
+                        <select class="form-control" required name="assigned">
+                            <option value="">Select</option>
+                            <% users.forEach(function(dropdown) { %>
+                                <option  value="<%= dropdown.id %>"><%= dropdown.username %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Case Type:</label>
+                <div class="col-lg-3">
+                    <div class="kt-radio-inline">
+                        <% caseType.forEach(function(dropdown) { %>
+                        <label class="kt-radio kt-radio--solid">
+                                <input type="radio" required name="case_type" value="<%= dropdown %>"> <%= dropdown %>
+                            <span></span>
+                        </label>
+                        <% }); %>
+                    </div>
+                </div>
+                <label class="col-lg-2 col-form-label">Request Type:</label>
+                <div class="col-lg-3">
+                    <div class="kt-radio-inline">
+                        <% caseRequestType.forEach(function(dropdown) { %>
+                        <label class="kt-radio kt-radio--solid">
+                                <input type="radio" required name="request_type" value="<%= dropdown %>"> <%= dropdown %>
+                            <span></span>
+                        </label>
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Priority:</label>
+                <div class="col-lg-3">
+                    <div class="kt-radio-inline">
+                        <% casePriority.forEach(function(dropdown) { %>
+                        <label class="kt-radio kt-radio--solid">
+                                <input type="radio" required name="priority" value="<%= dropdown %>"> <%= dropdown %>
+                            <span></span>
+                        </label>
+                        <% }); %>
+                    </div>
+                </div>
+                <label class="col-lg-2 col-form-label">Additional Note:</label>
+                <div class="col-lg-3">
+                    <textarea class="form-control" name="note" placeholder="Enter Additional Note"></textarea>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-2 col-form-label">Attach File:</label>
+                <div class="col-lg-3">
+                    <div class="kt-input-icon">
+                        <input name="file" required type="file" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="form-group row">
+                <label class="col-form-label col-lg-3 col-sm-12">File Type Validation</label>
+                <div class="col-lg-4 col-md-9 col-sm-12">
+                    <div class="dropzone dropzone-default dropzone-success" id="kt_dropzone_3">
+                        <div class="dropzone-msg dz-message needsclick">
+                            <h3 class="dropzone-msg-title">Drop files here or click to upload.</h3>
+                            <span class="dropzone-msg-desc">Only image, pdf and psd files are allowed for upload</span>
+                        </div>
+                    </div>
+                </div>
+                <label class="col-lg-2 col-form-label">Additional Note:</label>
+                <div class="col-lg-3">
+                    <textarea class="form-control" name="note" placeholder="Enter Additional Note"></textarea>
+                </div>
+            </div> -->
+        </div>
+        <div class="kt-portlet__foot">
+            <div class="kt-form__actions">
+                <div class="row">
+                    <div class="col-lg-2"></div>
+                    <div class="col-lg-10">
+                        <button type="submit" class="btn btn-success">Submit</button>
+                        <button type="reset" class="btn btn-secondary">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!--end::Form-->
+</div>

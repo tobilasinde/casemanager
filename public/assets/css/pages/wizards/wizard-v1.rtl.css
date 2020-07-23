@@ -40,7 +40,7 @@
       margin: 0 1rem 1rem;
       font-weight: 500; }
       .kt-wizard-v1 .kt-wizard-v1__nav .kt-wizard-v1__nav-items .kt-wizard-v1__nav-item[data-ktwizard-state="current"] {
-        background-color: #385aeb;
+        background-color: #5d78ff;
         color: #ffffff; }
     .kt-wizard-v1 .kt-wizard-v1__nav .kt-wizard-v1__nav-items.kt-wizard-v1__nav-items--clickable .kt-wizard-v1__nav-item {
       cursor: pointer; }

@@ -27,8 +27,8 @@ const { body, validationResult } = require('express-validator');
 exports.postCasecommentCreate = [
     body('title').isLength({
         min: 1, max: 255
-    }).trim().isEmpty().escape(),
-    body('description').trim().isEmpty(),
+    }).trim().not().isEmpty().escape(),
+    body('description').trim().not().isEmpty(),
     async (req, res, next) => {
         try{
             // Check if there are validation errors
@@ -111,8 +111,8 @@ exports.getCasecommentDelete = async function(req, res, next) {
 exports.postCasecommentUpdate = [
     body('title').isLength({
         min: 1, max: 255
-    }).trim().isEmpty().escape(),
-    body('description').trim().isEmpty(),
+    }).trim().not().isEmpty().escape(),
+    body('description').trim().not().isEmpty(),
     async (req, res, next) => {
         try{
             // Check if there are validation errors

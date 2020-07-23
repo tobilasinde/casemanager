@@ -116,7 +116,7 @@ app.post('/login',
 app.post('/autoLogin',
    authentication(),
     function(req, res) {
-        res.redirect('/user');
+        res.redirect('/');
     });
 
 
@@ -131,7 +131,7 @@ app.get('/logout',
 //
 app.use('/', index);
 app.use('/main', main);
-app.use('/casemanager', casemanager);
+app.use('/case', casemanager);
 // app.use('/user', function(req, res, next) {
 //     console.log('I am here');
 //     if (req.isAuthenticated()) {
