@@ -39,9 +39,9 @@
                     <div class="kt-input-icon">
                         <select class="form-control" required name="department">
                             <option value="<%= casemanager.Department.id %>"><%= casemanager.Department.department_name %></option>
-                            <% departments.forEach(function(dropdown) { %>
+                            <% departments.forEach(function(dropdown) { if(dropdown.department_name != 'Owner') { %>
                                 <option  value="<%= dropdown.id %>"><%= dropdown.department_name %></option>
-                            <% }); %>
+                            <% }}); %>
                         </select>
                     </div>
                 </div>

@@ -79,7 +79,7 @@ app.use(tools.onRequestEnd);
 // generate menu of the application
 app.use('/user', tools.generateUserMenu);
 
-const isWhiteListed = ( path, whiteList = [ 'login', 'autoLogin' ] ) => {
+const isWhiteListed = ( path, whiteList = [ 'login', 'autoLogin', 'signin' ] ) => {
     let whiteListed = false;
     for(let i=0; i < whiteList.length; i++) {
         // this won't check authentication for login and autoLogin
@@ -96,7 +96,7 @@ const authenticationMiddleware = (req, res, next) => {
         return next();
     }
 
-    res.redirect('https://manifestusermodule.herokuapp.com/login');
+    res.redirect('login');
 };
 app.use( authenticationMiddleware );
 
@@ -108,7 +108,7 @@ app.post('/login',
         failureRedirect: '/login'
     }),
     function(req, res) {
-        res.redirect('/user');
+        res.redirect('/');
     });
     
 

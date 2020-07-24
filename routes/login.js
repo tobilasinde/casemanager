@@ -3,10 +3,11 @@ var router = express.Router();
 var auth = require('./../modules/auth');
 
 router.get('/', function(req, res, next) {
-    var viewData = {
-        title: 'Login page',
-    }
-    res.render('pages/loginMain', viewData);
+    res.render('pages/content', {
+        title: 'Login',
+        functioName: 'LOGIN',
+        layout: 'loginlayout'
+    });
 });
 
 // router.post('/', function(req, res, next) {

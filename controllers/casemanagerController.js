@@ -46,7 +46,7 @@ exports.getCasemanagerCreate = async function(req, res, next) {
         });
         // Render Casemanager Form Page
         res.render('pages/content', {
-            title: 'Create a Casemanager Record',
+            title: 'Create a Case Record',
             functioName: 'GET CASE CREATE',
             layout: 'layout',
             users,
@@ -66,7 +66,6 @@ exports.getCasemanagerCreate = async function(req, res, next) {
         });
     }
 };
-
 
 // Handle post create on CASEMANAGER.
 exports.postCasemanagerCreate = [
@@ -144,7 +143,7 @@ exports.postCasemanagerCreate = [
                     } 
                 );
                 // everything done, now redirect....to casemanager detail.
-                return res.redirect('/case/' + casemanager.id);
+                return res.redirect('/case/' + casemanager.id + '/details');
             }
             
             // The User Uploaded a file
@@ -202,7 +201,7 @@ exports.postCasemanagerCreate = [
                     } 
                 );
                 // everything done, now redirect....to casemanager detail.
-                return res.redirect('/case/' + casemanager.id);
+                return res.redirect('/case/' + casemanager.id + '/details');
             });          
         } catch (error) {
             // we have an error during the process, then catch it and redirect to error page
@@ -354,7 +353,7 @@ exports.postCasemanagerUpdate = [
         ).then(function() {
             // If an casemanager gets updated successfully, we just redirect to casemanagers Details
             // no need to render a page
-            res.redirect("/case/"+req.params.casemanager_id);
+            res.redirect("/case/"+req.params.casemanager_id+"/details");
             console.log("Casemanager updated successfully");
         });
     } catch (error) {
@@ -435,6 +434,9 @@ exports.getCasemanagerDetails = async function(req, res, next) {
 
         const assignedTo = await User.findByPk(casemanager.assigned_to);
         const date = moment(casemanager.createdAt).format('MMMM Do YYYY, h:mm:ss a')
+
+        console.log(req.user.DepartmentId);
+        console.log(casemanager.DepartmentId);
         res.render('pages/content', {
             title: 'Casemanager Details',
             functioName: 'GET CASE DETAILS',
@@ -442,7 +444,9 @@ exports.getCasemanagerDetails = async function(req, res, next) {
             casemanager,
             assignedTo,
             casecomments,
-            date
+            caseStatus,
+            date,
+            user: req.user
         });
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
@@ -458,6 +462,7 @@ exports.getCasemanagerDetails = async function(req, res, next) {
 // Get users by department
 exports.getUsersByDepartment = async function(req, res, next) {
     try {
+        console.log(req.params.department_id);
         // find the departments
         const departmentCheck = await models.Department.findByPk(req.params.department_id);
         // Check if department exist
@@ -473,14 +478,9 @@ exports.getUsersByDepartment = async function(req, res, next) {
                 }
             }
         );
+        const us = "Hi"
+        res.send(users);
 
-        // renders a casemanager list page
-        res.render('pages/content', {
-            users,
-            title: 'User By Department',
-            functioName: 'GET USER LIST BY DEPARTMENT',
-            layout: 'layout'
-        });
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
         console.log("There was an error " + error);
@@ -524,6 +524,34 @@ exports.getDepartmentByCurrentbusiness = async function(req, res, next) {
         });
     }
 };
+
+// Get users by department
+exports.getCaseByDepartment = function(req, res, next) {
+    try {
+        // controller logic to display all casemanagers
+        Casemanager.findAll({where: {
+            CurrentBusinessId: req.user.CurrentBusinessId,
+            DepartmentId: req.user.DepartmentId
+        }}).then(function(casemanagers) {
+            // renders a casemanager list page
+            res.render('pages/content', {
+                title: 'Cases List',
+                functioName: 'GET CASE LIST',
+                layout: 'layout',
+                casemanagers,
+                caseStatus
+            });
+        });
+    } catch (error) {
+        // we have an error during the process, then catch it and redirect to error page
+        console.log("There was an error " + error);
+        res.render('pages/error', {
+            title: 'Error',
+            message: error,
+            error: error
+        });
+    }
+};
              
 // Display list of all casemanagers.
 exports.getCasemanagerList = function(req, res, next) {
@@ -556,17 +584,18 @@ exports.getCasemanagerList = function(req, res, next) {
 exports.getCasemanagerDashboard = async function(req, res, next) {
     try {
         // controller logic to display all casemanagers
-        const business = await Casemanager.count({where: {CurrentBusinessId: req.user.CurrentBusinessId}});
-        const department = await Casemanager.count({where: {CurrentBusinessId: req.user.CurrentBusinessId, DepartmentId: req.user.DepartmentId}});
-        const user = await Casemanager.count({where: {CurrentBusinessId: req.user.CurrentBusinessId, UserId: req.user.id}});
+        const businesses = await Casemanager.findAll({where: {CurrentBusinessId: req.user.CurrentBusinessId}});
+        const departments = await Casemanager.findAll({where: {CurrentBusinessId: req.user.CurrentBusinessId, DepartmentId: req.user.DepartmentId}});
+        const users = await Casemanager.findAll({where: {CurrentBusinessId: req.user.CurrentBusinessId, UserId: req.user.id}});
         console.log("rendering casemanager dashboard");
         res.render('pages/content', {
             title: 'Casemanager Dashboard',
             functioName: 'GET CASE DASHBOARD',
             layout: 'layout',
-            business,
-            department,
-            user
+            businesses,
+            departments,
+            users,
+            moment
         });
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page

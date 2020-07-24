@@ -37,22 +37,19 @@
                 <label class="col-lg-2 col-form-label">Department:</label>
                 <div class="col-lg-3">
                     <div class="kt-input-icon">
-                        <select class="form-control" required name="department">
+                        <select class="form-control" id="department" required name="department">
                             <option value="">Select</option>
-                            <% departments.forEach(function(dropdown) { %>
+                            <% departments.forEach(function(dropdown) { if(dropdown.department_name != 'Owner') { %>
                                 <option  value="<%= dropdown.id %>"><%= dropdown.department_name %></option>
-                            <% }); %>
+                            <% }}); %>
                         </select>
                     </div>
                 </div>
                 <label class="col-lg-2 col-form-label">Assign To:</label>
                 <div class="col-lg-3">
                     <div class="kt-input-icon">
-                        <select class="form-control" required name="assigned">
-                            <option value="">Select</option>
-                            <% users.forEach(function(dropdown) { %>
-                                <option  value="<%= dropdown.id %>"><%= dropdown.username %></option>
-                            <% }); %>
+                        <select class="form-control" required name="assigned" id="user">
+                            <option value="">Select Department First</option>
                         </select>
                     </div>
                 </div>
@@ -102,7 +99,7 @@
                 <label class="col-lg-2 col-form-label">Attach File:</label>
                 <div class="col-lg-3">
                     <div class="kt-input-icon">
-                        <input name="file" required type="file" class="form-control">
+                        <input name="file" type="file" class="form-control">
                     </div>
                 </div>
             </div>

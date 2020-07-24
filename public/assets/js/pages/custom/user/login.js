@@ -26,7 +26,7 @@ var KTLoginPage = function () {
 
 			form.validate({
 				rules: {
-					username: {
+					email: {
 						required: true
 					},
 					password: {
@@ -47,7 +47,8 @@ var KTLoginPage = function () {
 
 			// ajax form submit:  http://jquery.malsup.com/form/
 			form.ajaxSubmit({
-				url: '',
+				url: '/logins',
+				method: 'post',
 				success: function (response, status, xhr, $form) {
 					// similate 2s delay
 					setTimeout(function () {

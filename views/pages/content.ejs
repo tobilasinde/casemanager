@@ -3,6 +3,10 @@
 <% switch (functioName) {
 
 // USER PAGES
+case 'LOGIN' : %>
+       <%- include ('../login') %>
+       <% break;
+
 case 'GET USER CREATE' : %>
        <%- include ('../pages/user/user-create') %>
        <% break;
