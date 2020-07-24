@@ -50,6 +50,9 @@ router.get('/business/department', casemanagerController.getDepartmentByCurrentb
 //GET CASE BY DEPARTMENT
 router.get('/department', casemanagerController.getCaseByDepartment);
 
+//GET CASE ASSIGNED TO ME
+router.get('/user', casemanagerController.getCaseAssignedToMe);
+
 //GET DEPARTMENT BY CURRENTBUSINESS
 // router.post('/fileupload', casemanagerController.fileUpload);
 

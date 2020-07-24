@@ -526,8 +526,9 @@ exports.getDepartmentByCurrentbusiness = async function(req, res, next) {
 };
 
 // Get users by department
-exports.getCaseByDepartment = function(req, res, next) {
+exports.getCaseByDepartment = async function(req, res, next) {
     try {
+        const myDepartment = await Department.findByPk(req.user.DepartmentId);
         // controller logic to display all casemanagers
         Casemanager.findAll({where: {
             CurrentBusinessId: req.user.CurrentBusinessId,
@@ -535,7 +536,35 @@ exports.getCaseByDepartment = function(req, res, next) {
         }}).then(function(casemanagers) {
             // renders a casemanager list page
             res.render('pages/content', {
-                title: 'Cases List',
+                title: 'Cases in '+myDepartment.department_name+' Department',
+                functioName: 'GET CASE LIST',
+                layout: 'layout',
+                casemanagers,
+                caseStatus
+            });
+        });
+    } catch (error) {
+        // we have an error during the process, then catch it and redirect to error page
+        console.log("There was an error " + error);
+        res.render('pages/error', {
+            title: 'Error',
+            message: error,
+            error: error
+        });
+    }
+};
+
+// Get users by department
+exports.getCaseAssignedToMe = function(req, res, next) {
+    try {
+        // controller logic to display all casemanagers
+        Casemanager.findAll({where: {
+            CurrentBusinessId: req.user.CurrentBusinessId,
+            assigned_to: req.user.id
+        }}).then(function(casemanagers) {
+            // renders a casemanager list page
+            res.render('pages/content', {
+                title: 'Cases Assigned To Me',
                 functioName: 'GET CASE LIST',
                 layout: 'layout',
                 casemanagers,
