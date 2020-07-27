@@ -20,7 +20,13 @@ module.exports = {
         next();
     },
     updateCase: (req, res, next) => {
-        if(caseCheck.status == 'Closed' && caseCheck.UserId != req.user.id && caseCheck.assigned_to != req.user.id)
+        if(caseCheck.status == 'Closed')
+        {
+            var error = new Error('Case is already closed');
+            error.status = 401;
+            return res.render('pages/error', {layout: 'errorlayout', error });
+        }
+        if(caseCheck.UserId != req.user.id && caseCheck.assigned_to != req.user.id)
         {
             var error = new Error('Unauthorized access - not the case manager or the Case Creator');
             error.status = 401;
