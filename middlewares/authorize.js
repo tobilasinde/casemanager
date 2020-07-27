@@ -13,7 +13,6 @@ function authorize(roles = []) {
         // authorize based on user role
         async (req, res, next) => {
             const role = await models.User.findByPk(req.user.id, {include: [{model: models.Role}]});
-            console.log(role);
             // check if the user has logged in...
             if (req.isAuthenticated()) {
             
@@ -22,7 +21,8 @@ function authorize(roles = []) {
    // compare the role with the required role for authorization i.e. authorize(Role.Manager) in router
   // you can change this in the router for the user role you want to give access to... i.e. authorize(Role.Staff)
 
-            if (roles.length && !roles.includes(req.user.role)) {
+            if (roles.length && !roles.includes(role.Role.role_name))
+            {
                 // user's role is not authorized
                     var error = new Error('Unauthorized page for this user');
                     error.status = 401;

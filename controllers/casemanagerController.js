@@ -507,7 +507,8 @@ exports.getUserDetails = async function(req, res, next) {
         // find all users in the department
         const user = req.user;
         const myCases = await Casemanager.count({where : {
-            assigned_to: user.id
+            assigned_to: user.id,
+            status: 'New'
         }});
         const result = { user, myCases };
         res.send(result);

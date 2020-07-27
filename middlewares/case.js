@@ -1,8 +1,8 @@
 const models = require('../models');
 const Casemanager = models.Casemanager;
-const CurrentBusiness = models.CurrentBusiness;
-const User = models.User;
+const Role = models.Role;
 let caseCheck = '';
+let result = [];
 
 module.exports = {
     caseCheck: async (req, res, next) => {
@@ -38,7 +38,7 @@ module.exports = {
     },
     caseDetails: async (req, res, next) => {
         const loggedInUser = await models.Role.findByPk(req.user.RoleId);
-        if(caseCheck.UserId != req.user.id && loggedInUser.role_name != 'staff') {
+        if(caseCheck.UserId != req.user.id && loggedInUser.role_name == 'Customer') {
             var error = new Error('Unauthorized access - You do not have access to this resources');
             error.status = 401;
             return res.render('pages/error', {layout: 'errorlayout', error });
@@ -49,14 +49,20 @@ module.exports = {
         const loggedInUser = await models.Role.findByPk(req.user.RoleId);
         if(loggedInUser.role_name == 'Customer') return res.redirect('/case/create');
         next();
-    }
-    // getDepartment: async (req, res, next) => {
-    //     const user = req.user;
-    //     console.log(user);
-    //     const businessCheck = await CurrentBusiness.findByPk(req.params.business_id);
-    //     if (!businessCheck || req.params.business_id != user.CurrentBusinessId) {
-    //         return res.status(401).json({ status: false, code: 401, message: 'Unauthorized access - User does not belong to this Business' });
-    //     }
-    //     next();
-    // },
+    },
+    superUsers: async (req, res, next) => {
+        roleCheck = await Role.findAll();
+        console.log('roleCheck');
+        if(!roleCheck) {
+            var error = new Error('No role Present');
+            error.status = 401;
+            return res.render('pages/error', {layout: 'errorlayout', error });
+        };
+        result.splice(0, result.length);
+        await roleCheck.forEach(element => {
+            if(element.role_name != 'Customer') result.push(element.role_name)
+        });
+        next();
+    },
+    result: result,
 };

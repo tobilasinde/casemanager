@@ -29,8 +29,8 @@ $(document).ready(function(){
         dataType: 'json',
         success:function(response){
             $("#userUsername").append(response.user.username);
-            $("#userUsername1").append(response.user.username);
-            if (response.myCases != 0) $("#myCases").append(response.myCases)
+            if (response.myCases != 0) $("#myCases").append(response.myCases);
+
 
             // var len = response.length;
 

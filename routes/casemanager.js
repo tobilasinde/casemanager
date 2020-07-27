@@ -13,7 +13,8 @@ const express = require('express');
 const router = express.Router();
 const casemanagerController = require('../controllers/casemanagerController');
 const casecommentController = require('../controllers/casecommentController');
-const { caseCheck, updateCase, createComment, caseDetails } = require('../middlewares/case');
+const { caseCheck, updateCase, createComment, caseDetails, superUsers } = require('../middlewares/case');
+const Roless = require('../middlewares/case')
 var authorize = require('../middlewares/authorize');
 
 
@@ -30,22 +31,22 @@ router.get('/:casemanager_id/update', authorize(), caseCheck, updateCase, casema
 router.post('/:casemanager_id/update', authorize(), caseCheck, updateCase, casemanagerController.postCasemanagerUpdate); 
 
 // GET CASE DELETE
-router.get('/:casemanager_id/delete', authorize('staff'), caseCheck, updateCase, casemanagerController.getCasemanagerDelete); 
+router.get('/:casemanager_id/delete', superUsers, authorize(Roless.result), caseCheck, updateCase, casemanagerController.getCasemanagerDelete); 
 
 // GET CASE LIST
-router.get('/cases', authorize('staff'), casemanagerController.getCasemanagerList); 
+router.get('/cases', superUsers, authorize(Roless.result), casemanagerController.getCasemanagerList); 
 
 // GET CASE DETAIL 
 router.get('/:casemanager_id/details', authorize(), caseCheck, caseDetails, casemanagerController.getCasemanagerDetails); 
 
 // UPDATE CASE STATUS
-router.get('/:casemanager_id/status/:status', authorize('staff'), caseCheck, updateCase, casemanagerController.getStatusUpdate); 
+router.get('/:casemanager_id/status/:status', superUsers, authorize(Roless.result), caseCheck, updateCase, casemanagerController.getStatusUpdate); 
 
 // GET USER BY DEPARTMENT
 router.get('/department/:department_id', casemanagerController.getUsersByDepartment);
 
 //GET DEPARTMENT BY CURRENTBUSINESS
-router.get('/business/department', authorize('staff'), casemanagerController.getDepartmentByCurrentbusiness);
+router.get('/business/department', superUsers, authorize(Roless.result), casemanagerController.getDepartmentByCurrentbusiness);
 
 //GET CASE BY DEPARTMENT
 router.get('/department', casemanagerController.getCaseByDepartment);
@@ -54,7 +55,7 @@ router.get('/department', casemanagerController.getCaseByDepartment);
 router.get('/getuserdetails', casemanagerController.getUserDetails);
 
 //GET CASE ASSIGNED TO ME
-router.get('/user', authorize('staff'), casemanagerController.getCaseAssignedToMe);
+router.get('/user', superUsers, authorize(Roless.result), casemanagerController.getCaseAssignedToMe);
 
 //GET CASE CUSTOMER'S CASE
 router.get('/user/customer', authorize(), casemanagerController.getCustomerCases);
@@ -65,7 +66,7 @@ router.get('/user/customer', authorize(), casemanagerController.getCustomerCases
 
 // CASE COMMENT ROUTES
 // POST CASECOMMENT CREATE
-router.post('/:casemanager_id/comment/create', authorize('staff'), caseCheck, createComment, casecommentController.postCasecommentCreate); 
+router.post('/:casemanager_id/comment/create', superUsers, authorize(Roless.result), caseCheck, createComment, casecommentController.postCasecommentCreate); 
 
 // GET CASECOMMENT UPDATE
 // router.get('/comment/:casecomment_id/update', casecommentController.getCasecommentUpdate); 
