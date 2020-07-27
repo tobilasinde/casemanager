@@ -11,47 +11,53 @@
  */
 const express = require('express');
 const router = express.Router();
-const { caseCheck, updateCase, createComment, } = require('../middlewares/case')
 const casemanagerController = require('../controllers/casemanagerController');
 const casecommentController = require('../controllers/casecommentController');
+const { caseCheck, updateCase, createComment, caseDetails } = require('../middlewares/case');
+var authorize = require('../middlewares/authorize');
 
 
 // CASE ROUTES
-router.get('/create', casemanagerController.getCasemanagerCreate); 
+router.get('/create', authorize(), casemanagerController.getCasemanagerCreate); 
 
 // POST CASE CREATE
-router.post('/create', casemanagerController.postCasemanagerCreate); 
+router.post('/create', authorize(), casemanagerController.postCasemanagerCreate); 
 
 // GET CASE UPDATE
-// casemanager/:casemanager_id/update
-router.get('/:casemanager_id/update', caseCheck, updateCase, casemanagerController.getCasemanagerUpdate); 
+router.get('/:casemanager_id/update', authorize(), caseCheck, updateCase, casemanagerController.getCasemanagerUpdate); 
 
 // POST CASE UPDATE
-router.post('/:casemanager_id/update', caseCheck, updateCase, casemanagerController.postCasemanagerUpdate); 
+router.post('/:casemanager_id/update', authorize(), caseCheck, updateCase, casemanagerController.postCasemanagerUpdate); 
 
 // GET CASE DELETE
-router.get('/:casemanager_id/delete', caseCheck, updateCase, casemanagerController.getCasemanagerDelete); 
+router.get('/:casemanager_id/delete', authorize('staff'), caseCheck, updateCase, casemanagerController.getCasemanagerDelete); 
 
 // GET CASE LIST
-router.get('/cases', casemanagerController.getCasemanagerList); 
+router.get('/cases', authorize('staff'), casemanagerController.getCasemanagerList); 
 
 // GET CASE DETAIL 
-router.get('/:casemanager_id/details', caseCheck, casemanagerController.getCasemanagerDetails); 
+router.get('/:casemanager_id/details', authorize(), caseCheck, caseDetails, casemanagerController.getCasemanagerDetails); 
 
 // UPDATE CASE STATUS
-router.get('/:casemanager_id/status/:status', caseCheck, updateCase, casemanagerController.getStatusUpdate); 
+router.get('/:casemanager_id/status/:status', authorize('staff'), caseCheck, updateCase, casemanagerController.getStatusUpdate); 
 
 // GET USER BY DEPARTMENT
 router.get('/department/:department_id', casemanagerController.getUsersByDepartment);
 
 //GET DEPARTMENT BY CURRENTBUSINESS
-router.get('/business/department', casemanagerController.getDepartmentByCurrentbusiness);
+router.get('/business/department', authorize('staff'), casemanagerController.getDepartmentByCurrentbusiness);
 
 //GET CASE BY DEPARTMENT
 router.get('/department', casemanagerController.getCaseByDepartment);
 
+//GET LOGGED IN USER DETAILS
+router.get('/getuserdetails', casemanagerController.getUserDetails);
+
 //GET CASE ASSIGNED TO ME
-router.get('/user', casemanagerController.getCaseAssignedToMe);
+router.get('/user', authorize('staff'), casemanagerController.getCaseAssignedToMe);
+
+//GET CASE CUSTOMER'S CASE
+router.get('/user/customer', authorize(), casemanagerController.getCustomerCases);
 
 //GET DEPARTMENT BY CURRENTBUSINESS
 // router.post('/fileupload', casemanagerController.fileUpload);
@@ -59,7 +65,7 @@ router.get('/user', casemanagerController.getCaseAssignedToMe);
 
 // CASE COMMENT ROUTES
 // POST CASECOMMENT CREATE
-router.post('/:casemanager_id/comment/create', caseCheck, createComment, casecommentController.postCasecommentCreate); 
+router.post('/:casemanager_id/comment/create', authorize('staff'), caseCheck, createComment, casecommentController.postCasecommentCreate); 
 
 // GET CASECOMMENT UPDATE
 // router.get('/comment/:casecomment_id/update', casecommentController.getCasecommentUpdate); 
@@ -68,7 +74,7 @@ router.post('/:casemanager_id/comment/create', caseCheck, createComment, casecom
 // router.post('/comment/:casecomment_id/update', casecommentController.postCasecommentUpdate); 
 
 // GET CASECOMMENT DELETE
-router.get('/:casemanager_id/comment/:casecomment_id/delete', casecommentController.getCasecommentDelete); 
+router.get('/:casemanager_id/comment/:casecomment_id/delete', authorize('staff'), casecommentController.getCasecommentDelete); 
 
 // GET CASECOMMENT LIST
 // router.get('/', casecommentController.getCasecommentList); 

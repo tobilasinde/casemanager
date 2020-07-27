@@ -21,11 +21,8 @@
                         <div class="kt-widget__wrapper">
                             <div class="kt-widget__label">
                                 <a href="#" class="kt-widget__title">
-                                    <%= casemanager.subject %>
-                                </a>
-                                <span class="kt-widget__desc">
                                     <%= casemanager.case_number %>
-                                </span>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -186,6 +183,48 @@
                 <div class="kt-portlet__body">
 
                     <!--begin::Accordion-->
+                    <% if(user.DepartmentId == casemanager.DepartmentId) { %>
+                        <div class="accordion" id="accordionExample4">
+                            <div class="card">
+                                <div class="card-header" id="headingTwo4">
+                                    <div class="card-title collapsed" data-toggle="collapse" data-target="#collapseTwo5" aria-expanded="false" aria-controls="collapseTwo4">
+                                        <i class="flaticon2-box"></i> Add Comments
+                                    </div>
+                                </div>
+                                <div id="collapseTwo5" class="collapse show" aria-labelledby="headingTwo1" data-parent="#accordionExample4">
+                                    <div class="card-body">
+                                        <div class="kt-portlet__body">
+                                            <div class="kt-notes">
+                                                <div class="kt-notes__items">
+                                                    <!--begin::Form-->
+                                                    <form class="kt-form" action="/case/<%= casemanager.id %>/comment/create" method="post">
+                                                        <div class="kt-portlet__body">
+                                                            <div class="form-group">
+                                                                <label>Comment Title</label>
+                                                                <input type="text" name="title" class="form-control" aria-describedby="emailHelp" placeholder="Enter title">
+                                                            </div>
+                                                            <div class="form-group form-group-last">
+                                                                <label for="exampleTextarea">Comment Description</label>
+                                                                <textarea name="description" class="form-control" id="exampleTextarea" rows="3"></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="kt-portlet__foot">
+                                                            <div class="kt-form__actions">
+                                                                <button type="Submit" class="btn btn-primary">Submit</button>
+                                                                <button type="reset" class="btn btn-secondary">Cancel</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+
+                                            <!--end::Form-->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
                     <div class="accordion" id="accordionExample4">
                         <div class="card">
                             <div class="card-header" id="headingTwo4">
@@ -237,48 +276,6 @@
                             </div>
                         </div>
                     </div>
-                    <% if(user.DepartmentId == casemanager.DepartmentId || user.DepartmentId == assignedTo.id) { %>
-                        <div class="accordion" id="accordionExample4">
-                            <div class="card">
-                                <div class="card-header" id="headingTwo4">
-                                    <div class="card-title collapsed" data-toggle="collapse" data-target="#collapseTwo5" aria-expanded="false" aria-controls="collapseTwo4">
-                                        <i class="flaticon2-box"></i> Add Comments
-                                    </div>
-                                </div>
-                                <div id="collapseTwo5" class="collapse" aria-labelledby="headingTwo1" data-parent="#accordionExample4">
-                                    <div class="card-body">
-                                        <div class="kt-portlet__body">
-                                            <div class="kt-notes">
-                                                <div class="kt-notes__items">
-                                                    <!--begin::Form-->
-                                                    <form class="kt-form" action="/case/<%= casemanager.id %>/comment/create" method="post">
-                                                        <div class="kt-portlet__body">
-                                                            <div class="form-group">
-                                                                <label>Comment Title</label>
-                                                                <input type="text" name="title" class="form-control" aria-describedby="emailHelp" placeholder="Enter title">
-                                                            </div>
-                                                            <div class="form-group form-group-last">
-                                                                <label for="exampleTextarea">Comment Description</label>
-                                                                <textarea name="description" class="form-control" id="exampleTextarea" rows="3"></textarea>
-                                                            </div>
-                                                        </div>
-                                                        <div class="kt-portlet__foot">
-                                                            <div class="kt-form__actions">
-                                                                <button type="Submit" class="btn btn-primary">Submit</button>
-                                                                <button type="reset" class="btn btn-secondary">Cancel</button>
-                                                            </div>
-                                                        </div>
-                                                    </form>
-
-                                            <!--end::Form-->
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    <% } %>
 
                     <!--end::Accordion-->
                 </div>

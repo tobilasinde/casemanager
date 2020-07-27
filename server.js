@@ -79,7 +79,7 @@ app.use(tools.onRequestEnd);
 // generate menu of the application
 app.use('/user', tools.generateUserMenu);
 
-const isWhiteListed = ( path, whiteList = [ 'login', 'autoLogin', 'signin' ] ) => {
+const isWhiteListed = ( path, whiteList = [ 'login', 'autoLogin' ] ) => {
     let whiteListed = false;
     for(let i=0; i < whiteList.length; i++) {
         // this won't check authentication for login and autoLogin
@@ -159,12 +159,12 @@ app.use(function(req, res, next) {
 // error handler
 app.use(function(err, req, res, next) {
     // set locals, only providing error in development
-    res.locals.message = err.message;
+    // res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
 
     // render the error page
     res.status(err.status || 500);
-    res.render('pages/error');
+    res.render('pages/error', {layout: 'errorlayout'});
 });
 
 module.exports = app;

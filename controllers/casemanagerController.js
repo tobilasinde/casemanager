@@ -2,6 +2,7 @@ const models = require('../models');
 const moment = require('moment');
 const User = models.User;
 const Department = models.Department;
+const Role = models.Role;
 const Casemanager = models.Casemanager;
 const Casecomment = models.Casecomment;
 const CurrentBusiness = models.CurrentBusiness;
@@ -26,15 +27,8 @@ const caseResponseStatus = ['Awaiting Business Reply', 'Completed'];
 const caseRequestType = ['Issues', 'Complaints'];
 
 // Display casemanager create form on GET.
-exports.getCasemanagerCreate = async function(req, res, next) {
+exports.getCasemanagerCreate = async function(req, res) {
     try {
-        // create User GET controller logic here 
-        const users = await User.findAll({
-            where: {
-                CurrentBusinessId: req.user.CurrentBusinessId
-            }
-        });
-
         // create Department GET controller logic here 
         const departments = await Department.findAll({
             include: [{
@@ -44,12 +38,19 @@ exports.getCasemanagerCreate = async function(req, res, next) {
                 },
             }],
         });
+        const customer = await User.findByPk(req.user.id, {
+            include: [{
+                model: Role
+            }]
+        });
+        let layout = 'layout';
+        if (customer.Role.role_name == 'Customer') layout = 'layout1';
+
         // Render Casemanager Form Page
         res.render('pages/content', {
             title: 'Create a Case Record',
             functioName: 'GET CASE CREATE',
-            layout: 'layout',
-            users,
+            layout,
             departments,
             casePriority,
             caseType,
@@ -88,20 +89,18 @@ exports.postCasemanagerCreate = [
             // Check if there are validation errors
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
+                console.log(errors);
                 return res.status(422).json({ errors: errors.array() });
             }
-
-            // Generate Case Number
             function randomString(length, chars) {
                 var mask = '';
-                if (chars.indexOf('a') > -1) mask += 'abcdefghijklmnopqrstuvwxyz';
-                if (chars.indexOf('#') > -1) mask += '0123456789';
+                if (chars.indexOf('#') > -1) mask += '01234567890987654321';
+                if (chars.indexOf('A') > -1) mask += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
                 var result = '';
                 for (var i = length; i > 0; --i) result += mask[Math.floor(Math.random() * mask.length)];
                 return result;
             }
-            
-            let rand = randomString(10, '#a');
+            let rand = 'CASE-'+randomString(10, '#A');
             let caseNumberCheck = await Casemanager.count({where: {case_number: rand}});
             console.log(caseNumberCheck);
             if (caseNumberCheck != 0) {
@@ -206,11 +205,9 @@ exports.postCasemanagerCreate = [
         } catch (error) {
             // we have an error during the process, then catch it and redirect to error page
             console.log("There was an error " + error);
-            res.render('pages/error', {
-                title: 'Error',
-                message: error,
-                error: error
-            });
+                    var error = new Error(error);
+                    error.status = 500;
+                    return res.render('pages/error', {layout: 'errorlayout', error });
         }
     }
 ];
@@ -224,11 +221,18 @@ exports.getCasemanagerDelete = async function(req, res, next) {
             where: {
                 id: req.params.casemanager_id
             }
-        }).then(function() {
+        }).then(async function() {
+            const customer = await User.findByPk(req.user.id, {
+                include: [{
+                    model: Role
+                }]
+            });
+            let redr = '/case/cases';
+            if (customer.Role.role_name == 'Customer') redr = '/case/user/customer';
             // If an casemanager gets deleted successfully, we just redirect to casemanagers list
             // no need to render a page
-            res.redirect('/case/cases');
-            console.log("Casemanager deleted successfully");
+            res.redirect(redr);
+            console.log("Case deleted successfully");
         });
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
@@ -321,7 +325,6 @@ exports.postCasemanagerUpdate = [
 
     async (req, res, next) => {
     try {
-        console.log("I am here");
         // Check if there are validation errors
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -431,6 +434,13 @@ exports.getCasemanagerDetails = async function(req, res, next) {
                 ]
             }
         );
+        const customer = await User.findByPk(req.user.id, {
+            include: [{
+                model: Role
+            }]
+        });
+        let layout = 'layout';
+        if (customer.Role.role_name == 'Customer') layout = 'layout1';
 
         const assignedTo = await User.findByPk(casemanager.assigned_to);
         const date = moment(casemanager.createdAt).format('MMMM Do YYYY, h:mm:ss a')
@@ -438,9 +448,9 @@ exports.getCasemanagerDetails = async function(req, res, next) {
         console.log(req.user.DepartmentId);
         console.log(casemanager.DepartmentId);
         res.render('pages/content', {
-            title: 'Casemanager Details',
+            title: 'Case Details',
             functioName: 'GET CASE DETAILS',
-            layout: 'layout',
+            layout,
             casemanager,
             assignedTo,
             casecomments,
@@ -478,8 +488,29 @@ exports.getUsersByDepartment = async function(req, res, next) {
                 }
             }
         );
-        const us = "Hi"
         res.send(users);
+
+    } catch (error) {
+        // we have an error during the process, then catch it and redirect to error page
+        console.log("There was an error " + error);
+        res.render('pages/error', {
+            title: 'Error',
+            message: error,
+            error: error
+        });
+    }
+};
+
+// Get users by department
+exports.getUserDetails = async function(req, res, next) {
+    try {
+        // find all users in the department
+        const user = req.user;
+        const myCases = await Casemanager.count({where : {
+            assigned_to: user.id
+        }});
+        const result = { user, myCases };
+        res.send(result);
 
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
@@ -567,6 +598,34 @@ exports.getCaseAssignedToMe = function(req, res, next) {
                 title: 'Cases Assigned To Me',
                 functioName: 'GET CASE LIST',
                 layout: 'layout',
+                casemanagers,
+                caseStatus
+            });
+        });
+    } catch (error) {
+        // we have an error during the process, then catch it and redirect to error page
+        console.log("There was an error " + error);
+        res.render('pages/error', {
+            title: 'Error',
+            message: error,
+            error: error
+        });
+    }
+};
+
+// Get users by department
+exports.getCustomerCases = function(req, res, next) {
+    try {
+        // controller logic to display all casemanagers
+        Casemanager.findAll({where: {
+            CurrentBusinessId: req.user.CurrentBusinessId,
+            UserId: req.user.id
+        }}).then(function(casemanagers) {
+            // renders a casemanager list page
+            res.render('pages/content', {
+                title: 'My Cases',
+                functioName: 'GET CUSTOMER CASE LIST',
+                layout: 'layout1',
                 casemanagers,
                 caseStatus
             });

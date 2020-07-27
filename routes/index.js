@@ -13,9 +13,11 @@ var express = require('express');
 var router = express.Router();
 var indexController = require('../controllers/indexController');
 const casemanagerController = require('../controllers/casemanagerController');
+const { dashboard } = require('../middlewares/case');
+var authorize = require('../middlewares/authorize');
 
 // GET CASE LIST
-router.get('/', casemanagerController.getCasemanagerDashboard); 
+router.get('/', authorize(), dashboard, casemanagerController.getCasemanagerDashboard); 
 router.get('/about', indexController.getAbout);
  
 
