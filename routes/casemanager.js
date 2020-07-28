@@ -66,7 +66,7 @@ router.get('/user/customer', authorize(), casemanagerController.getCustomerCases
 
 // CASE COMMENT ROUTES
 // POST CASECOMMENT CREATE
-router.post('/:casemanager_id/comment/create', superUsers, authorize(Roless.result), caseCheck, createComment, casecommentController.postCasecommentCreate); 
+router.post('/:casemanager_id/comment/create', authorize(), caseCheck, createComment, casecommentController.postCasecommentCreate); 
 
 // GET CASECOMMENT UPDATE
 // router.get('/comment/:casecomment_id/update', casecommentController.getCasecommentUpdate); 

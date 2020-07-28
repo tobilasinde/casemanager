@@ -183,7 +183,7 @@
                 <div class="kt-portlet__body">
 
                     <!--begin::Accordion-->
-                    <% if(user.DepartmentId == casemanager.DepartmentId) { %>
+                    <% if(user.DepartmentId == casemanager.DepartmentId || casemanager.UserId == user.id) { %>
                         <div class="accordion" id="accordionExample4">
                             <div class="card">
                                 <div class="card-header" id="headingTwo4">
