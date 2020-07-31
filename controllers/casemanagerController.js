@@ -611,6 +611,7 @@ exports.getCasemanagerDashboard = async function(req, res, next) {
     try {
         // controller logic for dashboard
         const dash = await dashboardHelper(req);
+        console.log('today count'+dash.todayCount);
         // console.log(dash.today);
         res.render('pages/content', {
             title: 'Casemanager Dashboard',

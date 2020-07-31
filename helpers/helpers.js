@@ -5,10 +5,18 @@ const { body } = require('express-validator');
 
 module.exports = {
     dashboardHelper: async (req) => {
+        todayCount = 0;
         // const createdDate = moment(createdAt).calendar();
         const businesses = await models.Casemanager.count({where: {CurrentBusinessId: req.user.CurrentBusinessId}});
         const departments = await models.Casemanager.count({where: {CurrentBusinessId: req.user.CurrentBusinessId, DepartmentId: req.user.DepartmentId}});
-        const data = { businesses, departments};
+        const allBusiness =  await models.Casemanager.findAll({where: {CurrentBusinessId: req.user.CurrentBusinessId}});
+        allBusiness.forEach(function(business) {
+            // console.log(moment(business).format('dddd'));
+            if(moment(business).format('dddd') == moment().format('dddd')){
+                todayCount++
+            }
+        })
+        const data = { businesses, departments, todayCount };
         return data;
     },
     mockData: () => {
