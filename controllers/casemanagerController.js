@@ -10,8 +10,8 @@ const CurrentBusiness = models.CurrentBusiness;
 const caseData = mockData();
 const { validationResult } = require('express-validator');
 // import aws-sdk library
-var env = process.env.NODE_ENV || 'development',
-    config = require('./../config/config.' + env);
+// var env = process.env.NODE_ENV || 'development',
+//     config = require('./../config/config.' + env);
 const AWS = require('aws-sdk');
 // initiate s3 library from AWS
 const s3 = new AWS.S3({
