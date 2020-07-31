@@ -1,30 +1,24 @@
 const models = require('../models');
 const moment = require('moment');
+const { dashboardHelper, mockData, validation, randString, fileUload } = require('../helpers/helpers');
 const User = models.User;
 const Department = models.Department;
 const Role = models.Role;
 const Casemanager = models.Casemanager;
 const Casecomment = models.Casecomment;
 const CurrentBusiness = models.CurrentBusiness;
+const caseData = mockData();
+const { validationResult } = require('express-validator');
 // import aws-sdk library
+var env = process.env.NODE_ENV || 'development',
+    config = require('./../config/config.' + env);
 const AWS = require('aws-sdk');
-
-// Validation Middleware
-const { body, validationResult } = require('express-validator');
-
 // initiate s3 library from AWS
 const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-});
+    accessKeyId: config.accessKeyId,
+    secretAccessKey: config.secretAccessKey
+  });
 
-// Mock Data for Casemanager
-const caseStatus = ['New', 'On Hold', 'Escalated', 'Working', 'Closed'];
-const casePriority = ['Low', 'Medium', 'High'];
-const caseOrigin = ['Web', 'Email'];
-const caseType = ['Support', 'Request'];
-const caseResponseStatus = ['Awaiting Business Reply', 'Completed'];
-const caseRequestType = ['Issues', 'Complaints'];
 
 // Display casemanager create form on GET.
 exports.getCasemanagerCreate = async function(req, res) {
@@ -52,10 +46,10 @@ exports.getCasemanagerCreate = async function(req, res) {
             functioName: 'GET CASE CREATE',
             layout,
             departments,
-            casePriority,
-            caseType,
-            caseResponseStatus,
-            caseRequestType,
+            casePriority: caseData.casePriority,
+            caseType: caseData.caseType,
+            caseResponseStatus: caseData.caseResponseStatus,
+            caseRequestType: caseData.caseRequestType,
         });
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
@@ -69,148 +63,92 @@ exports.getCasemanagerCreate = async function(req, res) {
 };
 
 // Handle post create on CASEMANAGER.
-exports.postCasemanagerCreate = [
-    // Validate fields.
-    body('priority').trim().not().isEmpty().isAlpha().escape(),
-    body('request_type').trim().not().isEmpty().isAlpha().escape(),
-    body('assigned').trim().not().isEmpty().isInt().escape(),
-    body('case_type').trim().not().isEmpty().isAlpha().escape(),
-    body('subject').isLength({
-        min: 1, max: 255
-    }).trim().not().isEmpty().escape(),
-    body('description').trim().not().isEmpty(),
-    body('contact_name').isLength({
-        min: 1, max: 255
-    }).trim().not().isEmpty().escape(),
-    body('note').trim().escape(),
-    body('contact_email').trim().not().isEmpty().isEmail().withMessage('Enter a valid Email').escape(),
-    async (req, res) => {
-        try{
-            // Check if there are validation errors
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                console.log(errors);
-                return res.status(422).json({ errors: errors.array() });
-            }
-            function randomString(length, chars) {
-                var mask = '';
-                if (chars.indexOf('#') > -1) mask += '01234567890987654321';
-                if (chars.indexOf('A') > -1) mask += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                var result = '';
-                for (var i = length; i > 0; --i) result += mask[Math.floor(Math.random() * mask.length)];
-                return result;
-            }
-            let rand = 'CASE-'+randomString(10, '#A');
-            let caseNumberCheck = await Casemanager.count({where: {case_number: rand}});
-            console.log(caseNumberCheck);
-            if (caseNumberCheck != 0) {
-                return res.status(400);
-            }
-
-            console.log(req.body.department);
-            // Check if User is in department
-            const userDepartmentCheck = await User.count({
-                where: {
-                    id: req.body.assigned,
-                    DepartmentId: req.body.department,
-                }
-            });
-            console.log(userDepartmentCheck);
-            if (userDepartmentCheck == 0) {
-                return res.status(400).json({ status: false, code: 400, message: `The assigned User is not in the selected department` });
-            }
-
-            // Check if user uploads a file
-            if (!req.files || Object.keys(req.files).length === 0) {
-                // The User did not upload a file
-                // create the casemanager with user current business and department
-                var casemanager = await Casemanager.create(
-                    {
-                        priority: req.body.priority,
-                        request_type: req.body.request_type,
-                        assigned_to: req.body.assigned,
-                        case_type: req.body.case_type,
-                        UserId: req.user.id,
-                        DepartmentId: req.body.department,
-                        CurrentBusinessId: req.user.CurrentBusinessId,
-                        subject: req.body.subject,
-                        description: req.body.description,
-                        contact_name: req.body.contact_name,
-                        contact_email: req.body.contact_email,
-                        note: req.body.note,
-                        case_number: rand
-                    } 
-                );
-                // everything done, now redirect....to casemanager detail.
-                return res.redirect('/case/' + casemanager.id + '/details');
-            }
-            
-            // The User Uploaded a file
-            // Process the file upload
-            let uploadedFile = req.files.file;
-            let name = uploadedFile.name;
-            let filetype = req.files.file.mimetype;
-            let filesize = req.files.file.size
-
-            // Checking for File Type
-            if (
-              filetype !== 'image/jpeg' && filetype !== 'image/png' && // for images (png, jpg, jpeg)
-              filetype !== 'text/plain' && // for texts
-              filetype !== 'application/msword' && filetype !== 'application/vnd.ms-excel' && // for microsoft offices (doc and xls)
-              filetype !== 'application/pdf' && // for pdfs
-              filetype !== 'application/zip' // for zips
-            ) {
-              return res.status(400).json({ status: false, code: 400, message: 'File type not allowed !' });
-            }
-            
-            // Check the file size, it should not be greater than 2MB
-            if (filesize > 2 * 1024 * 1024 * 1024) {
-              return res.status(400).json({ status: false, code: 400, message: 'File size is more than 2 MB.' });
-            }
-            
-            
-            // params for AWS S3
-            const params = {
-              Bucket: 'bringforthjoy', // pass your bucket name
-              Key: 'home/TraineesFolder/casemanager/' + name, // file will be saved as     /TraineesFolder/assignment1.doc
-              Body: uploadedFile.data
-            };
-            
-            // load file inside AWS S3 bucket using the params declared
-            //  note s3 uses the access and secret keys declared earlier
-            s3.upload(params, async function (err, data) {
-              if (err) throw err
-                // create the casemanager with user current business and department
-                var casemanager = await Casemanager.create(
-                    {
-                        priority: req.body.priority,
-                        request_type: req.body.request_type,
-                        assigned_to: req.body.assigned,
-                        case_type: req.body.case_type,
-                        UserId: req.user.id,
-                        DepartmentId: req.body.department,
-                        CurrentBusinessId: req.user.CurrentBusinessId,
-                        subject: req.body.subject,
-                        description: req.body.description,
-                        contact_name: req.body.contact_name,
-                        contact_email: req.body.contact_email,
-                        note: req.body.note,
-                        case_number: rand,
-                        document: data.Location
-                    } 
-                );
-                // everything done, now redirect....to casemanager detail.
-                return res.redirect('/case/' + casemanager.id + '/details');
-            });          
-        } catch (error) {
-            // we have an error during the process, then catch it and redirect to error page
-            console.log("There was an error " + error);
-                    var error = new Error(error);
-                    error.status = 500;
-                    return res.render('pages/error', {layout: 'errorlayout', error });
+exports.postCasemanagerCreate = async function(req, res) {
+    try{
+        // Check if there are validation errors
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            console.log(errors.array());
+            var error = new Error(errors.array()[0].param + ': ' + errors.array()[0].msg);
+            error.status = 422;
+            return res.render('pages/error', {layout: 'errorlayout', error });
         }
-    }
-];
+
+        let rand = 'CASE-'+randString(10, '#A');
+        let caseNumberCheck = await Casemanager.count({where: {case_number: rand}});
+        while (caseNumberCheck != 0) {
+            rand = 'CASE-'+randString(10, '#A');
+        }
+        // Check if User is in department
+        const userDepartmentCheck = await User.count({
+            where: {
+                id: req.body.assigned,
+                DepartmentId: req.body.department,
+            }
+        });
+        if (userDepartmentCheck == 0) {
+            return res.status(400).json({ status: false, code: 400, message: `The assigned User is not in the selected department` });
+        }
+
+        if (!req.files || Object.keys(req.files).length === 0) {
+            // The User did not upload a file
+            // create the casemanager with user current business and department
+            var casemanager = await Casemanager.create(
+                {
+                    priority: req.body.priority,
+                    request_type: req.body.request_type,
+                    assigned_to: req.body.assigned,
+                    case_type: req.body.case_type,
+                    UserId: req.user.id,
+                    DepartmentId: req.body.department,
+                    CurrentBusinessId: req.user.CurrentBusinessId,
+                    subject: req.body.subject,
+                    description: req.body.description,
+                    contact_name: req.body.contact_name,
+                    contact_email: req.body.contact_email,
+                    note: req.body.note,
+                    case_number: rand
+                } 
+            );
+            // everything done, now redirect....to casemanager detail.
+            return res.redirect('/case/' + casemanager.id + '/details');
+        }
+        let params = '';
+        if(req.files) params = await fileUload(req, res)
+        s3.upload(params, async function (err, data) {
+            let datas = '';
+            if (err) datas = '';
+            datas = data.Location;
+        // create the casemanager with user current business and department
+            var casemanager = await Casemanager.create(
+                {
+                    priority: req.body.priority,
+                    request_type: req.body.request_type,
+                    assigned_to: req.body.assigned,
+                    case_type: req.body.case_type,
+                    UserId: req.user.id,
+                    DepartmentId: req.body.department,
+                    CurrentBusinessId: req.user.CurrentBusinessId,
+                    subject: req.body.subject,
+                    description: req.body.description,
+                    contact_name: req.body.contact_name,
+                    contact_email: req.body.contact_email,
+                    note: req.body.note,
+                    case_number: rand,
+                    document: datas
+                } 
+            );
+            // everything done, now redirect....to casemanager detail.
+            return res.redirect('/case/' + casemanager.id + '/details');  
+        });
+    } catch (error) {
+        // we have an error during the process, then catch it and redirect to error page
+        console.log("There was an error " + error);
+                var error = new Error(error);
+                error.status = 500;
+                return res.render('pages/error', {layout: 'errorlayout', error });
+        }
+    };
 
 // Display casemanager delete form on GET.
 exports.getCasemanagerDelete = async function(req, res, next) {
@@ -277,21 +215,29 @@ exports.getCasemanagerUpdate = async function(req, res, next) {
         });
         // Find the person the case was assigned to
         const assignedTo = await User.findByPk(casemanager.assigned_to);
+        const customer = await User.findByPk(req.user.id, {
+            include: [{
+                model: Role
+            }]
+        });
+        let layout = 'layout';
+        if (customer.Role.role_name == 'Customer') layout = 'layout1';
+
         // renders a casemanager form
         console.log(req.user);
         res.render('pages/content', {
             title: 'Update Casemanager',
             functioName: 'GET CASE UPDATE',
-            layout: 'layout',
+            layout,
             casemanager,
             users,
             departments,
-            caseStatus,
-            casePriority,
-            caseOrigin,
-            caseType,
-            caseResponseStatus,
-            caseRequestType,
+            caseStatus: caseData.caseStatus,
+            casePriority: caseData.casePriority,
+            caseOrigin: caseData.caseOrigin,
+            caseType: caseData.caseType,
+            caseResponseStatus: caseData.caseResponseStatus,
+            caseRequestType: caseData.caseRequestType,
             assignedTo,
         });
     } catch (error) {
@@ -306,29 +252,14 @@ exports.getCasemanagerUpdate = async function(req, res, next) {
 };
 
 // Handle casemanager update on CASEMANAGER.
-exports.postCasemanagerUpdate = [
-    // Validate fields.
-    body('priority').trim().not().isEmpty().isAlpha().escape(),
-    body('origin').trim().not().isEmpty().isAlpha().escape(),
-    body('request_type').trim().not().isEmpty().isAlpha().escape(),
-    body('assigned').trim().not().isEmpty().isInt().escape(),
-    body('case_type').trim().not().isEmpty().isAlpha().escape(),
-    body('subject').isLength({
-        min: 1, max: 255
-    }).trim().not().isEmpty().escape(),
-    body('description').trim().not().isEmpty(),
-    body('contact_name').isLength({
-        min: 1, max: 255
-    }).trim().not().isEmpty().escape(),
-    body('note').trim().escape(),
-    body('contact_email').trim().isEmail().withMessage('Enter a valid Email').escape(),
-
-    async (req, res, next) => {
+exports.postCasemanagerUpdate = async function(req, res, next) {
     try {
         // Check if there are validation errors
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(422).json({ errors: errors.array() });
+            var error = new Error(errors.array()[0].param + ': ' + errors.array()[0].msg);
+            error.status = 422;
+            return res.render('pages/error', {layout: 'errorlayout', error });
         }
 
         // now update
@@ -368,7 +299,7 @@ exports.postCasemanagerUpdate = [
             error: error
         });
     }
-}];
+};
 
 // Handle status update on CASEMANAGER.
 exports.getStatusUpdate = async function(req, res, next) {
@@ -383,7 +314,16 @@ exports.getStatusUpdate = async function(req, res, next) {
                     id: req.params.casemanager_id
                 }
             }
-        ).then(function() {
+        ).then( async function() {
+            if(req.params.status == 'Closed'){
+                await models.Casemanager.update({
+                    response_status: 'Completed'
+                },{
+                    where: {
+                        id: req.params.casemanager_id
+                    }
+                })
+            }
             // If an casemanager status gets updated successfully, we just redirect to casemanagers detail
             // no need to render a page
             res.redirect("/case/cases");
@@ -444,9 +384,6 @@ exports.getCasemanagerDetails = async function(req, res, next) {
 
         const assignedTo = await User.findByPk(casemanager.assigned_to);
         const date = moment(casemanager.createdAt).format('MMMM Do YYYY, h:mm:ss a')
-
-        console.log(req.user.DepartmentId);
-        console.log(casemanager.DepartmentId);
         res.render('pages/content', {
             title: 'Case Details',
             functioName: 'GET CASE DETAILS',
@@ -454,7 +391,7 @@ exports.getCasemanagerDetails = async function(req, res, next) {
             casemanager,
             assignedTo,
             casecomments,
-            caseStatus,
+            caseStatus: caseData.caseStatus,
             date,
             user: req.user
         });
@@ -572,7 +509,7 @@ exports.getCaseByDepartment = async function(req, res, next) {
                 functioName: 'GET CASE LIST',
                 layout: 'layout',
                 casemanagers,
-                caseStatus
+                caseStatus: caseData.caseStatus
             });
         });
     } catch (error) {
@@ -600,7 +537,7 @@ exports.getCaseAssignedToMe = function(req, res, next) {
                 functioName: 'GET CASE LIST',
                 layout: 'layout',
                 casemanagers,
-                caseStatus
+                caseStatus: caseData.caseStatus
             });
         });
     } catch (error) {
@@ -628,7 +565,7 @@ exports.getCustomerCases = function(req, res, next) {
                 functioName: 'GET CUSTOMER CASE LIST',
                 layout: 'layout1',
                 casemanagers,
-                caseStatus
+                caseStatus: caseData.caseStatus
             });
         });
     } catch (error) {
@@ -655,7 +592,7 @@ exports.getCasemanagerList = function(req, res, next) {
                 functioName: 'GET CASE LIST',
                 layout: 'layout',
                 casemanagers,
-                caseStatus
+                caseStatus: caseData.caseStatus
             });
         });
     } catch (error) {
@@ -672,18 +609,14 @@ exports.getCasemanagerList = function(req, res, next) {
 // Display list of all casemanagers.
 exports.getCasemanagerDashboard = async function(req, res, next) {
     try {
-        // controller logic to display all casemanagers
-        const businesses = await Casemanager.findAll({where: {CurrentBusinessId: req.user.CurrentBusinessId}});
-        const departments = await Casemanager.findAll({where: {CurrentBusinessId: req.user.CurrentBusinessId, DepartmentId: req.user.DepartmentId}});
-        const users = await Casemanager.findAll({where: {CurrentBusinessId: req.user.CurrentBusinessId, UserId: req.user.id}});
-        console.log("rendering casemanager dashboard");
+        // controller logic for dashboard
+        const dash = await dashboardHelper(req);
+        // console.log(dash.today);
         res.render('pages/content', {
             title: 'Casemanager Dashboard',
             functioName: 'GET CASE DASHBOARD',
             layout: 'layout',
-            businesses,
-            departments,
-            users,
+            dash: dash,
             moment
         });
     } catch (error) {

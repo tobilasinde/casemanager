@@ -16,19 +16,20 @@ const casecommentController = require('../controllers/casecommentController');
 const { caseCheck, updateCase, createComment, caseDetails, superUsers } = require('../middlewares/case');
 const Roless = require('../middlewares/case')
 var authorize = require('../middlewares/authorize');
+const { validation } = require('../helpers/helpers');
 
 
 // CASE ROUTES
 router.get('/create', authorize(), casemanagerController.getCasemanagerCreate); 
 
 // POST CASE CREATE
-router.post('/create', authorize(), casemanagerController.postCasemanagerCreate); 
+router.post('/create', validation, authorize(), casemanagerController.postCasemanagerCreate); 
 
 // GET CASE UPDATE
 router.get('/:casemanager_id/update', authorize(), caseCheck, updateCase, casemanagerController.getCasemanagerUpdate); 
 
 // POST CASE UPDATE
-router.post('/:casemanager_id/update', authorize(), caseCheck, updateCase, casemanagerController.postCasemanagerUpdate); 
+router.post('/:casemanager_id/update', validation, authorize(), caseCheck, updateCase, casemanagerController.postCasemanagerUpdate); 
 
 // GET CASE DELETE
 router.get('/:casemanager_id/delete', superUsers, authorize(Roless.result), caseCheck, updateCase, casemanagerController.getCasemanagerDelete); 

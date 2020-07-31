@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       },
       response_status: {
-        type: DataTypes.ENUM('Awaiting Business Reply', 'Completed'),
+        type: DataTypes.ENUM('Awaiting Customer Reply', 'Awaiting Business Reply', 'Completed'),
         defaultValue: 'Awaiting Business Reply'
       },
       request_type: {

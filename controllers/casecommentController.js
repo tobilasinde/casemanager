@@ -47,8 +47,25 @@ exports.postCasecommentCreate = [
                 body: req.body.description,
                 CasemanagerId: req.params.casemanager_id,
                 UserId: req.user.id
-            }).then(function() {
-                res.redirect("/case/"+req.params.casemanager_id+"/details");
+            }).then(async function() {
+                const role = await models.Role.findByPk(req.user.RoleId);
+                if(role.role_name == 'Customer'){
+                await models.Casemanager.update({
+                    response_status: 'Awaiting Customer Reply'
+                },{
+                    where: {
+                        id: req.params.casemanager_id
+                    }
+                })
+            } else {
+                await models.Casemanager.update({
+                    response_status: 'Awaiting Business Reply'
+                },{
+                where: {
+                    id: req.params.casemanager_id
+                }
+            });}
+            res.redirect("/case/"+req.params.casemanager_id+"/details");
             });
         } catch (error) {
             // we have an error during the process, then catch it and redirect to error page

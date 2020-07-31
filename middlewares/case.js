@@ -35,7 +35,7 @@ module.exports = {
         next();
     },
     createComment: (req, res, next) => {
-        if (caseCheck.DepartmentId != req.user.DepartmentId) {
+        if (caseCheck.DepartmentId != req.user.DepartmentId && caseCheck.UserId != req.user.id) {
             var error = new Error('Unauthorized access - User does not belong to the department the case was created from');
             error.status = 401;
             return res.render('pages/error', {layout: 'errorlayout', error });

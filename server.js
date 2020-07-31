@@ -96,7 +96,7 @@ const authenticationMiddleware = (req, res, next) => {
         return next();
     }
 
-    res.redirect('login');
+    res.redirect('/login');
 };
 app.use( authenticationMiddleware );
 

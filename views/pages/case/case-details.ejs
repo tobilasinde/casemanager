@@ -1,3 +1,6 @@
+<style>
+    .col-lg-2 {font-weight: bold;}
+</style>
 <!-- begin:: Content -->
 <div class="kt-container  kt-container--fluid  kt-grid__item kt-grid__item--fluid">
 
@@ -45,12 +48,6 @@
                             <a class="kt-nav__link" href="/case/<%= casemanager.id %>/update" role="tab">
                                 <span class="kt-nav__link-icon"><i class="flaticon2-edit"></i></span>
                                 <span class="kt-nav__link-text">Edit Case</span>
-                            </a>
-                        </li>
-                        <li class="kt-nav__item  ">
-                            <a class="kt-nav__link" href="/case/<%= casemanager.id %>/delete" role="tab">
-                                <span class="kt-nav__link-icon"><i class="flaticon2-rubbish-bin"></i></span>
-                                <span class="kt-nav__link-text">Delete Case</span>
                             </a>
                         </li>
                     </ul>
@@ -176,6 +173,16 @@
                             </div>
                         </div>
                     </div>
+                    <div class="kt-section kt-section--first">
+                        <div class="kt-section__body">
+                            <div class="row">
+                                <label class="col-lg-2">Attached File:</label>
+                                <div class="col-lg-8">
+                                    <a href="<%= casemanager.document %>">Click to Download</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!--begin::Portlet-->
@@ -211,7 +218,6 @@
                                                         <div class="kt-portlet__foot">
                                                             <div class="kt-form__actions">
                                                                 <button type="Submit" class="btn btn-primary">Submit</button>
-                                                                <button type="reset" class="btn btn-secondary">Cancel</button>
                                                             </div>
                                                         </div>
                                                     </form>
@@ -232,7 +238,7 @@
                                     <i class="flaticon2-box"></i> View Comments
                                 </div>
                             </div>
-                            <div id="collapseTwo4" class="collapse" aria-labelledby="headingTwo1" data-parent="#accordionExample4">
+                            <div id="collapseTwo4" class="collapse <% if(casecomments.length != 0) { %> show <% } %>" aria-labelledby="headingTwo1" data-parent="#accordionExample4">
                                 <div class="card-body">
                                     <div class="kt-portlet__body">
                                         <div class="kt-notes">
