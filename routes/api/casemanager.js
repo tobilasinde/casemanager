@@ -11,65 +11,75 @@
  */
 const express = require('express');
 const router = express.Router();
-const { updateCase, createComment, } = require('../../middlewares/case')
 const casemanagerController = require('../../controllers/api/casemanagerController');
 const casecommentController = require('../../controllers/api/casecommentController');
+const { caseCheck, updateCase, createComment, caseDetails, superUsers, dashboard } = require('../../middlewares/case');
+const Roless = require('../../middlewares/case')
+var authorize = require('../../middlewares/authorize');
+const { validation } = require('../../helpers/helpers');
 
+router.get('/', authorize(), dashboard, casemanagerController.getCasemanagerDashboard); 
 
 // CASE ROUTES
-router.get('/case/create', casemanagerController.getCasemanagerCreate); 
+router.get('/create', authorize(), casemanagerController.getCasemanagerCreate); 
 
 // POST CASE CREATE
-router.post('/case/create', casemanagerController.postCasemanagerCreate); 
+router.post('/create', validation, authorize(), casemanagerController.postCasemanagerCreate); 
 
 // GET CASE UPDATE
-// casemanager/:casemanager_id/update
-// router.get('/:casemanager_id/update', casemanagerController.getCasemanagerUpdate); 
+router.get('/:casemanager_id/update', authorize(), caseCheck, updateCase, casemanagerController.getCasemanagerUpdate); 
 
 // POST CASE UPDATE
-router.post('/case/:casemanager_id/update', updateCase, casemanagerController.postCasemanagerUpdate); 
+router.post('/:casemanager_id/update', validation, authorize(), caseCheck, updateCase, casemanagerController.postCasemanagerUpdate); 
 
 // GET CASE DELETE
-router.get('/case/:casemanager_id/delete', casemanagerController.getCasemanagerDelete); 
+// router.get('/:casemanager_id/delete', superUsers, authorize(Roless.result), caseCheck, updateCase, casemanagerController.getCasemanagerDelete); 
 
 // GET CASE LIST
-router.get('/cases', casemanagerController.getCasemanagerList); 
+router.get('/cases', superUsers, authorize(Roless.result), casemanagerController.getCasemanagerList); 
 
 // GET CASE DETAIL 
-router.get('/case/:casemanager_id', casemanagerController.getCasemanagerDetails); 
+router.get('/:casemanager_id/details', authorize(), caseCheck, caseDetails, casemanagerController.getCasemanagerDetails); 
 
 // UPDATE CASE STATUS
-router.get('/case/:casemanager_id/status/:status', updateCase, casemanagerController.getStatusUpdate); 
-
-// GET CASE LIST
-router.get('/', casemanagerController.getCasemanagerDashboard); 
+router.get('/:casemanager_id/status/:status', superUsers, authorize(Roless.result), caseCheck, updateCase, casemanagerController.getStatusUpdate); 
 
 // GET USER BY DEPARTMENT
-router.get('/case/department/:department_id', casemanagerController.getUsersByDepartment);
+router.get('/department/:department_id', casemanagerController.getUsersByDepartment);
+
+//GET CASE BY DEPARTMENT
+router.get('/department', casemanagerController.getCaseByDepartment);
+
+//GET LOGGED IN USER DETAILS
+router.get('/getuserdetails', casemanagerController.getUserDetails);
+
+//GET CASE ASSIGNED TO ME
+router.get('/user', superUsers, authorize(Roless.result), casemanagerController.getCaseAssignedToMe);
+
+//GET CASE CUSTOMER'S CASE
+router.get('/user/customer', authorize(), casemanagerController.getCustomerCases);
 
 //GET DEPARTMENT BY CURRENTBUSINESS
-router.get('/case/business/department', casemanagerController.getDepartmentByCurrentbusiness);
+// router.post('/fileupload', casemanagerController.fileUpload);
+
 
 // CASE COMMENT ROUTES
-// // CASECOMMENT CREATE GET
-// router.get('/create', createComment casecommentController.getCasecommentCreate); 
-
 // POST CASECOMMENT CREATE
-router.post('/:casemanager_id/comment/create', createComment, casecommentController.postCasecommentCreate); 
+router.post('/:casemanager_id/comment/create', authorize(), caseCheck, createComment, casecommentController.postCasecommentCreate); 
 
 // GET CASECOMMENT UPDATE
 // router.get('/comment/:casecomment_id/update', casecommentController.getCasecommentUpdate); 
 
-// POST CASECOMMENT UPDATE
-router.post('/comment/:casecomment_id/update', casecommentController.postCasecommentUpdate); 
+// // POST CASECOMMENT UPDATE
+// router.post('/comment/:casecomment_id/update', casecommentController.postCasecommentUpdate); 
 
 // GET CASECOMMENT DELETE
-router.get('/comment/:casecomment_id/delete', casecommentController.getCasecommentDelete); 
+router.get('/:casemanager_id/comment/:casecomment_id/delete', authorize('staff'), casecommentController.getCasecommentDelete); 
 
 // GET CASECOMMENT LIST
 // router.get('/', casecommentController.getCasecommentList); 
 
-// GET CASECOMMENT DETAIL 
-router.get('/comment/:casecomment_id', casecommentController.getCasecommentDetails); 
+// // GET CASECOMMENT DETAIL 
+// router.get('/comment/:casecomment_id', casecommentController.getCasecommentDetails); 
 
 module.exports = router;

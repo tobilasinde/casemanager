@@ -7,7 +7,7 @@
     </div>
 
     <!--begin::Form-->
-    <form action="" method="post" enctype="multipart/form-data" class="kt-form kt-form--fit kt-form--label-right">
+    <form enctype="multipart/form-data" name="createCase" class="kt-form kt-form--fit kt-form--label-right" onsubmit="submitCreateCase(event)" id="case_form">
         <div class="kt-portlet__body">
             <div class="form-group row">
                 <label class="col-lg-2 col-form-label">Subject:</label>
@@ -103,28 +103,14 @@
                     </div>
                 </div>
             </div>
-            <!-- <div class="form-group row">
-                <label class="col-form-label col-lg-3 col-sm-12">File Type Validation</label>
-                <div class="col-lg-4 col-md-9 col-sm-12">
-                    <div class="dropzone dropzone-default dropzone-success" id="kt_dropzone_3">
-                        <div class="dropzone-msg dz-message needsclick">
-                            <h3 class="dropzone-msg-title">Drop files here or click to upload.</h3>
-                            <span class="dropzone-msg-desc">Only image, pdf and psd files are allowed for upload</span>
-                        </div>
-                    </div>
-                </div>
-                <label class="col-lg-2 col-form-label">Additional Note:</label>
-                <div class="col-lg-3">
-                    <textarea class="form-control" name="note" placeholder="Enter Additional Note"></textarea>
-                </div>
-            </div> -->
         </div>
         <div class="kt-portlet__foot">
             <div class="kt-form__actions">
                 <div class="row">
                     <div class="col-lg-2"></div>
                     <div class="col-lg-10">
-                        <button type="submit" class="btn btn-success">Submit</button>
+                        <!-- <button type="submit" class="btn btn-success" id="caseSubmitBtn">Submit</button> -->
+                        <button type="submit" id="caseSubmitBtn" class="btn btn-success" data-ktwizard-type="action-submit">Create Case</button>
                         <button type="reset" class="btn btn-secondary">Reset</button>
                     </div>
                 </div>
@@ -134,3 +120,4 @@
 
     <!--end::Form-->
 </div>
+<script src="/assets/custom/case/createCase.js" type="text/javascript"></script>

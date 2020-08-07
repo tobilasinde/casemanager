@@ -4,7 +4,7 @@ $(document).ready(function(){
         var deptid = $(this).val();
 
         $.ajax({
-            url: '/case/department/'+deptid,
+            url: '/api/case/department/'+deptid,
             type: 'get',
             dataType: 'json',
             success:function(response){
@@ -24,7 +24,7 @@ $(document).ready(function(){
     });
 
     $.ajax({
-        url: '/case/getuserdetails',
+        url: '/api/case/getuserdetails',
         type: 'get',
         dataType: 'json',
         success:function(response){

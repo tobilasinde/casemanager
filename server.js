@@ -144,7 +144,7 @@ app.use('/case', casemanager);
 app.use('/user', user);
 app.use('/siteAdmin', siteAdmin);
 app.use('/login', login);
-app.use('/api', api);
+app.use('/api/case', api);
 
 //
 // error handling
