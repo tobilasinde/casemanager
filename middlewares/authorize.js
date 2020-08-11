@@ -24,9 +24,10 @@ function authorize(roles = []) {
             if (roles.length && !roles.includes(role.Role.role_name))
             {
                 // user's role is not authorized
-                    var error = new Error('Unauthorized page for this user');
-                    error.status = 401;
-                    return res.render('pages/error', {layout: 'errorlayout', error });
+                return res.status(401).json({
+                    status: false,
+                    message: 'Unauthorized page for this user'
+                });
             }
         
             // authentication and authorization successful

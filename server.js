@@ -8,6 +8,8 @@ var auth = require('./modules/auth.js');
 var cookieParser = require('cookie-parser');
 var ejsLayouts = require('express-ejs-layouts');
 const fileUpload = require('express-fileupload');
+const moment = require('moment');
+var flash = require('connect-flash');
 
 var env = process.env.NODE_ENV || 'development',
     config = require('./config/config.' + env);
@@ -28,7 +30,7 @@ var helmet = require('helmet');
 
 
 var app = express();
-
+app.use(flash());
 app.use(fileUpload());
 //
 // Handlebars / HBS setup and configuration
@@ -39,7 +41,7 @@ app.set('view engine', 'ejs');
 app.set('layout', 'layouts/main');
 app.use(ejsLayouts);
 
-
+app.locals.moment = moment;
 //
 // App level variables initialization
 //
@@ -105,7 +107,7 @@ var authentication = require('./modules/authentication');
 // authentication
 app.post('/login',
     passport.authenticate('local', {
-        failureRedirect: '/login'
+        failureRedirect: '/login', failureFlash: true
     }),
     function(req, res) {
         res.redirect('/');

@@ -1,37 +1,28 @@
-const caseSubmitBtn = document.getElementById('caseSubmitBtn');
+const commentSubmitBtn = document.getElementById('commentSubmitBtn');
 
-caseSubmitBtn.addEventListener('click', ()=>{
-  caseSubmitBtn.innerHTML = '<i class="kt-spinner kt-spinner--md kt-spinner--center px-4 kt-spinner--light"></i>';
+commentSubmitBtn.addEventListener('click', ()=>{
+  commentSubmitBtn.innerHTML = '<i class="kt-spinner kt-spinner--md kt-spinner--center px-4 kt-spinner--light"></i>';
 });
 
-const submitUpdateCase = async (event, caseId) => {
+const submitCommentCase = async (event, caseId) => {
 	try {
   event.preventDefault();
   //const form = event.target;
   const form = document.getElementById('case_form');
   const formData = {
-          subject: form.subject.value,
-          description: form.description.value,
-          contact_name: form.contact_name.value,
-          contact_email: form.contact_email.value,
-          department: form.department.value,
-          assigned: form.assigned.value,
-          case_type: form.case_type.value,
-          priority: form.priority.value,
-          request_type: form.request_type.value,
-          origin: form.origin.value,
-          note: form.note.value
+          title: form.title.value,
+          description: form.description.value
         }
-    const casemanager = await updateCase(formData, caseId);
+    const casemanager = await commentCreate(formData, caseId);
     let errors = '';
     console.log(casemanager);
     if (casemanager.status) {
       swal.fire(
         'Awesome!',
-        'Case updated Successfully!',
+        'Comment added Successfully!',
         'success'
       )
-      location.href = `/case/${caseId}/details`;
+      location.reload();
     } else {
       caseSubmitBtn.innerHTML = 'Create Case';
       console.log(casemanager.errors);
@@ -67,17 +58,17 @@ const submitUpdateCase = async (event, caseId) => {
     // show network error notification
     swal.fire(
       'Oops!',
-      'An error was encountered! Please review your network connectionssss.',
+      'An error was encountered! Please review your network connections.',
       'error'
     )
   }
 
 };
 
-const updateCase = async (data, caseId) => {
+const commentCreate = async (data, caseId) => {
     console.log(data)
     try {
-      const casemanager = await fetch(`${Route.apiRoot}/case/${caseId}/update`, {
+      const casemanager = await fetch(`${Route.apiRoot}/case/${caseId}/comment/create`, {
         // mode: 'no-cors',
         method: 'POST',
         headers: {

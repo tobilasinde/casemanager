@@ -8,46 +8,70 @@ module.exports = {
     caseCheck: async (req, res, next) => {
         caseCheck = await Casemanager.findByPk(req.params.casemanager_id);
         if(!caseCheck) {
-            var error = new Error('Case does not exist');
-            error.status = 401;
-            return res.render('pages/error', {layout: 'errorlayout', error });
+            return res.status(401).json({
+                status: false,
+                message: 'Case does not exist'
+            });
         }
         if(caseCheck.CurrentBusinessId != req.user.CurrentBusinessId) {
-            var error = new Error('Unauthorized access - You do not have access to this resources');
-            error.status = 401;
-            return res.render('pages/error', {layout: 'errorlayout', error });
+            return res.status(401).json({
+                status: false,
+                message: 'Unauthorized access - You do not have access to this resources'
+            });
         }
         next();
     },
     updateCase: (req, res, next) => {
         if(caseCheck.status == 'Closed')
         {
-            var error = new Error('Case is already closed');
-            error.status = 401;
-            return res.render('pages/error', {layout: 'errorlayout', error });
+            return res.status(401).json({
+                status: false,
+                message: 'Case is already closed'
+            });
         }
         if(caseCheck.UserId != req.user.id && caseCheck.assigned_to != req.user.id)
         {
-            var error = new Error('Unauthorized access - not the case manager or the Case Creator');
-            error.status = 401;
-            return res.render('pages/error', {layout: 'errorlayout', error });
+            return res.status(401).json({
+                status: false,
+                message: 'Unauthorized access - not the case manager or the Case Creator'
+            });
+        }
+        next();
+    },
+    updateCaseStatus: (req, res, next) => {
+        console.log('I am here ooo');
+        if(caseCheck.status == 'Closed')
+        {
+            return res.status(401).json({
+                status: false,
+                message: 'Case is already closed'
+            });
+        }
+        if(caseCheck.assigned_to != req.user.id)
+        {
+            return res.status(401).json({
+                status: false,
+                message: 'Unauthorized access - not the case manager'
+            });
         }
         next();
     },
     createComment: (req, res, next) => {
         if (caseCheck.DepartmentId != req.user.DepartmentId && caseCheck.UserId != req.user.id) {
-            var error = new Error('Unauthorized access - User does not belong to the department the case was created from');
-            error.status = 401;
-            return res.render('pages/error', {layout: 'errorlayout', error });
+            return res.status(401).json({
+                status: false,
+                message: 'Unauthorized access - User does not belong to the department the case was created from'
+            });
         }
         next();
     },
     caseDetails: async (req, res, next) => {
         const loggedInUser = await models.Role.findByPk(req.user.RoleId);
         if(caseCheck.UserId != req.user.id && loggedInUser.role_name == 'Customer') {
-            var error = new Error('Unauthorized access - You do not have access to this resources');
-            error.status = 401;
-            return res.render('pages/error', {layout: 'errorlayout', error });
+            return res.status(401).json({
+                status: false,
+                message: 'Unauthorized access - You do not have access to this resources'
+            });
         }
         next();
     },
@@ -60,9 +84,10 @@ module.exports = {
         roleCheck = await Role.findAll();
         console.log('roleCheck');
         if(!roleCheck) {
-            var error = new Error('No role Present');
-            error.status = 401;
-            return res.render('pages/error', {layout: 'errorlayout', error });
+            return res.status(401).json({
+                status: false,
+                message: 'No role Present'
+            });
         };
         result.splice(0, result.length);
         await roleCheck.forEach(element => {

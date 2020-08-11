@@ -9,19 +9,6 @@ const submitCreateCase = async (event) => {
   event.preventDefault();
   //const form = event.target;
   const form = document.getElementById('case_form');
-  // const formData = {
-  //         subject: form.subject.value,
-  //         description: form.description.value,
-  //         contact_name: form.contact_name.value,
-  //         contact_email: form.contact_email.value,
-  //         department: form.department.value,
-  //         assigned: form.assigned.value,
-  //         case_type: form.case_type.value,
-  //         priority: form.priority.value,
-  //         request_type: form.request_type.value,
-  //         note: form.note.value,
-  //         file: form.file.files[0],
-  //       }
         const formData = new FormData()
         formData.append('file', form.file.files[0])
         formData.append('subject', form.subject.value)
@@ -35,15 +22,14 @@ const submitCreateCase = async (event) => {
         formData.append('request_type', form.request_type.value)
         formData.append('note', form.note.value)
   console.log(formData);
-  
-  
+
     const casemanager = await createCase(formData);
     let errors = '';
     console.log(casemanager);
     if (casemanager.status) {
       swal.fire(
         'Awesome!',
-        'Invoice created!',
+        'Case created Successfully!',
         'success'
       )
       location.href = `/case/${casemanager.data.id}/details`;
@@ -69,7 +55,12 @@ const submitCreateCase = async (event) => {
       "hideMethod": "fadeOut"
     };
     casemanager.errors.forEach(error => {
-      toastr.error(error.msg);  
+      swal.fire(
+        'Oops!',
+        error.msg,
+        'warning'
+      )
+      // toastr.error(error.msg);  
     });
     
     }
@@ -78,7 +69,7 @@ const submitCreateCase = async (event) => {
     // show network error notification
     swal.fire(
       'Oops!',
-      'An error was encountered! Please review your network connectionssss.',
+      'An error was encountered! Please review your network connections.',
       'error'
     )
   }

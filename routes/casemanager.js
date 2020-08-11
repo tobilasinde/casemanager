@@ -12,11 +12,9 @@
 const express = require('express');
 const router = express.Router();
 const casemanagerController = require('../controllers/casemanagerController');
-const casecommentController = require('../controllers/casecommentController');
-const { caseCheck, updateCase, createComment, caseDetails, superUsers } = require('../middlewares/case');
+const { caseCheck, updateCase, caseDetails, superUsers} = require('../middlewares/case');
 const Roless = require('../middlewares/case')
 var authorize = require('../middlewares/authorize');
-const { validation } = require('../helpers/helpers');
 
 
 // CASE ROUTES
@@ -34,9 +32,6 @@ router.get('/cases', superUsers, authorize(Roless.result), casemanagerController
 // GET CASE DETAIL 
 router.get('/:casemanager_id/details', authorize(), caseCheck, caseDetails, casemanagerController.getCasemanagerDetails); 
 
-// UPDATE CASE STATUS
-router.get('/:casemanager_id/status/:status', superUsers, authorize(Roless.result), caseCheck, updateCase, casemanagerController.getStatusUpdate); 
-
 //GET CASE BY DEPARTMENT
 router.get('/department', casemanagerController.getCaseByDepartment);
 
@@ -48,25 +43,5 @@ router.get('/user/customer', authorize(), casemanagerController.getCustomerCases
 
 //GET DEPARTMENT BY CURRENTBUSINESS
 // router.post('/fileupload', casemanagerController.fileUpload);
-
-
-// CASE COMMENT ROUTES
-// POST CASECOMMENT CREATE
-router.post('/:casemanager_id/comment/create', authorize(), caseCheck, createComment, casecommentController.postCasecommentCreate); 
-
-// GET CASECOMMENT UPDATE
-// router.get('/comment/:casecomment_id/update', casecommentController.getCasecommentUpdate); 
-
-// // POST CASECOMMENT UPDATE
-// router.post('/comment/:casecomment_id/update', casecommentController.postCasecommentUpdate); 
-
-// GET CASECOMMENT DELETE
-router.get('/:casemanager_id/comment/:casecomment_id/delete', authorize('staff'), casecommentController.getCasecommentDelete); 
-
-// GET CASECOMMENT LIST
-// router.get('/', casecommentController.getCasecommentList); 
-
-// // GET CASECOMMENT DETAIL 
-// router.get('/comment/:casecomment_id', casecommentController.getCasecommentDetails); 
 
 module.exports = router;

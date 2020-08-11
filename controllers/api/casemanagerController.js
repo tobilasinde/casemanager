@@ -9,8 +9,6 @@ const Casecomment = models.Casecomment;
 const CurrentBusiness = models.CurrentBusiness;
 const caseData = mockData();
 const { validationResult } = require('express-validator');
-// var env = process.env.NODE_ENV || 'development',
-//     config = require('./config/config.' + env);
 // import aws-sdk library
 const AWS = require('aws-sdk');
 // initiate s3 library from AWS
@@ -120,7 +118,11 @@ exports.postCasemanagerCreate = async function(req, res) {
         if(req.files) params = await fileUload(req, res);
         s3.upload(params, async function (err, data) {
             let datas = '';
-            if (err) datas = '';
+            if (err) {console.log(err);
+                return res.status(400).json({
+                status: false,
+                errors: err
+            })};
             datas = data.Location;
         // create the casemanager with user current business and department
             var casemanager = await Casemanager.create(
@@ -189,7 +191,7 @@ exports.postCasemanagerCreate = async function(req, res) {
 //     }
 // };
 
-//Display casemanager update form on GET.
+//Display case update form on GET.
 exports.getCasemanagerUpdate = async function(req, res, next) {
     try {
         console.log(req.user);
@@ -243,7 +245,7 @@ exports.getCasemanagerUpdate = async function(req, res, next) {
     }
 };
 
-// Handle casemanager update on CASEMANAGER.
+// Handle casemanager update on CASE.
 exports.postCasemanagerUpdate = async function(req, res, next) {
     try {
         // Check if there are validation errors
@@ -293,9 +295,10 @@ exports.postCasemanagerUpdate = async function(req, res, next) {
     }
 };
 
-// Handle status update on CASEMANAGER.
+// Handle status update on CASE.
 exports.getStatusUpdate = async function(req, res, next) {
     try {
+        console.log('it is me again ooo');
         // now update
         Casemanager.update(
             // Values to update
@@ -330,8 +333,7 @@ exports.getStatusUpdate = async function(req, res, next) {
     }
 };
 
-
-// Display detail page for a specific casemanager.
+// Display detail page for a specific case.
 exports.getCasemanagerDetails = async function(req, res, next) {
     try {
         // find all comment for a a case
@@ -419,7 +421,7 @@ exports.getUsersByDepartment = async function(req, res, next) {
     }
 };
 
-// Get users by department
+// Get users Details
 exports.getUserDetails = async function(req, res, next) {
     try {
         // find all users in the department
@@ -442,7 +444,7 @@ exports.getUserDetails = async function(req, res, next) {
     }
 };
 
-// Get users by department
+// Get cases by department
 exports.getCaseByDepartment = async function(req, res, next) {
     try {
         const myDepartment = await Department.findByPk(req.user.DepartmentId);
@@ -466,7 +468,7 @@ exports.getCaseByDepartment = async function(req, res, next) {
     }
 };
 
-// Get users by department
+// Get cases assigned to me
 exports.getCaseAssignedToMe = function(req, res, next) {
     try {
         // controller logic to display all casemanagers
@@ -489,7 +491,7 @@ exports.getCaseAssignedToMe = function(req, res, next) {
     }
 };
 
-// Get users by department
+// Get Customer's Case
 exports.getCustomerCases = function(req, res, next) {
     try {
         // controller logic to display all casemanagers
@@ -512,13 +514,15 @@ exports.getCustomerCases = function(req, res, next) {
     }
 };
              
-// Display list of all casemanagers.
+// Display list of all cases.
 exports.getCasemanagerList = function(req, res, next) {
     try {
         // controller logic to display all casemanagers
         Casemanager.findAll({where: {
             CurrentBusinessId: req.user.CurrentBusinessId
-        }}).then(function(casemanagers) {
+        },
+        order: [['createdAt', 'ASC']]
+    }).then(function(casemanagers) {
             const data = {casemanagers, caseData}
             res.status(200).json({
                 status: true,
@@ -534,18 +538,18 @@ exports.getCasemanagerList = function(req, res, next) {
     }
 };
 
-// Display list of all casemanagers.
+// Display Dashboard
 exports.getCasemanagerDashboard = async function(req, res, next) {
     try {
         // controller logic for dashboard
         const dash = await dashboardHelper(req);
-        console.log('today count'+dash.todayCount);
+        console.log(dash);
         const data = {dash, moment}
-            res.status(200).json({
-                status: true,
-                data,
-                message: 'Case List rendered successfully'
-            });
+        res.status(200).json({
+            status: true,
+            data,
+            message: 'Case List rendered successfully'
+        });
     } catch (error) {
         res.status(500).json({
             status: false,

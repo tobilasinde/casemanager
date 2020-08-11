@@ -13,7 +13,7 @@ const express = require('express');
 const router = express.Router();
 const casemanagerController = require('../../controllers/api/casemanagerController');
 const casecommentController = require('../../controllers/api/casecommentController');
-const { caseCheck, updateCase, createComment, caseDetails, superUsers, dashboard } = require('../../middlewares/case');
+const { caseCheck, updateCase, createComment, caseDetails, superUsers, dashboard, updateCaseStatus } = require('../../middlewares/case');
 const Roless = require('../../middlewares/case')
 var authorize = require('../../middlewares/authorize');
 const { validation } = require('../../helpers/helpers');
@@ -42,7 +42,7 @@ router.get('/cases', superUsers, authorize(Roless.result), casemanagerController
 router.get('/:casemanager_id/details', authorize(), caseCheck, caseDetails, casemanagerController.getCasemanagerDetails); 
 
 // UPDATE CASE STATUS
-router.get('/:casemanager_id/status/:status', superUsers, authorize(Roless.result), caseCheck, updateCase, casemanagerController.getStatusUpdate); 
+router.get('/:casemanager_id/status/:status', superUsers, authorize(Roless.result), caseCheck, updateCaseStatus, casemanagerController.getStatusUpdate); 
 
 // GET USER BY DEPARTMENT
 router.get('/department/:department_id', casemanagerController.getUsersByDepartment);
@@ -67,19 +67,7 @@ router.get('/user/customer', authorize(), casemanagerController.getCustomerCases
 // POST CASECOMMENT CREATE
 router.post('/:casemanager_id/comment/create', authorize(), caseCheck, createComment, casecommentController.postCasecommentCreate); 
 
-// GET CASECOMMENT UPDATE
-// router.get('/comment/:casecomment_id/update', casecommentController.getCasecommentUpdate); 
-
-// // POST CASECOMMENT UPDATE
-// router.post('/comment/:casecomment_id/update', casecommentController.postCasecommentUpdate); 
-
-// GET CASECOMMENT DELETE
-router.get('/:casemanager_id/comment/:casecomment_id/delete', authorize('staff'), casecommentController.getCasecommentDelete); 
-
-// GET CASECOMMENT LIST
-// router.get('/', casecommentController.getCasecommentList); 
-
-// // GET CASECOMMENT DETAIL 
-// router.get('/comment/:casecomment_id', casecommentController.getCasecommentDetails); 
+// // GET CASECOMMENT DELETE
+// router.get('/:casemanager_id/comment/:casecomment_id/delete', authorize('staff'), casecommentController.getCasecommentDelete); 
 
 module.exports = router;

@@ -26,7 +26,7 @@
 						<th>Subject</th>
 						<th>Priority</th>
 						<th>Status</th>
-						<th>Request Type</th>
+						<th>Date Created</th>
 						<th>Actions</th>
 					</tr>
 				</thead>
@@ -37,7 +37,7 @@
 							<td><%= casemanager.subject %></td>
 							<td><%= casemanager.priority %></td>
 							<td><%= casemanager.status %></td>
-							<td><%= casemanager.request_type %></td>
+							<td><%= moment(casemanager.createdAt).format('MMMM Do YYYY, h:mm:ss a'); %></td>
 							<td>
 								<span class="dropdown">
 									<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" data-toggle="dropdown" aria-expanded="true">
@@ -45,6 +45,7 @@
 									</a>
 									<div class="dropdown-menu dropdown-menu-right">
 										<a class="dropdown-item" href="/case/<%= casemanager.id %>/update"><i class="la la-edit"></i> Edit Case</a>
+										<!-- <a class="dropdown-item" onclick="editCase(event, <%= casemanager.id %>)"><i class="la la-edit"></i> Edit Case</a> -->
 									</div>
 								</span>
 								<span>
@@ -58,7 +59,7 @@
 									</a>
 									<div class="dropdown-menu dropdown-menu-right">
 										<% caseStatus.forEach(function(status) { %>
-											<a class="dropdown-item" href="/case/<%= casemanager.id %>/status/<%= status %>"><i class="la la-edit"></i> <%= status %></a>
+											<a class="dropdown-item" onclick="submitStatus(event, <%= casemanager.id %>, '<%= status %>')"><i class="la la-edit"></i> <%= status %></a>
 										<% }); %>
 									</div>
 								</span>
@@ -72,3 +73,5 @@
 		</div>
 	</div>
 </div>
+<script src="assets/custom/case/updateStatus.js" type="text/javascript"></script>
+<script src="assets/custom/case/editCase.js" type="text/javascript"></script>

@@ -1,6 +1,6 @@
 const apiUrl = require('../helpers/apiUrl');
 const apiFetch = require('../helpers/apiFetch');
-
+const moment = require('moment');
 
 // Display casemanager create form on GET.
 exports.getCasemanagerCreate = async function(req, res) {
@@ -53,7 +53,7 @@ exports.getCasemanagerUpdate = async function(req, res, next) {
     try {
         const id = req.params.casemanager_id;
         const case_update = await apiFetch(req, res, `${apiUrl}/case/${id}/update`);
-        res.render('pages/content', {
+        return res.render('pages/content', {
             title: 'Update Casemanager',
             functioName: 'GET CASE UPDATE',
             layout: case_update.layout,
@@ -79,32 +79,11 @@ exports.getCasemanagerUpdate = async function(req, res, next) {
     }
 };
 
-// Handle status update on CASEMANAGER.
-exports.getStatusUpdate = async function(req, res, next) {
-    try {
-        const id = req.params.casemanager_id;
-        const status = req.params.status;
-        const case_update = await apiFetch(req, res, `${apiUrl}/case/${id}/status/${status}`);
-        res.redirect("/case/cases");
-        console.log("Status updated successfully");
-    } catch (error) {
-        // we have an error during the process, then catch it and redirect to error page
-        console.log("There was an error " + error);
-        res.render('pages/error', {
-            title: 'Error',
-            message: error,
-            error: error
-        });
-    }
-};
-
-
 // Display detail page for a specific casemanager.
 exports.getCasemanagerDetails = async function(req, res, next) {
     try {
         const id = req.params.casemanager_id;
         const case_details = await apiFetch(req, res, `${apiUrl}/case/${id}/details`);
-        console.log(case_details);
         res.render('pages/content', {
             title: 'Case Details',
             functioName: 'GET CASE DETAILS',
@@ -117,8 +96,6 @@ exports.getCasemanagerDetails = async function(req, res, next) {
             user: req.user
         });
     } catch (error) {
-        // we have an error during the process, then catch it and redirect to error page
-        console.log("There was an error " + error);
         res.render('pages/error', {
             title: 'Error',
             message: error,
@@ -220,13 +197,17 @@ exports.getCasemanagerList = async function(req, res, next) {
 // Display list of all casemanagers.
 exports.getCasemanagerDashboard = async function(req, res, next) {
     try {
+        const my_cases = await apiFetch(req, res, `${apiUrl}/case/user`);
         const case_dashboard = await apiFetch(req, res, `${apiUrl}/case/`);
         res.render('pages/content', {
             title: 'Casemanager Dashboard',
             functioName: 'GET CASE DASHBOARD',
             layout: 'layout',
             dash: case_dashboard.dash,
-            moment: case_dashboard.moment
+            moment: case_dashboard.moment,
+            casemanagers: my_cases.casemanagers,
+            caseStatus: my_cases.caseData.caseStatus,
+            moment
         });
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
