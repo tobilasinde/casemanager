@@ -8,7 +8,7 @@ module.exports = {
     caseCheck: async (req, res, next) => {
         caseCheck = await Casemanager.findByPk(req.params.casemanager_id);
         if(!caseCheck) {
-            return res.status(401).json({
+            return res.status(400).json({
                 status: false,
                 message: 'Case does not exist'
             });
@@ -39,7 +39,6 @@ module.exports = {
         next();
     },
     updateCaseStatus: (req, res, next) => {
-        console.log('I am here ooo');
         if(caseCheck.status == 'Closed')
         {
             return res.status(401).json({

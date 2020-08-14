@@ -79,11 +79,11 @@ module.exports = {
         body('case_type').trim().not().isEmpty().isAlpha().escape(),
         body('subject').isLength({
             min: 1, max: 255
-        }).trim().not().isEmpty().escape().isAlphanumeric().withMessage('Subject Should only contain only Letters and Numbers'),
-        body('description').trim().not().isEmpty().isAlphanumeric().withMessage('Description Should only contain only Letters and Numbers'),
+        }).trim().not().isEmpty().escape(),
+        body('description').trim().not().isEmpty(),
         body('contact_name').isLength({
             min: 1, max: 255
-        }).trim().not().isEmpty().escape().isAlpha().withMessage('Contact Name should Contain only Letters'),
+        }).trim().not().isEmpty().escape(),
         body('note').trim().escape(),
         body('department').trim().escape().isInt().notEmpty(),
         body('contact_email').trim().not().isEmpty().isEmail().withMessage('Enter a valid Email').escape(),
