@@ -7,7 +7,7 @@
     </div>
 
     <!--begin::Form-->
-    <form name="updateCase" class="kt-form kt-form--fit kt-form--label-right" onsubmit="submitUpdateCase(event, <%= casemanager.id %>)" id="case_form">
+    <form name="updateCase" class="kt-form kt-form--fit kt-form--label-right" onsubmit="submitUpdateCase(event, '<%= casemanager.id %>')" id="case_form">
         <div class="kt-portlet__body">
             <div class="form-group row">
                 <label class="col-lg-2 col-form-label">Subject:</label>
@@ -39,7 +39,7 @@
                     <div class="kt-input-icon">
                         <select class="form-control" required name="department" id="department">
                             <option value="<%= casemanager.Department.id %>"><%= casemanager.Department.department_name %></option>
-                            <% departments.forEach(function(dropdown) { if(dropdown.department_name != 'Owner') { %>
+                            <% departments.forEach(function(dropdown) { if(dropdown.department_name != 'Owner' && dropdown.department_name != 'Customer') { %>
                                 <option  value="<%= dropdown.id %>"><%= dropdown.department_name %></option>
                             <% }}); %>
                         </select>
@@ -117,7 +117,7 @@
                 <div class="row">
                     <div class="col-lg-2"></div>
                     <div class="col-lg-10">
-                        <button type="submit" id="caseSubmitBtn" class="btn btn-success" data-ktwizard-type="action-submit">Update Case</button>
+                        <button type="submit" id="caseSubmitBtn" class="btn btn-success">Update Case</button>
                         <button type="reset" class="btn btn-secondary">Reset</button>
                     </div>
                 </div>

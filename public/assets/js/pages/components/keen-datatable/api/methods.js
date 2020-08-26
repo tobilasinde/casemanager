@@ -6,14 +6,13 @@ var KTDefaultDatatableDemo = function() {
 
 	// basic demo
 	var demo = function() {
-
 		var options = {
 			// datasource definition
 			data: {
 				type: 'remote',
 				source: {
 					read: {
-						url: 'https://keenthemes.com/keen/tools/preview/api/datatables/demos/default2.php',
+						url: 'http://localhost:3000/api/case/cases-list',
 					},
 				},
 				pageSize: 20, // display 20 records per page
@@ -57,52 +56,44 @@ var KTDefaultDatatableDemo = function() {
 					textAlign: 'center',
 					template: '{{id}}',
 				}, {
-					field: 'employee_id',
-					title: 'Employee ID',
+					field: 'case_number',
+					title: 'Case Number',
 				}, {
-					field: 'name',
-					title: 'Name',
+					field: 'subject',
+					title: 'Subject',
 					sortable: 'asc',
-					template: function(row) {
-						return row.first_name + ' ' + row.last_name;
-					},
 				}, {
-					field: 'hire_date',
-					title: 'Hire Date',
+					field: 'createdAt',
+					title: 'Date Created',
 					type: 'date',
 					format: 'MM/DD/YYYY',
 				}, {
-					field: 'email',
-					title: 'Email',
-				}, {
 					field: 'status',
 					title: 'Status',
-					// callback function support for column rendering
+					// // callback function support for column rendering
 					template: function(row) {
 						var status = {
-							1: {'title': 'Pending', 'class': 'kt-badge--brand'},
-							2: {'title': 'Delivered', 'class': ' kt-badge--metal'},
-							3: {'title': 'Canceled', 'class': ' kt-badge--primary'},
-							4: {'title': 'Success', 'class': ' kt-badge--success'},
-							5: {'title': 'Info', 'class': ' kt-badge--info'},
-							6: {'title': 'Danger', 'class': ' kt-badge--danger'},
-							7: {'title': 'Warning', 'class': ' kt-badge--warning'},
+							'New': {'title': 'New', 'class': 'kt-badge--brand'},
+							'On Hold': {'title': 'On Hold', 'class': ' kt-badge--metal'},
+							'Escalated': {'title': 'Escalated', 'class': ' kt-badge--danger'},
+							'Working': {'title': 'Working', 'class': ' kt-badge--warning'},
+							'Closed': {'title': 'Closed', 'class': ' kt-badge--success'},
 						};
 						return '<span class="kt-badge ' + status[row.status].class + ' kt-badge--inline kt-badge--pill">' + status[row.status].title + '</span>';
 					},
 				}, {
-					field: 'type',
-					title: 'Type',
+					field: 'priority',
+					title: 'Priority',
 					autoHide: false,
 					// callback function support for column rendering
 					template: function(row) {
 						var status = {
-							1: {'title': 'Online', 'state': 'danger'},
-							2: {'title': 'Retail', 'state': 'primary'},
-							3: {'title': 'Direct', 'state': 'accent'},
+							'High': {'title': 'High', 'state': 'danger'},
+							'Medium': {'title': 'Medium', 'state': 'warning'},
+							'Low': {'title': 'Low', 'state': 'accent'},
 						};
-						return '<span class="kt-badge kt-badge--' + status[row.type].state + ' kt-badge--dot"></span>&nbsp;<span class="kt-font-bold kt-font-' + status[row.type].state + '">' +
-							status[row.type].title + '</span>';
+						return '<span class="kt-badge kt-badge--' + status[row.priority].state + ' kt-badge--dot"></span>&nbsp;<span class="kt-font-bold kt-font-' + status[row.priority].state + '">' +
+							status[row.priority].title + '</span>';
 					},
 				}, {
 					field: 'Actions',
@@ -111,25 +102,18 @@ var KTDefaultDatatableDemo = function() {
 					width: 110,
 					overflow: 'visible',
 					autoHide: false,
-					template: function() {
-						return '\
-						<div class="dropdown">\
-							<a href="javascript:;" class="btn btn-sm btn-clean btn-icon btn-icon-md" data-toggle="dropdown">\
-                                <i class="la la-ellipsis-h"></i>\
-                            </a>\
-						  	<div class="dropdown-menu dropdown-menu-right">\
-						    	<a class="dropdown-item" href="#"><i class="la la-edit"></i> Edit Details</a>\
-						    	<a class="dropdown-item" href="#"><i class="la la-leaf"></i> Update Status</a>\
-						    	<a class="dropdown-item" href="#"><i class="la la-print"></i> Generate Report</a>\
-						  	</div>\
-						</div>\
-						<a href="javascript:;" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="Edit details">\
-							<i class="la la-edit"></i>\
-						</a>\
-						<a href="javascript:;" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="Delete">\
-							<i class="la la-trash"></i>\
-						</a>\
-					';
+					template: function(row) {
+						return `
+						<a class="btn btn-sm btn-clean btn-icon btn-icon-md" title="Edit details">
+							<i class="la la-edit"></i>
+						</a>
+						<a href="/case/${row.id}/details" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="View details">
+							<i class="la la-eye"></i>
+						</a>
+						<a href="javascript:;" class="btn btn-clean" title="Change Status">\
+							Change Status
+						</a>
+					`;
 					},
 				}],
 
@@ -139,6 +123,7 @@ var KTDefaultDatatableDemo = function() {
 
 		// both methods are supported
 		// datatable.methodName(args); or $(datatable).KTDatatable(methodName, args);
+		// $('#ediCases').on('click', editCase());
 
 		$('#kt_datatable_destroy').on('click', function() {
 			// datatable.destroy();
@@ -206,11 +191,11 @@ var KTDefaultDatatableDemo = function() {
 			datatable.search($(this).val().toLowerCase(), 'status');
 		});
 
-		$('#kt_form_type').on('change', function() {
-			datatable.search($(this).val().toLowerCase(), 'type');
+		$('#kt_form_priority').on('change', function() {
+			datatable.search($(this).val(), 'priority');
 		});
 
-		$('#kt_form_status,#kt_form_type').selectpicker();
+		$('#kt_form_status,#kt_form_priority').selectpicker();
 
 	};
 

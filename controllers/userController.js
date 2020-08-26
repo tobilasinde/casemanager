@@ -10,7 +10,6 @@
  * Module dependencies.
  */
 var models = require('../models');
-
 var helpers = require('../helpers');
 
 // Display User create form on GET.

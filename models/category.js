@@ -1,10 +1,10 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   var Category = sequelize.define('Category', {
-        category_name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        }
+    category_name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    }
   });
  
   // create association between category and post

@@ -20,7 +20,8 @@ const submitUpdateCase = async (event, caseId) => {
           priority: form.priority.value,
           request_type: form.request_type.value,
           origin: form.origin.value,
-          note: form.note.value
+          note: form.note.value,
+          SLA_violation: form.SLA_violation.value
         }
     const casemanager = await updateCase(formData, caseId);
     let errors = '';

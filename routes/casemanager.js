@@ -12,7 +12,7 @@
 const express = require('express');
 const router = express.Router();
 const casemanagerController = require('../controllers/casemanagerController');
-const { caseCheck, updateCase, caseDetails, superUsers} = require('../middlewares/case');
+const { caseCheck, updateCase, caseDetails, superUsers, postCaseDetails } = require('../middlewares/case');
 const Roless = require('../middlewares/case')
 var authorize = require('../middlewares/authorize');
 
@@ -30,7 +30,13 @@ router.get('/:casemanager_id/update', authorize(), caseCheck, updateCase, casema
 router.get('/cases', superUsers, authorize(Roless.result), casemanagerController.getCasemanagerList); 
 
 // GET CASE DETAIL 
-router.get('/:casemanager_id/details', authorize(), caseCheck, caseDetails, casemanagerController.getCasemanagerDetails); 
+router.get('/:casemanager_id/details', caseDetails, casemanagerController.getCasemanagerDetails); 
+
+// GET CASE DETAIL 
+router.post('/:casemanager_id/details', postCaseDetails, casemanagerController.postCasemanagerDetails); 
+
+// // GET CASE DETAIL 
+// router.get('/details', casemanagerController.getCasePassword); 
 
 //GET CASE BY DEPARTMENT
 router.get('/department', casemanagerController.getCaseByDepartment);

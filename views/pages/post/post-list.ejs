@@ -1,24 +1,375 @@
- <div class="col-sm-8">    
-        <div class="">
-            <ol>
-            <% posts.forEach(function(post) { %>
-                    <li>
-                        <h4><a href="/main/post/<%= post.id %>"><%= post.post_title %></a></h4>
-                        <p>The main body of the post <%= post.post_body %> <br/>
-                        <b>Posted by User: </b> <%= post.User.first_name %> <%= post.User.last_name %> <br/>
-                        <b>User in this Department: </b> <%= post.User.Department.department_name %> <br/>
-                        <b>User in this Current Business: </b> 
-                        <% post.User.currentbusinesses.forEach(function(currentBusiness) { %>  
-                          <%= currentBusiness.current_business_name %>  
-                         <% }); %></br/>
-                         <!--Category: DISPLAY CATEGORY HERE -->
-                         <b>Inside Categories: </b> <% post.categories.forEach(function(category) { %>  <a href="/main/category/<%= category.id %>/"> <%= category.category_name %> </a>  <% }); %>
-                        </p>
-                         <a href="/main/post/<%= post.id %>/update">Edit  Post</a> | <a href="/main/post/<%= post.id %>/delete">Delete Post</a>
-                    </li>
-                <br/>
-            <% }); %>
-            </ol>
+<style>
+	.css-serial {counter-reset: serial-number;}
+	.css-serial td:first-child::before {
+		counter-increment: serial-number;
+		content: counter(serial-number);
+	}
+</style>
+<!-- begin:: Content -->
+<div class="kt-container  kt-container--fluid  kt-grid__item kt-grid__item--fluid">
+    <div class="kt-portlet kt-portlet--mobile">
+        <div class="kt-portlet__head kt-portlet__head--lg">
+            <div class="kt-portlet__head-label">
+                <h3 class="kt-portlet__head-title">
+                    <%= title %>
+                </h3>
+            </div>
+            <div class="kt-portlet__head-toolbar">
+                <div class="kt-portlet__head-wrapper">
+                    <button data-toggle="modal" data-target="#create" class="btn btn-brand btn-bold btn-upper btn-font-sm" aria-haspopup="true" aria-expanded="false">
+                        <i class="la la-plus"></i>
+                        New Post
+                    </button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="create" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Create Post</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <!--begin::Form-->
+                                    <form class="kt-form kt-form--fit kt-form--label-right" onsubmit="submitCreatePost(event)" id="post_form">
+                                        <div class="form-group">
+                                            <input type="text" name="post_title" required class="form-control" placeholder="Enter post title">
+                                        </div>
+                                        <div class="form-group">
+                                            <textarea class="form-control" required name="post_body" placeholder="Enter post body here..." rows="5"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Categories</label>
+                                            <div class="kt-checkbox-list">
+                                                <% categories.forEach(function(category) { %>
+                                                    <label class="kt-checkbox">
+                                                        <input type="checkbox" name="categories" value="<%= category.id %>"> <%= category.category_name %>
+                                                        <span></span>
+                                                    </label>
+                                                <% }) %>
+                                            </div>
+                                        </div>
+                                    <!--end::Form-->
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline-brand" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-outline-brand" id="postSubmitBtn">Submit</button>
+                                </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <a href="/main/post/create"> CLICK HERE TO CREATE POST</a>
+        <div class="kt-portlet__body">
+
+            <!--begin: Search Form -->
+            <div class="kt-form kt-fork--label-right kt-margin-t-20 kt-margin-b-10">
+                <div class="row align-items-center">
+                    <div class="col-xl-8 order-2 order-xl-1">
+                        <div class="row align-items-center">
+                            <div class="col-md-4 kt-margin-b-20-tablet-and-mobile">
+                                <div class="kt-input-icon kt-input-icon--left">
+                                    <input type="text" class="form-control" placeholder="Search..." id="generalSearch">
+                                    <span class="kt-input-icon__icon kt-input-icon__icon--left">
+                                        <span><i class="la la-search"></i></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 kt-margin-b-20-tablet-and-mobile">
+                                <div class="kt-form__group kt-form__group--inline">
+                                    <div class="kt-form__label">
+                                        <label>Categories:</label>
+                                    </div>
+                                    <div class="kt-form__control">
+                                        <select class="form-control bootstrap-select category" id="kt_form_status">
+                                            <option value="">All</option>
+                                            <% categories.forEach(function(category) { %>
+                                                <option value="<%= category.category_name %>"><%= category.category_name %></option>
+                                            <% }) %>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 kt-margin-b-20-tablet-and-mobile">
+                                <div class="kt-form__group kt-form__group--inline">
+                                    <div class="kt-form__label">
+                                        <label>Department:</label>
+                                    </div>
+                                    <div class="kt-form__control">
+                                        <select class="form-control bootstrap-select" id="kt_form_type">
+                                            <option value="">All</option>
+                                            <% departments.forEach(function(department) { %>
+                                                <option value="<%= department.department_name %>"><%= department.department_name %></option>
+                                            <% }) %>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--end: Search Form -->
+        </div>
+        <div class="kt-portlet__body kt-portlet__body--fit">
+
+            <!--begin: Datatable -->
+            <table class="kt-datatable" id="html_table" width="100%">
+                <thead>
+                    <tr>
+                        <th title="Field #2">Solution No</th>
+                        <th title="Field #1">Title</th>
+                        <th title="Field #3">Department</th>
+                        <th title="Field #4">Category</th>
+                        <th title="Field #4">Action</th>
+                        <th title="Field #5"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% posts.forEach(function(post) { %>
+                        <tr>
+                            <td><%= post.solution_number %></td>
+                            <td><%= post.post_title %></td>
+                            <td><%= post.Department.department_name %></td>
+                            <td><% post.categories.forEach(function(category) { %>
+                                 | <%= category.category_name %> <% }) %>
+                            </td>
+                            <td>
+                                <span>
+                                    <span>
+                                        <button type="button" data-toggle="modal" data-target="#detail<%= post.id %>" class="btn btn-clean btn-sm btn-icon btn-icon-md" aria-haspopup="true" aria-expanded="false">
+                                            <i class="la la-eye"></i>
+                                        </button>
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="detail<%= post.id %>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                                            <div class="modal-dialog modal-xl" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLongTitle">Post Details</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        
+                                                    <!--Begin:: App Content-->
+                                                    <div class="kt-grid__item kt-grid__item--fluid kt-app__content">
+                                                        <div class="kt-portlet">
+                                                            <div class="kt-portlet__head">
+                                                                <div class="kt-portlet__head-label">
+                                                                    <h3 class="kt-portlet__head-title">Post Details </h3>
+                                                                </div>
+                                                            </div>
+                                                            <div class="kt-portlet__body">
+                                                                <div class="kt-section kt-section--first">
+                                                                    <div class="kt-section__body">
+                                                                        <div class="row">
+                                                                            <label class="col-lg-2">Title:</label>
+                                                                            <div class="col-lg-3">
+                                                                                <%= post.post_title %>
+                                                                            </div>
+                                                                            <label class="col-lg-2">Solution Number:</label>
+                                                                            <div class="col-lg-3">
+                                                                                <%= post.solution_number %>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="kt-section kt-section--first">
+                                                                    <div class="kt-section__body">
+                                                                        <div class="row">
+                                                                            <label class="col-lg-2">Department:</label>
+                                                                            <div class="col-lg-3">
+                                                                                <%= post.Department.department_name %>
+                                                                            </div>
+                                                                            <label class="col-lg-2">Created By</label>
+                                                                            <div class="col-lg-3">
+                                                                                <%= post.User.username %>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="kt-section kt-section--first">
+                                                                    <div class="kt-section__body">
+                                                                        <div class="row">
+                                                                            <label class="col-lg-2">Categories</label>
+                                                                            <div class="col-lg-3">
+                                                                                <% post.categories.forEach(function(category) { %>
+                                                                                    | <%= category.category_name %>
+                                                                                <% }) %>
+                                                                            </div>
+                                                                            <label class="col-lg-2">Date Created:</label>
+                                                                            <div class="col-lg-3">
+                                                                                <%= moment(post.createdAt).format('ll'); %>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="kt-section kt-section--first">
+                                                                    <div class="kt-section__body">
+                                                                        <div class="row">
+                                                                            <label class="col-lg-2">Body</label>
+                                                                            <div class="col-lg-8">
+                                                                                <%= post.post_body %>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <!--begin::Portlet-->
+                                                        <div class="kt-portlet">
+                                                            <div class="kt-portlet__body">
+                                                                <!--begin::Accordion-->
+                                                                <div class="accordion" id="accordionExample4">
+                                                                    <div class="card">
+                                                                        <div class="card-header" id="headingTwo4">
+                                                                            <div class="card-title collapsed" data-toggle="collapse" data-target="#collapseTwo5" aria-expanded="false" aria-controls="collapseTwo4">
+                                                                                <i class="flaticon2-box"></i> Add Comments
+                                                                            </div>
+                                                                        </div>
+                                                                        <div id="collapseTwo5" class="collapse show" aria-labelledby="headingTwo1" data-parent="#accordionExample4">
+                                                                            <div class="card-body">
+                                                                                <div class="kt-portlet__body">
+                                                                                    <div class="kt-notes">
+                                                                                        <div class="kt-notes__items">
+                                                                                            <!--begin::Form-->
+                                                                                            <form name="createCase" class="kt-form kt-form--fit kt-form--label-right" onsubmit="submitCommentPost(event, '<%= post.id %>')" id="comment_form<%= post.id %>">
+                                                                                                <div class="kt-portlet__body">
+                                                                                                    <div class="form-group">
+                                                                                                        <label>Comment Title</label>
+                                                                                                        <input type="text" name="title" class="form-control" aria-describedby="emailHelp" placeholder="Enter title">
+                                                                                                    </div>
+                                                                                                    <div class="form-group form-group-last">
+                                                                                                        <label for="exampleTextarea">Comment Description</label>
+                                                                                                        <textarea name="body" class="form-control" rows="5"></textarea>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <div class="kt-portlet__foot">
+                                                                                                    <div class="kt-form__actions">
+                                                                                                        <button type="submit" id="commentSubmitBtn<%= post.id %>" class="btn btn-success">Post Comment</button>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </form>
+                                                                                    <!--end::Form-->
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="accordion" id="accordionExample4">
+                                                                    <div class="card">
+                                                                        <div class="card-header" id="headingTwo4">
+                                                                            <div class="card-title collapsed" data-toggle="collapse" data-target="#collapseTwo4" aria-expanded="false" aria-controls="collapseTwo4">
+                                                                                <i class="flaticon2-box"></i> View Comments
+                                                                            </div>
+                                                                        </div>
+                                                                        <div id="collapseTwo4" class="collapse <% if(comments.length != 0) { %> show <% } %>" aria-labelledby="headingTwo1" data-parent="#accordionExample4">
+                                                                            <div class="card-body">
+                                                                                <div class="kt-portlet__body">
+                                                                                    <div class="kt-notes">
+                                                                                        <div class="kt-notes__items">
+                                                                                            <% comments.forEach(function(comment) { if(comment.PostId == post.id) { %>
+                                                                                                <div class="kt-notes__item">
+                                                                                                    <div class="kt-notes__media">
+                                                                                                        <span class="kt-notes__icon">
+                                                                                                            <i class="flaticon2-digital-marketing kt-font-danger"></i>
+                                                                                                        </span>
+                                                                                                    </div>
+                                                                                                    <div class="kt-notes__content">
+                                                                                                        <div class="kt-notes__section">
+                                                                                                            <div class="kt-notes__info">
+                                                                                                                <a href="#" class="kt-notes__title">
+                                                                                                                    <%= comment.title %>
+                                                                                                                </a>
+                                                                                                                <span class="kt-notes__desc">
+                                                                                                                    <%= moment(comment.createdAt).format('MMMM Do YYYY, h:mm:ss a') %>
+                                                                                                                </span>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                        <span class="kt-notes__body">
+                                                                                                            <%= comment.body %>
+                                                                                                        </span>
+                                                                                                    </div>
+                                                                                                    <%= comment.User.username %>
+                                                                                                </div>
+                                                                                            <% }}); %>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+    
+                                                                <!--end::Accordion-->
+                                                            </div>
+                                                        </div>
+    
+                                                        <!--end::Portlet-->
+                                                    </div>
+    
+                                                    <!--End:: App Content-->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </span>
+                                    <button data-toggle="modal" data-target="#update<%= post.id %>" class="btn btn-clean btn-sm btn-icon btn-icon-md" aria-haspopup="true" aria-expanded="false">
+                                        <i class="la la-edit"></i>
+                                    </button>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="update<%= post.id %>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-scrollable" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLongTitle">Edit Post</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <form class="kt-form kt-form--fit kt-form--label-right" onsubmit="submitUpdatePost(event, '<%= post.id %>')" id="post_form<%= post.id %>">
+                                                    <div class="modal-body">
+                                                        <!--begin::Form-->
+                                                            <div class="form-group">
+                                                                <input type="text" name="post_title" required class="form-control" placeholder="Enter post title" value="<%= post.post_title %>">
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <textarea class="form-control" required name="post_body" placeholder="Enter post body here..." rows="5"><%= post.post_body %></textarea>
+                                                            </div>
+                                                        <!--end::Form-->
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-outline-brand" data-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-outline-brand" id="postSubmitBtn<%= post.id %>">Submit</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button onclick="deletePost(event, '<%= post.id %>')" class="btn btn-clean btn-sm btn-icon btn-icon-md">
+                                        <i class="la la-trash"></i>
+                                    </button>
+                                </span>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+
+            <!--end: Datatable -->
+        </div>
     </div>
+</div>
+
+<!-- end:: Content -->
+<script src="/assets/custom/post/createPost.js" type="text/javascript"></script>
+<script src="/assets/custom/post/updatePost.js" type="text/javascript"></script>
+<script src="/assets/custom/post/deletePost.js" type="text/javascript"></script>
+<script src="/assets/custom/post/createComment.js" type="text/javascript"></script>

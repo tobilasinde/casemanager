@@ -9,9 +9,9 @@
 /**
  * Module dependencies.
  */
-var models = require('../models');
+var models = require('../../models');
 
-var helpers = require('../helpers');
+var helpers = require('../../helpers');
 
 // Display User create form on GET.
 exports.getUserCreate = async function(req, res, next) {
@@ -258,19 +258,22 @@ exports.getUserDetails = async function(req, res, next) {
 
 // Display list of all Users.
 exports.getUserList = async function(req, res, next) {
-
-    models.User.findAll(
-        {order: [
-            ['id', 'ASC']
-        ]}).then(async function(users) {
-        console.log("rendering user list");
-        res.render('pages/content', {
-            title: 'User List',
-            users: users,
-            functioName: 'GET USER LIST',
-            layout: 'layouts/list'
+    try {
+        models.User.findAll(
+            {order: [
+                ['id', 'ASC']
+            ]}).then(async function(data) {
+                res.status(200).json({
+                    status: true,
+                    data,
+                    message: 'User List Generated successfully'
+                });
+        });  
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            message: `There was an error - ${error}`
         });
-        console.log("Users list renders successfully");
-    });
+    }
 };
 

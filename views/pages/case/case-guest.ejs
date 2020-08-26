@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+
+<!--
+Theme: Keen - The Ultimate Bootstrap Admin Theme
+Author: KeenThemes
+Website: http://www.keenthemes.com/
+Contact: support@keenthemes.com
+Follow: www.twitter.com/keenthemes
+Dribbble: www.dribbble.com/keenthemes
+Like: www.facebook.com/keenthemes
+License: You must have a valid license purchased only from https://themes.getbootstrap.com/product/keen-the-ultimate-bootstrap-admin-theme/ in order to legally use the theme for your project.
+-->
+<html lang="en">
+
+	<!-- begin::Head -->
+	<head>
+		<base href="../../">
+		<meta charset="utf-8" />
+		<title><%= title %></title>
+		<meta name="description" content="User login example">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+		<!--begin::Fonts -->
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700">
+
+		<!--end::Fonts -->
+
+		<!--begin::Page Custom Styles(used by this page) -->
+		<link href="assets/css/pages/login/login-v2.css" rel="stylesheet" type="text/css" />
+		<link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.css" rel="stylesheet">
+		<link href="/assets/custom/bootstrap-star-rating/css/star-rating.min.css" media="all" rel="stylesheet" type="text/css" />
+
+		<!--end::Page Custom Styles -->
+
+		<!--begin::Global Theme Styles(used by all pages) -->
+		<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+		<link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+
+		<!--end::Global Theme Styles -->
+
+		<!--begin::Layout Skins(used by all pages) -->
+		<link href="assets/css/skins/header/base/light.css" rel="stylesheet" type="text/css" />
+		<link href="assets/css/skins/header/menu/light.css" rel="stylesheet" type="text/css" />
+		<link href="assets/css/skins/brand/navy.css" rel="stylesheet" type="text/css" />
+		<link href="assets/css/skins/aside/navy.css" rel="stylesheet" type="text/css" />
+
+		<!--end::Layout Skins -->
+		<link rel="shortcut icon" href="assets/media/logos/favicon.ico" />
+		<style>
+			.col-lg-2 {font-weight: bold;}
+		</style>
+	</head>
+
+	<!-- end::Head -->
+
+	<!-- begin::Body -->
+	<body class="kt-login-v2--enabled kt-quick-panel--right kt-demo-panel--right kt-offcanvas-panel--right kt-header--fixed kt-header-mobile--fixed kt-subheader--enabled kt-subheader--transparent kt-aside--enabled kt-aside--fixed kt-page--loading">
+
+		<!-- begin:: Page -->
+		<div class="kt-grid kt-grid--ver kt-grid--root">
+			<div class="kt-grid__item   kt-grid__item--fluid kt-grid  kt-grid kt-grid--hor kt-login-v2" id="kt_login_v2">
+
+				<!--begin::Item-->
+				<div class="kt-grid__item  kt-grid--hor">
+
+					<!--begin::Heade-->
+					<div class="kt-login-v2__head">
+						<div class="kt-login-v2__logo">
+							<a href="#">
+								<!-- <img src="assets/media/logos/logo-5.png" alt="" /> -->
+							</a>
+						</div>
+						<div class="kt-login-v2__signup">
+							<!-- <span>Don't have an account?</span>
+							<a href="#" class="kt-link kt-font-brand">Sign Up</a> -->
+						</div>
+					</div>
+
+					<!--begin::Head-->
+				</div>
+
+				<!--end::Item-->
+
+				<!--begin::Item-->
+				<div class="kt-grid__item  kt-grid  kt-grid--ver  kt-grid__item--fluid">
+					<!-- begin:: Content -->
+					<div class="kt-container  kt-container--fluid  kt-grid__item kt-grid__item--fluid">
+					
+						<!--Begin::App-->
+						<div class="kt-grid kt-grid--desktop kt-grid--ver kt-grid--ver-desktop kt-app">
+					
+							<!--Begin:: App Content-->
+							<div class="kt-grid__item kt-grid__item--fluid kt-app__content">
+								<div class="kt-portlet">
+									<div class="kt-portlet__head">
+										<div class="kt-portlet__head-label">
+											<h3 class="kt-portlet__head-title"><%= title %> </h3>
+										</div>
+									</div>
+									<div class="kt-portlet__body">
+										<div class="kt-section kt-section--first">
+											<div class="kt-section__body">
+												<div class="row">
+													<label class="col-lg-2">Subject:</label>
+													<div class="col-lg-3">
+														<%= casemanager.subject %>
+													</div>
+													<label class="col-lg-2">Case NO.:</label>
+													<div class="col-lg-3">
+														<%= casemanager.id %>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="kt-section kt-section--first">
+											<div class="kt-section__body">
+												<div class="row">
+													<label class="col-lg-2">Date Created:</label>
+													<div class="col-lg-3">
+														<%= date %>
+													</div>
+													<label class="col-lg-2">Status:</label>
+													<div class="col-lg-3">
+														<%= casemanager.status %>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="kt-section kt-section--first">
+											<div class="kt-section__body">
+												<div class="row">
+													<label class="col-lg-2">Department:</label>
+													<div class="col-lg-3">
+														<%= casemanager.Department.department_name %>
+													</div>
+													<label class="col-lg-2">Assigned To:</label>
+													<div class="col-lg-3">
+														<%= assignedTo.username %>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="kt-section kt-section--first">
+											<div class="kt-section__body">
+												<div class="row">
+													<label class="col-lg-2">Case Type:</label>
+													<div class="col-lg-3">
+														<%= casemanager.case_type %>
+													</div>
+													<label class="col-lg-2">Response:</label>
+													<div class="col-lg-3">
+														<%= casemanager.response_status %>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="kt-section kt-section--first">
+											<div class="kt-section__body">
+												<div class="row">
+													<label class="col-lg-2">Case Origin:</label>
+													<div class="col-lg-3">
+														<%= casemanager.case_origin %>
+													</div>
+													<label class="col-lg-2">Priority:</label>
+													<div class="col-lg-3">
+														<%= casemanager.priority %>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="kt-section kt-section--first">
+											<div class="kt-section__body">
+												<div class="row">
+													<label class="col-lg-2">Contact Name:</label>
+													<div class="col-lg-3">
+														<%= casemanager.contact_name %>
+													</div>
+													<label class="col-lg-2">Contact Email:</label>
+													<div class="col-lg-3">
+														<%= casemanager.contact_email %>
+													</div>
+												</div>
+											</div>
+										</div>
+										<% if(casemanager.updated_by) { %>
+											<div class="kt-section kt-section--first">
+												<div class="kt-section__body">
+													<div class="row">
+														<label class="col-lg-2">Updated by:</label>
+														<div class="col-lg-3">
+															<%= updated_by.username %>
+														</div>
+														<label class="col-lg-2">Date Updated:</label>
+														<div class="col-lg-3">
+															<%= moment(casemanager.updatedAt).format('ll') %>
+														</div>
+													</div>
+												</div>
+											</div>
+										<% } %>
+										<% if(casemanager.status == 'Closed') { %>
+											<div class="kt-section kt-section--first">
+												<div class="kt-section__body">
+													<div class="row">
+														<label class="col-lg-2">Closed by:</label>
+														<div class="col-lg-3">
+															<%= closed_by.username %>
+														</div>
+														<label class="col-lg-2">Date Closed:</label>
+														<div class="col-lg-3">
+															<%= moment(casemanager.date_closed).format('ll') %>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="kt-section kt-section--first">
+												<div class="kt-section__body">
+													<div class="row">
+														<label class="col-lg-2">Closed Reason:</label>
+														<div class="col-lg-3">
+															<%= casemanager.closed_reason %>
+														</div>
+														<label class="col-lg-2">Solution No.:</label>
+														<div class="col-lg-3">
+															<%= casemanager.sol_no %>
+														</div>
+													</div>
+												</div>
+											</div>
+										<% } %>
+										<div class="kt-section kt-section--first">
+											<div class="kt-section__body">
+												<div class="row">
+													<label class="col-lg-2">SLA Violation:</label>
+													<div class="col-lg-3">
+														<%= casemanager.SLA_violation %>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="kt-section kt-section--first">
+											<div class="kt-section__body">
+												<div class="row">
+													<label class="col-lg-2">Description:</label>
+													<div class="col-lg-8">
+														<%= casemanager.description %>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="kt-section kt-section--first">
+											<div class="kt-section__body">
+												<div class="row">
+													<label class="col-lg-2">Note:</label>
+													<div class="col-lg-8">
+														<%= casemanager.note %>
+													</div>
+												</div>
+											</div>
+										</div>
+										<% if(casemanager.document != null) { %>
+										<div class="kt-section kt-section--first">
+											<div class="kt-section__body">
+												<div class="row">
+													<label class="col-lg-2">Attached File:</label>
+													<div class="col-lg-8">
+														<a href="<%= casemanager.document %>">Click to Download</a>
+													</div>
+												</div>
+											</div>
+										</div>
+										<% } %>
+									</div>
+								</div>
+								<!--begin::Portlet-->
+								<div class="kt-portlet">
+									<div class="kt-portlet__body">
+					
+										<!--begin::Accordion-->
+										<div class="accordion" id="accordionExample4">
+											<div class="card">
+												<div class="card-header" id="headingTwo4">
+													<div class="card-title collapsed" data-toggle="collapse" data-target="#collapseTwo5" aria-expanded="false" aria-controls="collapseTwo4">
+														<i class="flaticon2-box"></i> Add Comments
+													</div>
+												</div>
+												<div id="collapseTwo5" class="collapse show" aria-labelledby="headingTwo1" data-parent="#accordionExample4">
+													<div class="card-body">
+														<div class="kt-portlet__body">
+															<div class="kt-notes">
+																<div class="kt-notes__items">
+																	<!--begin::Form-->
+																	<form name="createCase" class="kt-form kt-form--fit kt-form--label-right" onsubmit="submitCommentCase(event, '<%= casemanager.id %>')" id="comment_form<%= casemanager.id %>">
+																		<div class="kt-portlet__body">
+																			<div class="form-group">
+																				<label>Comment Title</label>
+																				<input type="text" name="title" class="form-control" aria-describedby="emailHelp" placeholder="Enter title">
+																			</div>
+																			<div class="form-group form-group-last">
+																				<label for="exampleTextarea">Comment Description</label>
+																				<textarea name="body" class="form-control" id="exampleTextarea" rows="3"></textarea>
+																			</div>
+																		</div>
+																		<div class="kt-portlet__foot">
+																			<div class="kt-form__actions">
+																				<button type="submit" id="commentSubmitBtn<%= casemanager.id %>" class="btn btn-success" data-ktwizard-type="action-submit">Post Comment</button>
+																			</div>
+																		</div>
+																	</form>
+															<!--end::Form-->
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="accordion" id="accordionExample4">
+											<div class="card">
+												<div class="card-header" id="headingTwo4">
+													<div class="card-title collapsed" data-toggle="collapse" data-target="#collapseTwo4" aria-expanded="false" aria-controls="collapseTwo4">
+														<i class="flaticon2-box"></i> View Comments
+													</div>
+												</div>
+												<div id="collapseTwo4" class="collapse <% if(casecomments.length != 0) { %> show <% } %>" aria-labelledby="headingTwo1" data-parent="#accordionExample4">
+													<div class="card-body">
+														<div class="kt-portlet__body">
+															<div class="kt-notes">
+																<div class="kt-notes__items">
+																	<% casecomments.forEach(function(casecomment) { %>
+																		<div class="kt-notes__item">
+																			<div class="kt-notes__media">
+																				<span class="kt-notes__icon">
+																					<i class="flaticon2-digital-marketing kt-font-danger"></i>
+																				</span>
+																			</div>
+																			<div class="kt-notes__content" <% if(!casecomment.UserId || casecomment.User.Role.role_name == 'Customer') { %> dir="rtl" style="text-align: right;" <% } %>>
+																				<div class="kt-notes__section">
+																					<div class="kt-notes__info">
+																						<a href="#" class="kt-notes__title">
+																							<%= casecomment.title %>
+																						</a>
+																						<% if(casecomment.UserId) { %>
+																							<span class="kt-notes__desc">
+																								<%= casecomment.User.username %>
+																							</span>
+																						<% } %>
+																					</div>
+																				</div>
+																				<span class="kt-notes__body">
+																					<%= casecomment.body %>
+																				</span>
+																			</div>
+																			<%= moment(casecomment.createdAt).format('lll') %>
+																			<input id="input-7-xs" class="rating rating-loading review<%= casecomment.id %>"  value="<%= casecomment.review %>" dir="rtl" data-min="0" data-max="5" data-step="0.1" name="review" data-size="xs" onchange="sendReview(event, '<%= casecomment.id %>')"<% if(!casecomment.UserId) { %> data-readonly="true" <% } %>><hr/>
+																		</div>
+																	<% }); %>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+					
+										<!--end::Accordion-->
+									</div>
+								</div>
+					
+								<!--end::Portlet-->
+							</div>
+					
+							<!--End:: App Content-->
+						</div>
+					
+						<!--End::App-->
+					</div>
+					
+					<!-- end:: Content -->
+					<script src="assets/custom/case/createComment.js" type="text/javascript"></script>
+					<script src="assets/custom/case/sendReview.js" type="text/javascript"></script>
+					 
+				</div>
+
+				<!--end::Item-->
+
+				<!--begin::Item-->
+				<div class="kt-grid__item">
+					<div class="kt-login-v2__footer">
+						<div class="kt-login-v2__link">
+							<a href="#" class="kt-link kt-font-brand">Privacy</a>
+							<a href="#" class="kt-link kt-font-brand">Legal</a>
+							<a href="#" class="kt-link kt-font-brand">Contact</a>
+						</div>
+						<div class="kt-login-v2__info">
+							<a href="#" class="kt-link">&copy; 2018 KeenThemes</a>
+						</div>
+					</div>
+				</div>
+
+				<!--end::Item-->
+			</div>
+		</div>
+
+		<!-- end:: Page -->
+
+		<!-- begin::Global Config(global config for global JS sciprts) -->
+		<script>
+			var KTAppOptions = {
+				"colors": {
+					"state": {
+						"brand": "#5d78ff",
+						"metal": "#c4c5d6",
+						"light": "#ffffff",
+						"accent": "#00c5dc",
+						"primary": "#5867dd",
+						"success": "#34bfa3",
+						"info": "#36a3f7",
+						"warning": "#ffb822",
+						"danger": "#fd3995",
+						"focus": "#9816f4"
+					},
+					"base": {
+						"label": [
+							"#c5cbe3",
+							"#a1a8c3",
+							"#3d4465",
+							"#3e4466"
+						],
+						"shape": [
+							"#f0f3ff",
+							"#d9dffa",
+							"#afb4d4",
+							"#646c9a"
+						]
+					}
+				}
+			};
+		</script>
+
+		<!-- end::Global Config -->
+
+		<!--begin::Global Theme Bundle(used by all pages) -->
+		<script src="assets/plugins/global/plugins.bundle.js" type="text/javascript"></script>
+		<script src="assets/js/scripts.bundle.js" type="text/javascript"></script>
+		<script src="/assets/custom/bootstrap-star-rating/js/star-rating.min.js" type="text/javascript"></script>
+		<script src="/assets/Routes.js"></script>
+
+		<!--end::Global Theme Bundle -->
+
+		<!--begin::Page Scripts(used by this page) -->
+		<!-- <script src="/assets/js/pages/custom/user/login.js" type="text/javascript"></script> -->
+
+		<!--end::Page Scripts -->
+	</body>
+
+	<!-- end::Body -->
+</html>

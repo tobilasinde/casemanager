@@ -8,7 +8,7 @@ const submitCreateCase = async (event) => {
 	try {
   event.preventDefault();
   //const form = event.target;
-  const form = document.getElementById('case_form');
+  const form = document.getElementById('kt_form');
         const formData = new FormData()
         formData.append('file', form.file.files[0])
         formData.append('subject', form.subject.value)
@@ -21,11 +21,10 @@ const submitCreateCase = async (event) => {
         formData.append('priority', form.priority.value)
         formData.append('request_type', form.request_type.value)
         formData.append('note', form.note.value)
-  console.log(formData);
+        formData.append('SLA_violation', form.SLA_violation.value)
 
     const casemanager = await createCase(formData);
     let errors = '';
-    console.log(casemanager);
     if (casemanager.status) {
       swal.fire(
         'Awesome!',
@@ -35,25 +34,6 @@ const submitCreateCase = async (event) => {
       location.href = `/case/${casemanager.data.id}/details`;
     } else {
       caseSubmitBtn.innerHTML = 'Create Case';
-      console.log(casemanager.errors);
-      
-      toastr.options = {
-      "closeButton": true,
-      "debug": true,
-      "newestOnTop": true,
-      "progressBar": true,
-      "positionClass": "toast-top-right",
-      "preventDuplicates": false,
-      "onclick": null,
-      "showDuration": "300",
-      "hideDuration": "1000",
-      "timeOut": "5000",
-      "extendedTimeOut": "1000",
-      "showEasing": "swing",
-      "hideEasing": "linear",
-      "showMethod": "fadeIn",
-      "hideMethod": "fadeOut"
-    };
     casemanager.errors.forEach(error => {
       swal.fire(
         'Oops!',
@@ -65,7 +45,6 @@ const submitCreateCase = async (event) => {
     
     }
   } catch (error) {
-    console.log(error);
     // show network error notification
     swal.fire(
       'Oops!',
@@ -77,7 +56,6 @@ const submitCreateCase = async (event) => {
 };
 
 const createCase = async (data) => {
-    console.log(data)
     try {
       const casemanager = await fetch(`${Route.apiRoot}/case/create`, {
         // mode: 'no-cors',
@@ -86,7 +64,6 @@ const createCase = async (data) => {
       });
       return await casemanager.json();
     } catch (error) {
-      console.log(error);
       // show network error notification
       swal.fire(
         'Oops!',

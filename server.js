@@ -16,18 +16,21 @@ var env = process.env.NODE_ENV || 'development',
 
 var index = require('./routes/index');
 var user = require('./routes/user');
-var main = require('./routes/main');
+// var main = require('./routes/main');
 var casemanager = require('./routes/casemanager');
 var api = require('./routes/api/casemanager');
+var post = require('./routes/post');
+var postApi = require('./routes/api/post');
+var createCase = require('./routes/createCase');
+var createCaseApi = require('./routes/api/createCase');
+var miscApi = require('./routes/api/misc');
 var login = require('./routes/login');
 var siteAdmin = require('./routes/siteAdmin');
 var tools = require('./modules/tools');
 var sessionManagement = require('./modules/sessionManagement');
 
-
 var compression = require('compression');
 var helmet = require('helmet');
-
 
 var app = express();
 app.use(flash());
@@ -81,7 +84,7 @@ app.use(tools.onRequestEnd);
 // generate menu of the application
 app.use('/user', tools.generateUserMenu);
 
-const isWhiteListed = ( path, whiteList = [ 'login', 'autoLogin' ] ) => {
+const isWhiteListed = ( path, whiteList = [ 'login', 'autoLogin', 'create', 'details', 'review' ] ) => {
     let whiteListed = false;
     for(let i=0; i < whiteList.length; i++) {
         // this won't check authentication for login and autoLogin
@@ -110,6 +113,7 @@ app.post('/login',
         failureRedirect: '/login', failureFlash: true
     }),
     function(req, res) {
+        console.log(req.user);
         res.redirect('/');
     });
     
@@ -132,8 +136,7 @@ app.get('/logout',
 // routing
 //
 app.use('/', index);
-app.use('/main', main);
-app.use('/case', casemanager);
+// app.use('/main', main);
 // app.use('/user', function(req, res, next) {
 //     console.log('I am here');
 //     if (req.isAuthenticated()) {
@@ -147,6 +150,12 @@ app.use('/user', user);
 app.use('/siteAdmin', siteAdmin);
 app.use('/login', login);
 app.use('/api/case', api);
+app.use('/case', casemanager);
+app.use('/api/post', postApi);
+app.use('/post', post);
+app.use('/api/misc', miscApi);
+app.use('/create', createCase);
+app.use('/api/create', createCaseApi);
 
 //
 // error handling

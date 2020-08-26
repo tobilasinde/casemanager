@@ -10,6 +10,9 @@ case 'LOGIN' : %>
 case 'GET USER CREATE' : %>
        <%- include ('../pages/user/user-create') %>
        <% break;
+case 'GET CREATE' : %>
+       <%- include ('../create-case') %>
+       <% break;
 
 case 'GET USER UPDATE' : %>
        <%- include ('../pages/user/user-update') %>
@@ -196,12 +199,21 @@ case 'GET CASE DETAILS' : %>
 case 'GET CASE LIST' : %>
        <%- include ('../pages/case/case-list') %>
        <% break;
+       
 case 'GET CUSTOMER CASE LIST' : %>
        <%- include ('../pages/case/customer-case-list') %>
        <% break;
 
 case 'GET CASE DASHBOARD' : %>
        <%- include ('../pages/case/case-dashboard') %>
+       <% break;
+       
+case 'GET CASE PASSWORD' : %>
+       <%- include ('../pages/case/case-password') %>
+       <% break;
+
+case 'GET GUEST CASE DETAILS' : %>
+       <%- include ('../pages/case/case-guest') %>
        <% break;
        
 default : %>

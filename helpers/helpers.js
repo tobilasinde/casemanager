@@ -2,6 +2,7 @@ const models = require('../models');
 const moment = require('moment');
 // Validation Middleware
 const { body } = require('express-validator');
+const { sendMail } = require('./sendMail');
 
 module.exports = {
     dashboardHelper: async (req) => {
@@ -128,5 +129,46 @@ module.exports = {
             Body: uploadedFile.data
         };
         return params;
+    },
+    sendCaseDetails: async (req, casemanager_id) => {
+        const casei = await models.Casemanager.findByPk(casemanager_id);
+        const manager = await models.User.findOne({
+            include: [{
+                model: models.Department,
+                where: {DepartmentId: casei.DepartmentId}
+            },{
+                model: models.Role,
+                where: {role_name: 'Manager'}
+            }]
+        });
+        const ass_to = await models.User.findByPk(req.body.assigned);
+        const to = [req.user.email, ass_to.email, req.body.contact_email];//email: 1. creator 2. assigned_to 3. req.body.contact_email
+        if(casei.priority == 'High' && manager != null) to = [req.user.email, ass_to.email, req.body.contact_email, manager.email];
+        const subject = ['You just Created a new Case', 'A new case Has been assigned to you', 'A new case has been created with your email'];
+        const text = `Subject: ${req.body.subject}\n Description: ${req.body.description}\n Link: ${req.get('host')}/case/${casemanager_id}/details`;
+        for(let i=0;i<to.length;i++) {
+            sendMail(to[i], subject[i], text);
+        }
+    },sendGuestCaseDetails: async (req, sender, assigned, casemanager_id, casemanager_password) => {
+        const to = [sender, assigned];//email: 1. creator 2. assigned_to 3. req.body.contact_email
+        const subject = ['You just Created a new Case', 'A new case Has been assigned to you'];
+        const text = `${req.body.subject}\n ${req.body.description}\n Link: ${req.get('host')}/case/${casemanager_id}/details\n Password: ${casemanager_password}`;
+        for(let i=0;i<to.length;i++) {
+            sendMail(to[i], subject[i], text);
+        }
+    },
+    sendCommentUpdate: async (req, email) => {
+        const to = email;
+        const subject = 'Reply to Comment';
+        const text = `A new comment has been made on case No.: ${req.params.casemanager_id}\n Link: ${req.get('host')}/case/${req.params.casemanager_id}/details`;
+        sendMail(to, subject, text);
+    },
+    sendStatusUpdate: async (req) => {
+        const update = await models.Casemanager.findByPk(req.params.casemanager_id);
+        const to = update.contact_email;
+        const subject = 'Case Status Updated';
+        const text = `Case status has been changed on case No.: ${update.id} to ${update.status}\n Link: ${req.get('host')}/case/${update.id}/details\n Password: ${update.password}`;
+        if(update.status == 'Closed') text = `Case No.: ${update.id} has been closed and has now been completed\n Link: ${req.get('host')}/case/${update.id}/details\n Password: ${update.password}`;
+        sendMail(to, subject, text);
     }
 }

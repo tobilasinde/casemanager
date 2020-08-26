@@ -7,7 +7,7 @@
 const submitStatus = async (event, caseId, status) => {
 	try {
   event.preventDefault();
-    const casemanager = await updateCase(caseId, status);
+    const casemanager = await caseStatus(caseId, status);
     let errors = '';
     console.log(casemanager);
     if (casemanager.status) {
@@ -36,7 +36,7 @@ const submitStatus = async (event, caseId, status) => {
 
 };
 
-const updateCase = async (caseId, status) => {
+const caseStatus = async (caseId, status) => {
     try {
       const casemanager = await fetch(`${Route.apiRoot}/case/${caseId}/status/${status}`, {
       });

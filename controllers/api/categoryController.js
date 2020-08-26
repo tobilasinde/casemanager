@@ -1,30 +1,28 @@
-var models = require('../models');
+var models = require('../../models');
  
-// Display category create form on GET.
-exports.getCategoryCreate = function(req, res, next) {
-    // create category GET controller logic here 
-
-    // renders a category form
-    res.render('pages/content', {
-        title: 'Create Category',
-        functioName: 'GET CATEGORY CREATE',
-        layout: 'layouts/detail'
-    });
-};
-
 // Handle category create on POST.
 exports.postCategoryCreate = function(req, res, next) {
+    try {
+        models.Category.create({
+            category_name: req.body.category_name
+        }).then(function(data) {
+            res.status(200).json({
+                status: true,
+                data,
+                message: 'Category created Successfully'
+            });
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            message: `There was an error - ${error}`
+        });
+    }
     // create category POST controller logic here
 
     // If a category gets created successfully, we just redirect to categories list
     // no need to render a page
-    models.Category.create({
-        category_name: req.body.category_name
-    }).then(function() {
-        console.log("Category created successfully");
-        // check if there was an error during post creation
-        res.redirect('/main/categories');
-    });
+    
 };
 
 // Display category delete form on GET.
@@ -37,10 +35,10 @@ exports.getCategoryDelete = function(req, res, next) {
             id: req.params.category_id
         }
     }).then(function() {
-        // If an category gets deleted successfully, we just redirect to categories list
-        // no need to render a page
-        res.redirect('/main/categories');
-        console.log("Category deleted successfully");
+        res.status(200).json({
+            status: true,
+            message: "Categories list renders successfully"
+        });
     });
 
 };
@@ -76,10 +74,10 @@ exports.postCategoryUpdate = function(req, res, next) {
         }
         //   returning: true, where: {id: req.params.post_id} 
     ).then(function() {
-        // If an post gets updated successfully, we just redirect to posts list
-        // no need to render a page
-        res.redirect("/main/categories");
-        console.log("Category updated successfully");
+        res.status(200).json({
+            status: true,
+            message: "Category updated successfully"
+        });
     });
 };
 
@@ -134,14 +132,10 @@ exports.getCategoryList = function(req, res, next) {
             }
         }]
     }).then(function(categories) {
-        // renders a post list page
-        console.log("rendering category list");
-        res.render('pages/content', {
-            title: 'Category List',
-            categories: categories,
-            functioName: 'GET CATEGORY LIST',
-            layout: 'layouts/list'
+        res.status(200).json({
+            status: true,
+            data: categories,
+            message: "Categories list renders successfully"
         });
-        console.log("Categories list renders successfully");
     });
 };

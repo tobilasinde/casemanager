@@ -1,77 +1,506 @@
+<style>
+	.css-serial {counter-reset: serial-number;}
+	.css-serial td:first-child::before {
+		counter-increment: serial-number;
+		content: counter(serial-number);
+	}
+</style>
+<!-- begin:: Content -->
 <div class="kt-container  kt-container--fluid  kt-grid__item kt-grid__item--fluid">
-	<div class="kt-portlet kt-portlet--mobile">
-		<div class="kt-portlet__head">
-			<div class="kt-portlet__head-label">
-				<h3 class="kt-portlet__head-title">
-					<%= title %>
-				</h3>
-			</div>
-			<div class="kt-portlet__head-toolbar">
-				<div class="kt-portlet__head-toolbar">
-					<div class="dropdown dropdown-inline">
-						<a href="/case/create" class="btn btn-clean btn-sm btn-icon btn-icon-md" aria-haspopup="true" aria-expanded="false">
-							<i class="la la-pencil"></i>
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="kt-portlet__body">
+    <div class="kt-portlet kt-portlet--mobile">
+        <div class="kt-portlet__head kt-portlet__head--lg">
+            <div class="kt-portlet__head-label">
+                <h3 class="kt-portlet__head-title">
+                    <%= title %>
+                </h3>
+            </div>
+        </div>
+        <div class="kt-portlet__body">
 
-			<!--begin: Datatable -->
-			<table class="table table-striped- table-bordered table-hover table-checkable" id="kt_table_1">
-				<thead>
-					<tr>
-						<th>Case Number</th>
-						<th>Subject</th>
-						<th>Priority</th>
-						<th>Status</th>
-						<th>Date Created</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					<% casemanagers.forEach(function(casemanager) { %>
-						<tr>
-							<td><%= casemanager.case_number %></td>
-							<td><%= casemanager.subject %></td>
-							<td><%= casemanager.priority %></td>
-							<td><%= casemanager.status %></td>
-							<td><%= moment(casemanager.createdAt).format('MMMM Do YYYY, h:mm:ss a'); %></td>
-							<td>
-								<span class="dropdown">
-									<a href="#" class="btn btn-sm btn-clean btn-icon btn-icon-md" data-toggle="dropdown" aria-expanded="true">
-									<i class="la la-ellipsis-h"></i>
-									</a>
-									<div class="dropdown-menu dropdown-menu-right">
-										<a class="dropdown-item" onclick="editCase(event, <%= casemanager.id %>)"><i class="la la-edit"></i> Edit Case</a>
-										<!-- <a class="dropdown-item" onclick="editCase(event, <%= casemanager.id %>)"><i class="la la-edit"></i> Edit Case</a> -->
-									</div>
-								</span>
+            <!--begin: Search Form -->
+            <div class="kt-form kt-fork--label-right kt-margin-t-20 kt-margin-b-10">
+                <div class="row align-items-center">
+                    <div class="col-xl-12 order-2 order-xl-1">
+                        <div class="row align-items-center">
+                            <div class="col-md-3 kt-margin-b-20-tablet-and-mobile">
+                                <div class="kt-input-icon kt-input-icon--left">
+                                    <input type="text" class="form-control" placeholder="Search..." id="generalSearch">
+                                    <span class="kt-input-icon__icon kt-input-icon__icon--left">
+                                        <span><i class="la la-search"></i></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-3 kt-margin-b-20-tablet-and-mobile">
+                                <div class="kt-form__group kt-form__group--inline">
+                                    <div class="kt-form__label">
+                                        <label>Status:</label>
+                                    </div>
+                                    <div class="kt-form__control">
+                                        <select class="form-control bootstrap-select status" id="kt_form_status">
+                                            <option value="">All</option>
+                                            <% cases.caseData.caseStatus.forEach(function(status) { %>
+                                                <option value="<%= status %>"><%= status %></option>
+                                            <% }) %>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 kt-margin-b-20-tablet-and-mobile">
+                                <div class="kt-form__group kt-form__group--inline">
+                                    <div class="kt-form__label">
+                                        <label>Priority:</label>
+                                    </div>
+                                    <div class="kt-form__control">
+                                        <select class="form-control bootstrap-select priority" id="kt_form_status">
+                                            <option value="">All</option>
+                                            <% cases.caseData.casePriority.forEach(function(priority) { %>
+                                                <option value="<%= priority %>"><%= priority %></option>
+                                            <% }) %>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 kt-margin-b-20-tablet-and-mobile">
+                                <div class="kt-form__group kt-form__group--inline">
+                                    <div class="kt-form__label">
+                                        <label>Department:</label>
+                                    </div>
+                                    <div class="kt-form__control">
+                                        <select class="form-control bootstrap-select" id="kt_form_type">
+                                            <option value="">All</option>
+                                            <% departments.forEach(function(department) { %>
+                                                <option value="<%= department.department_name %>"><%= department.department_name %></option>
+                                            <% }) %>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--end: Search Form -->
+        </div>
+        <div class="kt-portlet__body kt-portlet__body--fit">
+
+            <!--begin: Datatable -->
+            <table class="kt-datatable" id="html_table" width="100%">
+                <thead>
+                    <tr>
+                        <th title="Field #1">Case No</th>
+                        <th title="Field #2">Subject</th>
+                        <th title="Field #4">Department</th>
+						<th title="Field #5">Status</th>
+						<th title="Field #6">Priority</th>
+                        <th title="Field #7">Action</th>
+                        <th title="Field #8"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% cases.casemanagers.forEach(function(casei) { %>
+                        <tr>
+                            <td><%= casei.id %></td>
+							<td><%= casei.subject %></td>
+							<td><%= casei.Department.department_name %></td>
+							<td><%= casei.status %></td>
+							<td><%= casei.priority %></td>
+
+                            <td>
 								<span>
-									<a href="/case/<%= casemanager.id %>/details" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="View">
-										<i class="la la-eye"></i>
-									</a>
-								</span>
-								<span class="dropdown">
-									<a href="#" class="" data-toggle="dropdown" aria-expanded="true">
-									Change Status
-									</a>
-									<div class="dropdown-menu dropdown-menu-right">
-										<% caseStatus.forEach(function(status) { %>
-											<a class="dropdown-item" onclick="submitStatus(event, <%= casemanager.id %>, '<%= status %>')"><i class="la la-edit"></i> <%= status %></a>
-										<% }); %>
+									<span>
+										<button type="button" data-toggle="modal" data-target="#detail<%= casei.id %>" class="btn btn-clean btn-sm btn-icon btn-icon-md" aria-haspopup="true" aria-expanded="false">
+											<i class="la la-eye"></i>
+										</button>
+										<!-- Modal -->
+										<div class="modal fade" id="detail<%= casei.id %>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+											<div class="modal-dialog modal-xl" role="document">
+												<div class="modal-content">
+													<div class="modal-header">
+														<h5 class="modal-title" id="exampleModalLongTitle">Case Details</h5>
+														<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+															<span aria-hidden="true">&times;</span>
+														</button>
+													</div>
+													<div class="modal-body">
+														
+													<!--Begin:: App Content-->
+													<div class="kt-grid__item kt-grid__item--fluid kt-app__content">
+														<div class="kt-portlet">
+															<div class="kt-portlet__head">
+																<div class="kt-portlet__head-label">
+																	<h3 class="kt-portlet__head-title">Case Details </h3>
+																</div>
+															</div>
+															<div class="kt-portlet__body">
+																<div class="kt-section kt-section--first">
+																	<div class="kt-section__body">
+																		<div class="row">
+																			<label class="col-lg-2">Subject:</label>
+																			<div class="col-lg-3">
+																				<%= casei.subject %>
+																			</div>
+																			<label class="col-lg-2">Case Number:</label>
+																			<div class="col-lg-3">
+																				<%= casei.id %>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="kt-section kt-section--first">
+																	<div class="kt-section__body">
+																		<div class="row">
+																			<label class="col-lg-2">Department:</label>
+																			<div class="col-lg-3">
+																				<%= casei.Department.department_name %>
+																			</div>
+																			<label class="col-lg-2">Created By</label>
+																			<div class="col-lg-3">
+																				<% if(casei.UserId){ %>
+																					<%= casei.User.username %>
+																				<% } else { %>
+																					Guest
+																				<% } %>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="kt-section kt-section--first">
+																	<div class="kt-section__body">
+																		<div class="row">
+																			<label class="col-lg-2">Date Created:</label>
+																			<div class="col-lg-3">
+																				<%= moment(casei.createdAt).format('ll'); %>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="kt-section kt-section--first">
+																	<div class="kt-section__body">
+																		<div class="row">
+																			<label class="col-lg-2">Body</label>
+																			<div class="col-lg-8">
+																				<%= casei.description %>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+														<!--begin::Portlet-->
+														<div class="kt-portlet">
+															<div class="kt-portlet__body">
+																<!--begin::Accordion-->
+																<div class="accordion" id="accordionExample4">
+																	<div class="card">
+																		<div class="card-header" id="headingTwo4">
+																			<div class="card-title collapsed" data-toggle="collapse" data-target="#collapseTwo5" aria-expanded="false" aria-controls="collapseTwo4">
+																				<i class="flaticon2-box"></i> Add Comments
+																			</div>
+																		</div>
+																		<div id="collapseTwo5" class="collapse show" aria-labelledby="headingTwo1" data-parent="#accordionExample4">
+																			<div class="card-body">
+																				<div class="kt-portlet__body">
+																					<div class="kt-notes">
+																						<div class="kt-notes__items">
+																							<!--begin::Form-->
+																							<form name="createComment" class="kt-form kt-form--fit kt-form--label-right" onsubmit="submitCommentCase(event, '<%= casei.id %>')" id="comment_form<%= casei.id %>">
+																								<div class="kt-portlet__body">
+																									<div class="form-group">
+																										<label>Comment Title</label>
+																										<input type="text" name="title" class="form-control" aria-describedby="emailHelp" placeholder="Enter title">
+																									</div>
+																									<div class="form-group form-group-last">
+																										<label for="exampleTextarea">Comment Description</label>
+																										<textarea name="body" class="form-control" rows="5"></textarea>
+																									</div>
+																								</div>
+																								<div class="kt-portlet__foot">
+																									<div class="kt-form__actions">
+																										<button type="submit" id="commentSubmitBtn<%= casei.id %>" class="btn btn-success">Post Comment</button>
+																									</div>
+																								</div>
+																							</form>
+																					<!--end::Form-->
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="accordion" id="accordionExample4">
+																	<div class="card">
+																		<div class="card-header" id="headingTwo4">
+																			<div class="card-title collapsed" data-toggle="collapse" data-target="#collapseTwo4" aria-expanded="false" aria-controls="collapseTwo4">
+																				<i class="flaticon2-box"></i> View Comments
+																			</div>
+																		</div>
+																		<div id="collapseTwo4" class="collapse <% if(cases.casecomments.length != 0) { %> show <% } %>" aria-labelledby="headingTwo1" data-parent="#accordionExample4">
+																			<div class="card-body">
+																				<div class="kt-portlet__body">
+																					<div class="kt-notes">
+																						<div class="kt-notes__items">
+																							<% cases.casecomments.forEach(function(comment) { if(comment.CasemanagerId == casei.id) { %>
+																								<div class="kt-notes__item">
+																									<div class="kt-notes__media">
+																										<span class="kt-notes__icon">
+																											<i class="flaticon2-digital-marketing kt-font-danger"></i>
+																										</span>
+																									</div>
+																									<div class="kt-notes__content">
+																										<div class="kt-notes__section">
+																											<div class="kt-notes__info">
+																												<a href="#" class="kt-notes__title">
+																													<%= comment.title %>
+																												</a>
+																												<span class="kt-notes__desc">
+																													<%= moment(comment.createdAt).format('MMMM Do YYYY, h:mm:ss a') %>
+																												</span>
+																											</div>
+																										</div>
+																										<span class="kt-notes__body">
+																											<%= comment.body %>
+																										</span>
+																									</div>
+																									<% if(casei.UserId){ %>
+																										<%= comment.User.username %>
+																									<% } else { %>
+																										Guest
+																									<% } %>
+																								</div>
+																							<% }}); %>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+	
+																<!--end::Accordion-->
+															</div>
+														</div>
+	
+														<!--end::Portlet-->
+													</div>
+	
+													<!--End:: App Content-->
+													</div>
+												</div>
+											</div>
+										</div>
+									</span>
+									<button data-toggle="modal" data-target="#update<%= casei.id %>" class="btn btn-clean btn-sm btn-icon btn-icon-md" aria-haspopup="true" aria-expanded="false">
+										<i class="la la-edit"></i>
+									</button>
+									<!-- Modal -->
+									<div class="modal fade" id="update<%= casei.id %>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+										<div class="modal-dialog modal-xl" role="document">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title" id="exampleModalLongTitle">Edit Case</h5>
+													<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+														<span aria-hidden="true">&times;</span>
+													</button>
+												</div>
+												<form class="kt-form kt-form--fit kt-form--label-right" onsubmit="submitUpdateCase(event, '<%= casei.id %>')" id="case_form<%= casei.id %>">
+													<div class="modal-body">
+														<!--begin::Form-->
+														<div class="form-group row">
+															<label class="col-lg-2 col-form-label">Subject:</label>
+															<div class="col-lg-3">
+																<input type="text" name="subject"required class="form-control" value="<%= casei.subject %>">
+															</div>
+															<label class="col-lg-2 col-form-label">Description:</label>
+															<div class="col-lg-3">
+																<textarea class="form-control" required readonly name="description" rows="5"><%= casei.description %></textarea>
+															</div>
+														</div>
+														<div class="form-group row">
+															<label class="col-lg-2 col-form-label">Contact Name:</label>
+															<div class="col-lg-3">
+																<div class="kt-input-icon">
+																	<input name="contact_name" required type="text" class="form-control" value="<%= casei.contact_name %>">
+																</div>
+															</div>
+															<label class="col-lg-2 col-form-label">Contact Email:</label>
+															<div class="col-lg-3">
+																<div class="kt-input-icon">
+																	<input name="contact_email" required type="text" class="form-control" value="<%= casei.contact_email %>">
+																</div>
+															</div>
+														</div>
+														<div class="form-group row">
+															<label class="col-lg-2 col-form-label">Department:</label>
+															<div class="col-lg-3">
+																<div class="kt-input-icon">
+																	<select class="form-control" required name="department">
+																		<option value="<%= casei.Department.id %>"><%= casei.Department.department_name %></option>
+																		<% departments.forEach(function(dropdown) { if(dropdown.department_name != 'Owner' && dropdown.department_name != 'Customer') { %>
+																			<option  value="<%= dropdown.id %>"><%= dropdown.department_name %></option>
+																		<% }}); %>
+																	</select>
+																</div>
+															</div>
+															<label class="col-lg-2 col-form-label">Assign To:</label>
+															<div class="col-lg-3">
+																<div class="kt-input-icon">
+
+																</div>
+															</div>
+														</div>
+														<div class="form-group row">
+															<label class="col-lg-2 col-form-label">Priority:</label>
+															<div class="col-lg-3">
+																<div class="kt-input-icon">
+																	<select class="form-control" required name="priority">
+																		<option value="<%= casei.priority %>"><%= casei.priority %></option>
+																		<% cases.caseData.casePriority.forEach(function(dropdown) { %>
+																			<option  value="<%= dropdown %>"><%= dropdown %></option>
+																		<% }); %>
+																	</select>
+																</div>
+															</div>
+															<label class="col-lg-2 col-form-label">Origin:</label>
+															<div class="col-lg-3">
+																<div class="kt-radio-inline">
+																	<% cases.caseData.caseOrigin.forEach(function(dropdown) { %>
+																	<label class="kt-radio kt-radio--solid">
+																			<input type="radio" required name="origin" value="<%= dropdown %>" <% if (dropdown == casei.case_origin ) { %>  checked <% } %> > <%= dropdown %>
+																		<span></span>
+																	</label>
+																	<% }); %>
+																</div>
+															</div>
+														</div>
+														<div class="form-group row">
+															<label class="col-lg-2 col-form-label">Case Type:</label>
+															<div class="col-lg-3">
+																<div class="kt-radio-inline">
+																	<% cases.caseData.caseType.forEach(function(dropdown) { %>
+																	<label class="kt-radio kt-radio--solid">
+																			<input type="radio" required name="case_type" value="<%= dropdown %>" <% if (dropdown == casei.case_type ) { %>  checked <% } %> >  <%= dropdown %>
+																		<span></span>
+																	</label>
+																	<% }); %>
+																</div>
+															</div>
+															<label class="col-lg-2 col-form-label">Request Type:</label>
+															<div class="col-lg-3">
+																<div class="kt-radio-inline">
+																	<% cases.caseData.caseRequestType.forEach(function(dropdown) { %>
+																	<label class="kt-radio kt-radio--solid">
+																			<input type="radio" required name="request_type" value="<%= dropdown %>" <% if (dropdown == casei.request_type ) { %>  checked <% } %> > <%= dropdown %>
+																		<span></span>
+																	</label>
+																	<% }); %>
+																</div>
+															</div>
+														</div>
+														<div class="form-group row">
+															<label class="col-lg-2 col-form-label">Additional Note:</label>
+															<div class="col-lg-3">
+																<textarea class="form-control" name="note"><%= casei.note %></textarea>
+															</div>
+															<label class="col-lg-2 col-form-label">Origin:</label>
+															<div class="col-lg-3">
+																<div class="kt-radio-inline">
+																	<label class="kt-radio kt-radio--solid">
+																		<input type="radio" required name="SLA_violation" value="No" <% if ('No' == casei.SLA_violation ) { %>  checked <% } %> > No
+																		<span></span>
+																	</label>
+																	<label class="kt-radio kt-radio--solid">
+																		<input type="radio" required name="SLA_violation" value="Yes" <% if ('Yes' == casei.SLA_violation ) { %>  checked <% } %> > Yes
+																		<span></span>
+																	</label>
+																</div>
+															</div>
+														</div>
+														<!--end::Form-->
+													</div>
+													<div class="modal-footer">
+														<button type="button" class="btn btn-outline-brand" data-dismiss="modal">Close</button>
+														<button type="submit" class="btn btn-outline-brand" id="caseiSubmitBtn<%= casei.id %>">Submit</button>
+													</div>
+												</form>
+											</div>
+										</div>
 									</div>
+									<% if(casei.status != 'Closed'){ %>
+										<a href="#" class="kt-nav__link active" data-toggle="dropdown" aria-expanded="true" role="tab">
+											<span class="kt-nav__link-text btn btn-clean">Status</span>
+										</a>
+										<div class="dropdown-menu dropdown-menu-right">
+											<% cases.caseData.caseStatus.forEach(function(status) { if(status != 'Closed') { %>
+												<a class="dropdown-item" onclick="submitStatus(event, '<%= casei.id %>', '<%= status %>')"><i class="la la-edit"></i> <%= status %></a>
+											<% } else { %>
+												<a class="dropdown-item" data-toggle="modal" data-target=".status<%= casei.id %>"><i class="la la-edit"></i> <%= status %></a>
+											<% }}); %>
+										</div>
+									<% } else if(casei.status == 'Closed' && casei.assigned_to == user.id) { %>
+										<a class="btn btn-clean" onclick="submitStatus(event, '<%= casei.id %>', 'New')"> Reopen</a>
+									<% } %>
 								</span>
 							</td>
+							<!--begin::Modal-->
+							<div class="modal fade status<%= casei.id %>" id="kt_select2_modal" role="dialog" aria-labelledby="" aria-hidden="true">
+								<div class="modal-dialog modal-lg" role="document">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="modal-title" id="">Close Case</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true" class="la la-remove"></span>
+											</button>
+										</div>
+										<form class="kt-form kt-form--fit kt-form--label-right" onsubmit="closedStatus(event, '<%= casei.id %>')" id="status_form<%= casei.id %>">
+											<div class="modal-body">
+												<div class="form-group row">
+													<label class="col-lg-3 col-form-label">Reason:</label>
+													<div class="col-lg-8">
+														<div class="kt-input-icon">
+															<select class="form-control" required name="reason">
+																<option value="Resolved"><%= casei.subject %></option>
+																<option value="Resolved">Resolved</option>
+																<option value="Abandoned">Abandoned</option>
+																<option value="Known Issues">Known Issues</option>
+															</select>
+														</div>
+													</div>
+												</div>
+												<div class="form-group row">
+													<label class="col-form-label col-lg-3 col-sm-12">Solution No.</label>
+													<div class="col-lg-8 col-md-9 col-sm-12">
+														<select class="form-control kt-select2" id="kt_select2_1_modal" name="sol_no">
+															<option></option>
+															<% cases.solutions.forEach(function(dropdown) { %>
+																<option value="<%= dropdown.solution_number %>"><%= dropdown.solution_number %></option>
+															<% }); %>
+														</select>
+													</div>
+												</div>
+											</div>
+											<div class="modal-footer">
+												<button type="button" class="btn btn-brand" data-dismiss="modal">Close</button>
+												<button type="submit" class="btn btn-secondary">Submit</button>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+	
+							<!--end::Modal-->
 						</tr>
-					<% }); %>
-				</tbody>
-			</table>
+                    <% }) %>
+                </tbody>
+            </table>
 
-			<!--end: Datatable -->
-		</div>
-	</div>
+            <!--end: Datatable -->
+        </div>
+    </div>
 </div>
-<script src="assets/custom/case/updateStatus.js" type="text/javascript"></script>
-<script src="assets/custom/case/editCase.js" type="text/javascript"></script>
+<!-- end:: Content -->
+<script src="/assets/custom/case/updateCase.js" type="text/javascript"></script>
+<script src="/assets/custom/case/createComment.js" type="text/javascript"></script>
+<script src="/assets/custom/case/updateStatus.js" type="text/javascript"></script>
+<script src="/assets/custom/case/closedStatus.js" type="text/javascript"></script>

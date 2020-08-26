@@ -18,6 +18,7 @@ const Roless = require('../../middlewares/case')
 var authorize = require('../../middlewares/authorize');
 const { validation } = require('../../helpers/helpers');
 
+
 router.get('/', authorize(), dashboard, casemanagerController.getCasemanagerDashboard); 
 
 // CASE ROUTES
@@ -36,13 +37,19 @@ router.post('/:casemanager_id/update', validation, authorize(), caseCheck, updat
 // router.get('/:casemanager_id/delete', superUsers, authorize(Roless.result), caseCheck, updateCase, casemanagerController.getCasemanagerDelete); 
 
 // GET CASE LIST
-router.get('/cases', superUsers, authorize(Roless.result), casemanagerController.getCasemanagerList); 
+router.get('/cases', superUsers, authorize(Roless.result), casemanagerController.getCasemanagerList);
 
 // GET CASE DETAIL 
-router.get('/:casemanager_id/details', authorize(), caseCheck, caseDetails, casemanagerController.getCasemanagerDetails); 
+router.get('/:casemanager_id/details', casemanagerController.getCasemanagerDetails); 
+
+// POST CASE DETAIL 
+router.get('/:casemanager_id/guest/details', casemanagerController.postCasemanagerDetails); 
 
 // UPDATE CASE STATUS
 router.get('/:casemanager_id/status/:status', superUsers, authorize(Roless.result), caseCheck, updateCaseStatus, casemanagerController.getStatusUpdate); 
+
+// CLOSE CASE
+router.post('/:casemanager_id/close', superUsers, authorize(Roless.result), caseCheck, updateCaseStatus, casemanagerController.closeCase); 
 
 // GET USER BY DEPARTMENT
 router.get('/department/:department_id', casemanagerController.getUsersByDepartment);
@@ -52,6 +59,9 @@ router.get('/department', casemanagerController.getCaseByDepartment);
 
 //GET LOGGED IN USER DETAILS
 router.get('/getuserdetails', casemanagerController.getUserDetails);
+
+//GET USER ROLE
+router.get('/getuserrole', casemanagerController.getUserRole);
 
 //GET CASE ASSIGNED TO ME
 router.get('/user', superUsers, authorize(Roless.result), casemanagerController.getCaseAssignedToMe);
@@ -65,7 +75,9 @@ router.get('/user/customer', authorize(), casemanagerController.getCustomerCases
 
 // CASE COMMENT ROUTES
 // POST CASECOMMENT CREATE
-router.post('/:casemanager_id/comment/create', authorize(), caseCheck, createComment, casecommentController.postCasecommentCreate); 
+router.post('/:casemanager_id/comment/create', createComment, casecommentController.postCasecommentCreate); 
+
+router.get('/comment/:comment_id/review/:review', createComment, casecommentController.createReview); 
 
 // // GET CASECOMMENT DELETE
 // router.get('/:casemanager_id/comment/:casecomment_id/delete', authorize('staff'), casecommentController.getCasecommentDelete); 

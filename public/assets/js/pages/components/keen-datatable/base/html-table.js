@@ -16,90 +16,60 @@ var KTDatatableHtmlTableDemo = function() {
             layout: {
                 scroll: true,
                 height: 550,
-                footer: false
+                footer: false,
+                // class: '', // custom wrapper class
             },
             search: {
                 input: $('#generalSearch'),
             },
             columns: [
                 {
-                    field: 'DepositPaid',
-                    type: 'number',
-                },
-                {
-                    field: 'OrderDate',
-                    type: 'date',
-                    format: 'YYYY-MM-DD',
-                }, {
                     field: 'Status',
                     title: 'Status',
                     autoHide: false,
                     // callback function support for column rendering
                     template: function(row) {
-                        var status = {
-                            1: {
-                                'title': 'Pending',
-                                'class': 'kt-badge--brand'
-                            },
-                            2: {
-                                'title': 'Delivered',
-                                'class': ' kt-badge--metal'
-                            },
-                            3: {
-                                'title': 'Canceled',
-                                'class': ' kt-badge--primary'
-                            },
-                            4: {
-                                'title': 'Success',
-                                'class': ' kt-badge--success'
-                            },
-                            5: {
-                                'title': 'Info',
-                                'class': ' kt-badge--info'
-                            },
-                            6: {
-                                'title': 'Danger',
-                                'class': ' kt-badge--danger'
-                            },
-                            7: {
-                                'title': 'Warning',
-                                'class': ' kt-badge--warning'
-                            },
-                        };
-                        return '<span class="kt-badge ' + status[row.Status].class + ' kt-badge--inline kt-badge--pill">' + status[row.Status].title + '</span>';
-                    },
+						var status = {
+							'New': {'title': 'New', 'class': 'kt-badge--brand'},
+							'On Hold': {'title': 'On Hold', 'class': ' kt-badge--metal'},
+							'Escalated': {'title': 'Escalated', 'class': ' kt-badge--danger'},
+							'Working': {'title': 'Working', 'class': ' kt-badge--warning'},
+							'Closed': {'title': 'Closed', 'class': ' kt-badge--success'},
+						};
+						return '<span class="kt-badge ' + status[row.Status].class + ' kt-badge--inline kt-badge--pill">' + status[row.Status].title + '</span>';
+					},
                 }, {
-                    field: 'Type',
-                    title: 'Type',
+                    field: 'Priority',
+                    title: 'Priority',
                     autoHide: false,
                     // callback function support for column rendering
                     template: function(row) {
-                        var status = {
-                            1: {
-                                'title': 'Online',
-                                'state': 'danger'
-                            },
-                            2: {
-                                'title': 'Retail',
-                                'state': 'primary'
-                            },
-                            3: {
-                                'title': 'Direct',
-                                'state': 'accent'
-                            },
-                        };
-                        return '<span class="kt-badge kt-badge--' + status[row.Type].state + ' kt-badge--dot"></span>&nbsp;<span class="kt-font-bold kt-font-' + status[row.Type].state + '">' + status[row.Type].title + '</span>';
-                    },
+						var status = {
+							'High': {'title': 'High', 'state': 'danger'},
+							'Medium': {'title': 'Medium', 'state': 'warning'},
+							'Low': {'title': 'Low', 'state': 'accent'},
+						};
+						return '<span class="kt-badge kt-badge--' + status[row.Priority].state + ' kt-badge--dot"></span>&nbsp;<span class="kt-font-bold kt-font-' + status[row.Priority].state + '">' +
+							status[row.Priority].title + '</span>';
+					},
                 },
             ],
         });
 
-        $('#kt_form_status').on('change', function() {
+        $('.category').on('change', function() {
+            datatable.search($(this).val().toLowerCase(), 'Category');
+        });
+
+        $('.priority').on('change', function() {
+            datatable.search($(this).val().toLowerCase(), 'Priority');
+        });
+
+        $('.status').on('change', function() {
             datatable.search($(this).val().toLowerCase(), 'Status');
         });
 
         $('#kt_form_type').on('change', function() {
-            datatable.search($(this).val().toLowerCase(), 'Type');
+            datatable.search($(this).val().toLowerCase(), 'Department');
         });
 
         $('#kt_form_status,#kt_form_type').selectpicker();

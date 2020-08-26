@@ -1,26 +1,18 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   var Post = sequelize.define('Post', {
-      post_title: {
+    post_title: {
       type: DataTypes.STRING,
       allowNull: false,
-      },
-      post_body: {
+    },
+    post_body: {
       type: DataTypes.STRING,
       allowNull: false,
-      },
-      CurrentBusinessId: {
-      type: DataTypes.INTEGER,
+    },
+    solution_number: {
+      type: DataTypes.STRING,
       allowNull: false,
-      },
-      DepartmentId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      },
-      UserId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      } 
+    }
   });
   
   // create post association

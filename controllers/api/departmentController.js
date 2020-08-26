@@ -9,7 +9,7 @@
 /**
  * Module dependencies.
  */
-var models = require('../models');
+var models = require('../../models');
 
 
 // Display department create form on GET.
@@ -109,15 +109,18 @@ exports.getDepartmentDetails = async function(req, res, next) {
 
 // Display list of all roles.
 exports.getDepartmentList = async function(req, res, next) {
-
-    models.Department.findAll().then(async function(departments) {
-        console.log("rendering Department list");
-        res.render('pages/content', {
-            title: 'Department List',
-            departments: departments,
-            functioName: 'GET DEPARTMENT LIST',
-            layout: 'layouts/list'
+    try {
+        models.Department.findAll().then(async function(data) {
+            res.status(200).json({
+                status: true,
+                data,
+                message: 'Department List Generated successfully'
+            });
         });
-        console.log("Departments list renders successfully");
-    });
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            message: `There was an error - ${error}`
+        });
+    }
 };

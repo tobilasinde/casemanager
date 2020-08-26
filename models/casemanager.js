@@ -5,9 +5,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM('Support', 'Request'),
         defaultValue: 'Support'
       },
-      case_number: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      id: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        primaryKey: true,
+        unique: true
       },
       status: {
         type: DataTypes.ENUM('New', 'On Hold', 'Escalated', 'Working', 'Closed'),
@@ -38,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       assigned_to: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       },
       response_status: {
         type: DataTypes.ENUM('Awaiting Customer Reply', 'Awaiting Business Reply', 'Completed'),
@@ -59,7 +61,33 @@ module.exports = (sequelize, DataTypes) => {
       },
       updatedBy: {
         type: DataTypes.STRING
-      }
+      },
+      date_closed: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      closed_reason: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      sol_no: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      closed_by: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      SLA_violation: {
+        type: DataTypes.ENUM('Yes', 'No'),
+        defaultValue: 'No'
+      },
+      password: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+        unique: true
+      },
   });
   
   // create case association
@@ -68,7 +96,7 @@ module.exports = (sequelize, DataTypes) => {
     models.Casemanager.belongsTo(models.User, {
       onDelete: "CASCADE",
       foreignKey: {
-        allowNull: false
+        // allowNull: false
       }
     });
     
@@ -82,7 +110,7 @@ module.exports = (sequelize, DataTypes) => {
     models.Casemanager.belongsTo(models.CurrentBusiness, {
       onDelete: "CASCADE",
       foreignKey: {
-        allowNull: false
+        // allowNull: false
       }
     });
     models.Casemanager.hasMany(models.Casecomment);

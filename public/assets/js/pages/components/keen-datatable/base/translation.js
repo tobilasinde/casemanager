@@ -6,6 +6,11 @@ var KTDatatableTranslationDemo = function() {
 
     // basic demo
     var demo = function() {
+		let link = '';
+		if(document.location.href == `${Route.root}/case/cases`) link = `${Route.apiRoot}/case/cases-list`
+		else if (document.location.href == `${Route.root}/case/user`) link = `${Route.apiRoot}/case/user`
+		else if (document.location.href == `${Route.root}/case/user/customer`) link = `${Route.apiRoot}/case/user/customer`
+		else if (document.location.href == `${Route.root}/`) link = `${Route.apiRoot}/case/user`
 
         var datatable = $('.kt_datatable').KTDatatable({
             // datasource definition
@@ -13,7 +18,7 @@ var KTDatatableTranslationDemo = function() {
                 type: 'remote',
                 source: {
                     read: {
-                        url: 'https://keenthemes.com/keen/tools/preview/api/datatables/demos/default2.php',
+                        url: link,
                     },
                 },
                 pageSize: 10,
@@ -41,153 +46,92 @@ var KTDatatableTranslationDemo = function() {
             },
 
             // columns definition
-            columns: [{
-                field: 'id',
-                title: '#',
-                sortable: 'asc',
-                width: 30,
-                type: 'number',
-                selector: false,
-                textAlign: 'center',
-            }, {
-                field: 'employee_id',
-                title: 'Employee ID',
-            }, {
-                field: 'name',
-                title: 'Name',
-                template: function(row) {
-                    return row.first_name + ' ' + row.last_name;
-                },
-            }, {
-                field: 'hire_date',
-                title: 'Hire Date',
-                type: 'date',
-                format: 'MM/DD/YYYY',
-            }, {
-                field: 'gender',
-                title: 'Gender',
-            }, {
-                field: 'status',
-                title: 'Status',
-                // callback function support for column rendering
-                template: function(row) {
-                    var status = {
-                        1: {
-                            'title': 'Pending',
-                            'class': 'kt-badge--brand'
-                        },
-                        2: {
-                            'title': 'Delivered',
-                            'class': ' kt-badge--metal'
-                        },
-                        3: {
-                            'title': 'Canceled',
-                            'class': ' kt-badge--primary'
-                        },
-                        4: {
-                            'title': 'Success',
-                            'class': ' kt-badge--success'
-                        },
-                        5: {
-                            'title': 'Info',
-                            'class': ' kt-badge--info'
-                        },
-                        6: {
-                            'title': 'Danger',
-                            'class': ' kt-badge--danger'
-                        },
-                        7: {
-                            'title': 'Warning',
-                            'class': ' kt-badge--warning'
-                        },
-                    };
-                    return '<span class="kt-badge ' + status[row.status].class + ' kt-badge--inline kt-badge--pill">' + status[row.status].title + '</span>';
-                },
-            }, {
-                field: 'type',
-                title: 'Type',
-                autoHide: false,
-                // callback function support for column rendering
-                template: function(row) {
-                    var status = {
-                        1: {
-                            'title': 'Online',
-                            'state': 'danger'
-                        },
-                        2: {
-                            'title': 'Retail',
-                            'state': 'primary'
-                        },
-                        3: {
-                            'title': 'Direct',
-                            'state': 'accent'
-                        },
-                    };
-                    return '<span class="kt-badge kt-badge--' + status[row.type].state + ' kt-badge--dot"></span>&nbsp;<span class="kt-font-bold kt-font-' + status[row.type].state + '">' +
-                        status[row.type].title + '</span>';
-                },
-            }, {
-                field: 'Actions',
-                title: 'Actions',
-                sortable: false,
-                width: 110,
-                overflow: 'visible',
-                autoHide: false,
-                template: function() {
-                    return '\
-						<div class="dropdown">\
-							<a href="javascript:;" class="btn btn-sm btn-clean btn-icon btn-icon-md" data-toggle="dropdown">\
-                                <i class="la la-ellipsis-h"></i>\
-                            </a>\
-						  	<div class="dropdown-menu dropdown-menu-right">\
-						    	<a class="dropdown-item" href="#"><i class="la la-edit"></i> Edit Details</a>\
-						    	<a class="dropdown-item" href="#"><i class="la la-leaf"></i> Update Status</a>\
-						    	<a class="dropdown-item" href="#"><i class="la la-print"></i> Generate Report</a>\
-						  	</div>\
-						</div>\
-						<a href="javascript:;" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="Edit details">\
-							<i class="la la-edit"></i>\
-						</a>\
-						<a href="javascript:;" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="Delete">\
-							<i class="la la-trash"></i>\
-						</a>\
-					';
-                },
-            }],
+			columns: [
+				{
+					field: 'id',
+					title: '#',
+					sortable: false,
+					width: 10,
+					type: 'number',
+					selector: {class: 'kt-checkbox--solid'},
+					textAlign: 'center',
+				},{
+					field: 'case_number',
+					title: 'Case Number',
+				}, {
+					field: 'subject',
+					title: 'Subject',
+				}, {
+					field: 'createdAt',
+                    title: 'Date Created',
+					sortable: true,
+                    template: function(row) {
+                        return moment(row.createdAt).format('ll');;
+                    }
+				},{
+					field: 'Department.department_name',
+					title: 'Department',
+				}, {
+					field: 'status',
+					title: 'Status',
+					// // callback function support for column rendering
+					template: function(row) {
+						var status = {
+							'New': {'title': 'New', 'class': 'kt-badge--brand'},
+							'On Hold': {'title': 'On Hold', 'class': ' kt-badge--metal'},
+							'Escalated': {'title': 'Escalated', 'class': ' kt-badge--danger'},
+							'Working': {'title': 'Working', 'class': ' kt-badge--warning'},
+							'Closed': {'title': 'Closed', 'class': ' kt-badge--success'},
+						};
+						return '<span class="kt-badge ' + status[row.status].class + ' kt-badge--inline kt-badge--pill">' + status[row.status].title + '</span>';
+					},
+				}, {
+					field: 'priority',
+					title: 'Priority',
+					autoHide: false,
+					// callback function support for column rendering
+					template: function(row) {
+						var status = {
+							'High': {'title': 'High', 'state': 'danger'},
+							'Medium': {'title': 'Medium', 'state': 'warning'},
+							'Low': {'title': 'Low', 'state': 'accent'},
+						};
+						return '<span class="kt-badge kt-badge--' + status[row.priority].state + ' kt-badge--dot"></span>&nbsp;<span class="kt-font-bold kt-font-' + status[row.priority].state + '">' +
+							status[row.priority].title + '</span>';
+					},
+				}, {
+					field: 'Actions',
+					title: 'Actions',
+					sortable: false,
+					// width: 110,
+					overflow: 'visible',
+					autoHide: false,
+					template: function(row) {
+						return `
+						<a href="/case/${row.id}/update" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="Edit details">
+							<i class="la la-edit"></i>
+						</a>
+						<a href="/case/${row.id}/details" class="btn btn-sm btn-clean btn-icon btn-icon-md" title="View details">
+							<i class="la la-eye"></i>
+						</a>
+						<a href="javascript:;" class="btn btn-clean" title="Change Status">\
+							Change Status
+						</a>
+					`;
+					},
+				}],
 
-            translate: {
-                records: {
-                    processing: 'Cargando...',
-                    noRecords: 'No se encontrarón archivos',
-                },
-                toolbar: {
-                    pagination: {
-                        items: {
-                            default: {
-                                first: 'Primero',
-                                prev: 'Anterior',
-                                next: 'Siguiente',
-                                last: 'Último',
-                                more: 'Más páginas',
-                                input: 'Número de página',
-                                select: 'Seleccionar tamaño de página',
-                            },
-                            info: 'Viendo {{start}} - {{end}} de {{total}} registros',
-                        },
-                    },
-                },
-            },
         });
 
         $('#kt_form_status').on('change', function() {
             datatable.search($(this).val().toLowerCase(), 'status');
         });
 
-        $('#kt_form_type').on('change', function() {
-            datatable.search($(this).val().toLowerCase(), 'type');
+        $('.priority').on('change', function() {
+            datatable.search($(this).val().toLowerCase(), 'priority');
         });
 
-        $('#kt_form_status,#kt_form_type').selectpicker();
+        $('#kt_form_status,.priority').selectpicker();
 
     };
 

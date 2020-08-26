@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+
+<!--
+Theme: Keen - The Ultimate Bootstrap Admin Theme
+Author: KeenThemes
+Website: http://www.keenthemes.com/
+Contact: support@keenthemes.com
+Follow: www.twitter.com/keenthemes
+Dribbble: www.dribbble.com/keenthemes
+Like: www.facebook.com/keenthemes
+License: You must have a valid license purchased only from https://themes.getbootstrap.com/product/keen-the-ultimate-bootstrap-admin-theme/ in order to legally use the theme for your project.
+-->
+<html lang="en">
+
+	<!-- begin::Head -->
+	<head>
+		<base href="../../">
+		<meta charset="utf-8" />
+		<title><%= title %></title>
+		<meta name="description" content="User login example">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+		<!--begin::Fonts -->
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700">
+
+		<!--end::Fonts -->
+
+		<!--begin::Page Custom Styles(used by this page) -->
+		<link href="assets/css/pages/login/login-v2.css" rel="stylesheet" type="text/css" />
+		<link href="assets/css/pages/wizards/wizard-v3.css" rel="stylesheet" type="text/css" />
+
+		<!--end::Page Custom Styles -->
+
+		<!--begin::Global Theme Styles(used by all pages) -->
+		<link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+		<link href="assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+
+		<!--end::Global Theme Styles -->
+
+		<!--begin::Layout Skins(used by all pages) -->
+		<link href="assets/css/skins/header/base/light.css" rel="stylesheet" type="text/css" />
+		<link href="assets/css/skins/header/menu/light.css" rel="stylesheet" type="text/css" />
+		<link href="assets/css/skins/brand/navy.css" rel="stylesheet" type="text/css" />
+		<link href="assets/css/skins/aside/navy.css" rel="stylesheet" type="text/css" />
+
+		<!--end::Layout Skins -->
+		<link rel="shortcut icon" href="assets/media/logos/favicon.ico" />
+		<script src="https://www.google.com/recaptcha/api.js"></script>
+	</head>
+
+	<!-- end::Head -->
+
+	<!-- begin::Body -->
+	<body class="kt-login-v2--enabled kt-quick-panel--right kt-demo-panel--right kt-offcanvas-panel--right kt-header--fixed kt-header-mobile--fixed kt-subheader--enabled kt-subheader--transparent kt-aside--enabled kt-aside--fixed kt-page--loading">
+
+		<!-- begin:: Page -->
+		<div class="kt-grid kt-grid--ver kt-grid--root">
+			<div class="kt-grid__item   kt-grid__item--fluid kt-grid  kt-grid kt-grid--hor kt-login-v2" id="kt_login_v2">
+
+				<!--begin::Item-->
+				<div class="kt-grid__item  kt-grid--hor">
+
+					<!--begin::Heade-->
+					<div class="kt-login-v2__head">
+						<div class="kt-login-v2__logo">
+							<a href="#">
+								<!-- <img src="assets/media/logos/logo-5.png" alt="" /> -->
+							</a>
+						</div>
+						<div class="kt-login-v2__signup">
+							<!-- <span>Don't have an account?</span>
+							<a href="#" class="kt-link kt-font-brand">Sign Up</a> -->
+						</div>
+					</div>
+
+					<!--begin::Head-->
+				</div>
+
+				<!--end::Item-->
+
+				<!--begin::Item-->
+				<div class="kt-grid__item  kt-grid  kt-grid--ver  kt-grid__item--fluid">
+
+					<!--begin::Body-->
+					<div class="kt-login-v2__body">
+
+						<!--begin::Wrapper-->
+						<!-- begin:: Content -->
+						<div class="kt-container  kt-container--fluid  kt-grid__item kt-grid__item--fluid">
+							<div class="kt-portlet">
+								<div class="kt-portlet__body kt-portlet__body--fit">
+									<div class="kt-wizard-v3" id="kt_wizard_v3" data-ktwizard-state="step-first">
+
+										<!--begin:Nav -->
+										<div class="kt-wizard-v3__nav">
+											<div class="kt-wizard-v3__nav-line"></div>
+
+											<!--doc: Remove "kt-wizard-v1__nav-items--clickable" class and also set 'clickableSteps: false' in the JS init to disable manually clicking step titles -->
+											<div class="kt-wizard-v3__nav-items kt-wizard-v3__nav-items--clickable">
+
+												<!--doc: Replace A tag with SPAN tag to disable the step link click -->
+												<div class="kt-wizard-v3__nav-item" data-ktwizard-type="step" data-ktwizard-state="current">
+													<span>1</span>
+													<i class="fa fa-check"></i>
+													<div class="kt-wizard-v3__nav-label">Case Type</div>
+												</div>
+												<div class="kt-wizard-v3__nav-item" data-ktwizard-type="step">
+													<span>2</span>
+													<i class="fa fa-check"></i>
+													<div class="kt-wizard-v3__nav-label">Request Type</div>
+												</div>
+												<div class="kt-wizard-v3__nav-item" data-ktwizard-type="step">
+													<span>3</span>
+													<i class="fa fa-check"></i>
+													<div class="kt-wizard-v3__nav-label">Case Details</div>
+												</div>
+												<div class="kt-wizard-v3__nav-item" data-ktwizard-type="step">
+													<span>4</span>
+													<i class="fa fa-check"></i>
+													<div class="kt-wizard-v3__nav-label">Contacts</div>
+												</div>
+												<div class="kt-wizard-v3__nav-item" data-ktwizard-type="step">
+													<span>5</span>
+													<i class="fa fa-check"></i>
+													<div class="kt-wizard-v3__nav-label">Finalize</div>
+												</div>
+											</div>
+										</div>
+
+										<!--end:Nav -->
+
+										<!--begin:Form-->
+                                        <form enctype="multipart/form-data" name="createCase" class="kt-form kt-form--fit kt-form--label-right" onsubmit="submitCreateCase(event)" id="kt_form">
+
+											<!--begin:Step 1-->
+											<div class="kt-wizard-v3__content" data-ktwizard-type="step-content" data-ktwizard-state="current">
+												<div class="kt-heading kt-heading--md">Case Type</div>
+												<div class="kt-separator kt-separator--height-xs"></div>
+												<div class="kt-form__section kt-form__section--first">
+													<div class="form-group">
+														<div class="kt-radio-inline">
+                                                            <% caseType.forEach(function(dropdown) { %>
+                                                            <label class="kt-radio kt-radio--solid">
+                                                                    <input type="radio" required name="case_type" value="<%= dropdown %>" onclick="handleClick(this);"> <%= dropdown %>
+                                                                <span></span>
+                                                            </label>
+                                                            <% }); %>
+                                                        </div>
+													</div>
+												</div>
+											</div>
+
+											<!--end:Step 1-->
+
+											<!--begin:Step 2-->
+											<div class="kt-wizard-v3__content" data-ktwizard-type="step-content">
+												<div class="kt-form__section kt-form__section--first">
+													<div class="kt-heading kt-heading--md">Request Type</div>
+													<div class="form-group">
+                                                        <div class="kt-radio-inline" id="request_type">
+
+                                                        </div>
+													</div>
+												</div>
+											</div>
+
+											<!--end:Step 2-->
+
+											<!--begin:Step 3-->
+											<div class="kt-wizard-v3__content" data-ktwizard-type="step-content">
+												<div class="kt-heading kt-heading--md">Case Details</div>
+												<div class="kt-separator kt-separator--height-xs"></div>
+												<div class="kt-form__section kt-form__section--first">
+													<div class="row">
+														<div class="col-xl-12">
+                                                            <div class="form-group row">
+                                                                <label class="col-lg-3 col-form-label">Subject:</label>
+                                                                <div class="col-lg-6">
+                                                                    <input type="text" name="subject"required class="form-control" placeholder="Enter Case Subject">
+                                                                </div>
+                                                            </div>
+														</div>
+														<div class="col-xl-12">
+                                                            <div class="form-group row">
+                                                                <label class="col-lg-3 col-form-label">Description:</label>
+                                                                <div class="col-lg-6">
+                                                                    <textarea class="form-control" required name="description" placeholder="Enter Case Description here..." rows="5"></textarea>
+                                                                </div>
+                                                            </div>
+														</div>
+													</div>
+													<div class="row">
+														<div class="col-xl-12">
+                                                            <div class="form-group row">
+                                                                <label class="col-lg-3 col-form-label">Priority:</label>
+                                                                <div class="col-lg-6">
+                                                                    <div class="kt-input-icon">
+                                                                        <select class="form-control" required name="priority">
+                                                                            <option value="">Select</option>
+                                                                            <% casePriority.forEach(function(dropdown) { %>
+                                                                                <option  value="<%= dropdown %>"><%= dropdown %></option>
+                                                                            <% }); %>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+														</div>
+														<div class="col-xl-12">
+                                                            <div class="form-group row">
+                                                                <label class="col-lg-3 col-form-label">SLA Violation:</label>
+                                                                <div class="col-lg-6">
+                                                                    <div class="kt-radio-inline">
+                                                                        <label class="kt-radio kt-radio--solid">
+                                                                                <input type="radio" required name="SLA_violation" value="No" checked> No
+                                                                            <span></span>
+                                                                        </label>
+                                                                        <label class="kt-radio kt-radio--solid">
+                                                                                <input type="radio" required name="SLA_violation" value="Yes"> Yes
+                                                                            <span></span>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+														</div>
+													</div>
+												</div>
+											</div>
+
+											<!--end:Step 3-->
+
+											<!--begin:Step 4-->
+											<div class="kt-wizard-v3__content" data-ktwizard-type="step-content">
+												<div class="kt-form__section kt-form__section--first">
+													<div class="kt-heading kt-heading--md">Contact Details</div>
+													<div class="row">
+														<div class="col-xl-12">
+                                                            <div class="form-group row">
+                                                                <label class="col-lg-3 col-form-label">Contact Name:</label>
+                                                                <div class="col-lg-6">
+                                                                    <input name="contact_name" required type="text" class="form-control" placeholder="Contact Name">
+                                                                </div>
+                                                            </div>
+														</div>
+														<div class="col-xl-12">
+                                                            <div class="form-group row">
+                                                                <label class="col-lg-3 col-form-label">Contact Email:</label>
+                                                                <div class="col-lg-6">
+                                                                    <input name="contact_email" required type="email" class="form-control" placeholder="Contact Email">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+													</div>
+													<div class="kt-heading kt-heading--md">Personnel In-Charge</div>
+													<div class="row">
+														<div class="col-xl-12">
+                                                            <div class="form-group row">
+                                                                <label class="col-lg-3 col-form-label">Department:</label>
+                                                                <div class="col-lg-6">
+                                                                    <div class="kt-input-icon">
+                                                                        <select class="form-control" required name="department">
+                                                                            <option value="">Select</option>
+                                                                            <% departments.forEach(function(dropdown) { if(dropdown.department_name != 'Owner' && dropdown.department_name != 'Customer') { %>
+                                                                                <option  value="<%= dropdown.id %>"><%= dropdown.department_name %></option>
+                                                                            <% }}); %>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+														</div>
+													</div>
+												</div>
+											</div>
+
+											<!--end:Step 4-->
+
+											<!--begin:Step 5-->
+											<div class="kt-wizard-v3__content" data-ktwizard-type="step-content">
+												<div class="kt-form__section kt-form__section--first">
+													<div class="kt-heading kt-heading--md">Optional</div>
+													<div class="form-group">
+														<div class="row">
+                                                            <div class="col-xl-12">
+                                                                <div class="form-group row">
+                                                                    <label class="col-lg-3 col-form-label">Attach File:</label>
+                                                                    <div class="col-lg-6">
+                                                                        <div class="kt-input-icon">
+                                                                            <input name="file" type="file" multiple class="form-control">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xl-12">
+                                                                <div class="form-group row">
+                                                                    <label class="col-lg-3 col-form-label">Additional Note:</label>
+                                                                    <div class="col-lg-6">
+                                                                        <textarea class="form-control" name="note" placeholder="Enter Additional Note" rows="5"></textarea>
+                                                                    </div>
+                                                                </div>
+															</div>
+															<div class="col-xl-12">
+                                                                <div class="form-group row">
+                                                                    <div class="g-recaptcha" data-sitekey="6LfsDcMZAAAAAL1gFnczeXgV6-1KoX-dO6aLMaxP"></div>
+                                                                </div>
+                                                            </div>
+														</div>
+													</div>
+												</div>
+											</div>
+
+											<!--end:Step 5-->
+
+											<!--begin:Form Actions -->
+											<div class="kt-form__actions">
+												<div class="btn btn-outline-brand btn-md btn-tall btn-wide btn-bold btn-upper" data-ktwizard-type="action-prev">
+													Previous
+												</div>
+												<button type="submit" class="btn btn-brand btn-md btn-tall btn-wide btn-bold btn-upper" data-ktwizard-type="action-submit" id="caseSubmitBtn">
+													Submit
+                                                </button>
+												<div class="btn btn-brand btn-md btn-tall btn-wide btn-bold btn-upper" data-ktwizard-type="action-next">
+													Next Step
+												</div>
+											</div>
+
+											<!--end:Form Actions -->
+										</form>
+
+										<!--end:Form-->
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- end:: Content -->
+
+						<!--end::Wrapper-->
+
+					</div>
+
+					<!--begin::Body-->
+				</div>
+
+				<!--end::Item-->
+
+				<!--begin::Item-->
+				<div class="kt-grid__item">
+					<div class="kt-login-v2__footer">
+						<div class="kt-login-v2__link">
+							<a href="#" class="kt-link kt-font-brand">Privacy</a>
+							<a href="#" class="kt-link kt-font-brand">Legal</a>
+							<a href="#" class="kt-link kt-font-brand">Contact</a>
+						</div>
+						<div class="kt-login-v2__info">
+							<a href="#" class="kt-link">&copy; 2018 KeenThemes</a>
+						</div>
+					</div>
+				</div>
+
+				<!--end::Item-->
+			</div>
+		</div>
+
+		<!-- end:: Page -->
+
+		<!-- begin::Global Config(global config for global JS sciprts) -->
+		<script>
+			var KTAppOptions = {
+				"colors": {
+					"state": {
+						"brand": "#5d78ff",
+						"metal": "#c4c5d6",
+						"light": "#ffffff",
+						"accent": "#00c5dc",
+						"primary": "#5867dd",
+						"success": "#34bfa3",
+						"info": "#36a3f7",
+						"warning": "#ffb822",
+						"danger": "#fd3995",
+						"focus": "#9816f4"
+					},
+					"base": {
+						"label": [
+							"#c5cbe3",
+							"#a1a8c3",
+							"#3d4465",
+							"#3e4466"
+						],
+						"shape": [
+							"#f0f3ff",
+							"#d9dffa",
+							"#afb4d4",
+							"#646c9a"
+						]
+					}
+				}
+			};
+		</script>
+		<script src="/assets/custom/case/create.js" type="text/javascript"></script>
+		<script>
+			function handleClick(case_type) {
+				if (case_type.value == 'Support'){
+					document.getElementById('request_type').innerHTML = `<label class="kt-radio kt-radio--solid">
+																					<input type="radio" checked required name="request_type" value="Issues"> Issues
+																				<span></span>
+																			</label>
+																			<label class="kt-radio kt-radio--solid">
+																					<input type="radio" disabled required name="request_type" value="Complaints"> Complaints
+																				<span></span>
+																			</label>`;
+				} else {
+					document.getElementById('request_type').innerHTML = `<label class="kt-radio kt-radio--solid">
+																					<input type="radio" equired name="request_type" value="Issues"> Issues
+																				<span></span>
+																			</label>
+																			<label class="kt-radio kt-radio--solid">
+																					<input type="radio" required name="request_type" value="Complaints"> Complaints
+																				<span></span>
+																			</label>`;
+				}
+			}
+		</script>
+
+		<!-- end::Global Config -->
+
+		<!--begin::Global Theme Bundle(used by all pages) -->
+		<script src="assets/plugins/global/plugins.bundle.js" type="text/javascript"></script>
+		<script src="assets/js/scripts.bundle.js" type="text/javascript"></script>
+
+		<!--end::Global Theme Bundle -->
+
+		<!--begin::Page Scripts(used by this page) -->
+		<script src="/assets/js/pages/custom/user/login.js" type="text/javascript"></script>
+		<script src="/assets/js/pages/custom/users/add.js" type="text/javascript"></script>
+
+		<!--end::Page Scripts -->
+	</body>
+
+	<!-- end::Body -->
+</html>

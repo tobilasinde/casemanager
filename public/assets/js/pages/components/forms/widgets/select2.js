@@ -156,7 +156,7 @@ var KTSelect2 = function() {
         $('#kt_select2_modal').on('shown.bs.modal', function () {
             // basic
             $('#kt_select2_1_modal').select2({
-                placeholder: "Select a state"
+                placeholder: "Select a solution number"
             });
 
             // nested
