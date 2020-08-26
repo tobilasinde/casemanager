@@ -13,8 +13,8 @@ const { validationResult } = require('express-validator');
 const AWS = require('aws-sdk');
 // initiate s3 library from AWS
 const s3 = new AWS.S3({
-    accessKeyId: 'AKIAI5U5MDW3ZZS4A76A',
-    secretAccessKey: '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'
+    accessKeyId: '',
+    secretAccessKey: ''
   });
 
 
