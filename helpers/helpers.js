@@ -132,8 +132,8 @@ module.exports = {
         
         // params for AWS S3
         const params = {
-            Bucket: 'bringforthjoy', // pass your bucket name
-            Key: 'home/TraineesFolder/casemanager/' + name, // file will be saved as     /TraineesFolder/assignment1.doc
+            Bucket: 'tobilasinde', // pass your bucket name
+            Key: 'manifest/' + name, // file will be saved as     /TraineesFolder/assignment1.doc
             Body: uploadedFile.data
         };
         return params;
