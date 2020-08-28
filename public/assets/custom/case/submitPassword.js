@@ -1,31 +1,30 @@
-const caseSubmitBtn = document.getElementById('caseSubmitBtn');
+const passwordSubmitBtn = document.getElementById('passwordSubmitBtn');
 
-caseSubmitBtn.addEventListener('click', ()=>{
-  caseSubmitBtn.innerHTML = '<i class="kt-spinner kt-spinner--md kt-spinner--center px-4 kt-spinner--light"></i>';
+passwordSubmitBtn.addEventListener('click', ()=>{
+  PasswordSubmitBtn.innerHTML = '<i class="kt-spinner kt-spinner--md kt-spinner--center px-4 kt-spinner--light"></i>';
 });
 
-const submitUpdateCase = async (event, caseId) => {
+const submitPassword = async (event, caseId) => {
 	try {
   event.preventDefault();
   //const form = event.target;
-  const form = document.getElementById('case_form');
+  const form = document.getElementById('password_form');
   const formData = {
-    case_id: form.case_id.value,
     password: form.password.value
   }
-    const casemanager = await updateCase(formData, caseId);
+    const guest = await submitPass(formData, caseId);
     let errors = '';
-    console.log(casemanager);
-    if (casemanager.status) {
+    console.log(guest);
+    if (guest.status) {
       swal.fire(
         'Awesome!',
-        'Case updated Successfully!',
+        guest.message,
         'success'
       )
-      location.href = `/case/${caseId}/details`;
+      location.href = `/guest/${caseId}/details`;
     } else {
-      caseSubmitBtn.innerHTML = 'Check Case';
-    casemanager.errors.forEach(error => {
+      guestSubmitBtn.innerHTML = 'Check Case';
+    guest.errors.forEach(error => {
       swal.fire(
         'Oops!',
         error.msg,
@@ -46,9 +45,9 @@ const submitUpdateCase = async (event, caseId) => {
 
 };
 
-const updateCase = async (data, caseId) => {
+const submitPass = async (data, caseId) => {
     try {
-      const casemanager = await fetch(`${Route.root}/case/${caseId}/details`, {
+      const guest = await fetch(`${Route.apiRoot}/guest/${caseId}/password`, {
         // mode: 'no-cors',
         method: 'POST',
         headers: {
@@ -56,7 +55,7 @@ const updateCase = async (data, caseId) => {
         },
         body: JSON.stringify(data)
       });
-      return await casemanager.json();
+      return await guest.json();
     } catch (error) {
       console.log(error);
       // show network error notification

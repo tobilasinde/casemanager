@@ -88,12 +88,12 @@
             <table class="kt-datatable" id="html_table" width="100%">
                 <thead>
                     <tr>
-                        <th title="Field #1">Case No</th>
+                        <th title="Field #1">Case No.</th>
                         <th title="Field #2">Subject</th>
                         <th title="Field #4">Department</th>
 						<th title="Field #5">Status</th>
 						<th title="Field #6">Priority</th>
-                        <th title="Field #7">Action</th>
+                        <th title="Field #7">Actions</th>
                         <th title="Field #8"></th>
                     </tr>
                 </thead>
@@ -108,328 +108,15 @@
 
                             <td>
 								<span>
-									<span>
-										<button type="button" data-toggle="modal" data-target="#detail<%= casei.id %>" class="btn btn-clean btn-sm btn-icon btn-icon-md" aria-haspopup="true" aria-expanded="false">
-											<i class="la la-eye"></i>
-										</button>
-										<!-- Modal -->
-										<div class="modal fade" id="detail<%= casei.id %>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-											<div class="modal-dialog modal-xl" role="document">
-												<div class="modal-content">
-													<div class="modal-header">
-														<h5 class="modal-title" id="exampleModalLongTitle">Case Details</h5>
-														<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-															<span aria-hidden="true">&times;</span>
-														</button>
-													</div>
-													<div class="modal-body">
-														
-													<!--Begin:: App Content-->
-													<div class="kt-grid__item kt-grid__item--fluid kt-app__content">
-														<div class="kt-portlet">
-															<div class="kt-portlet__head">
-																<div class="kt-portlet__head-label">
-																	<h3 class="kt-portlet__head-title">Case Details </h3>
-																</div>
-															</div>
-															<div class="kt-portlet__body">
-																<div class="kt-section kt-section--first">
-																	<div class="kt-section__body">
-																		<div class="row">
-																			<label class="col-lg-2">Subject:</label>
-																			<div class="col-lg-3">
-																				<%= casei.subject %>
-																			</div>
-																			<label class="col-lg-2">Case Number:</label>
-																			<div class="col-lg-3">
-																				<%= casei.id %>
-																			</div>
-																		</div>
-																	</div>
-																</div>
-																<div class="kt-section kt-section--first">
-																	<div class="kt-section__body">
-																		<div class="row">
-																			<label class="col-lg-2">Department:</label>
-																			<div class="col-lg-3">
-																				<%= casei.Department.department_name %>
-																			</div>
-																			<label class="col-lg-2">Created By</label>
-																			<div class="col-lg-3">
-																				<% if(casei.UserId){ %>
-																					<%= casei.User.username %>
-																				<% } else { %>
-																					Guest
-																				<% } %>
-																			</div>
-																		</div>
-																	</div>
-																</div>
-																<div class="kt-section kt-section--first">
-																	<div class="kt-section__body">
-																		<div class="row">
-																			<label class="col-lg-2">Date Created:</label>
-																			<div class="col-lg-3">
-																				<%= moment(casei.createdAt).format('ll'); %>
-																			</div>
-																		</div>
-																	</div>
-																</div>
-																<div class="kt-section kt-section--first">
-																	<div class="kt-section__body">
-																		<div class="row">
-																			<label class="col-lg-2">Body</label>
-																			<div class="col-lg-8">
-																				<%= casei.description %>
-																			</div>
-																		</div>
-																	</div>
-																</div>
-															</div>
-														</div>
-														<!--begin::Portlet-->
-														<div class="kt-portlet">
-															<div class="kt-portlet__body">
-																<!--begin::Accordion-->
-																<div class="accordion" id="accordionExample4">
-																	<div class="card">
-																		<div class="card-header" id="headingTwo4">
-																			<div class="card-title collapsed" data-toggle="collapse" data-target="#collapseTwo5" aria-expanded="false" aria-controls="collapseTwo4">
-																				<i class="flaticon2-box"></i> Add Comments
-																			</div>
-																		</div>
-																		<div id="collapseTwo5" class="collapse show" aria-labelledby="headingTwo1" data-parent="#accordionExample4">
-																			<div class="card-body">
-																				<div class="kt-portlet__body">
-																					<div class="kt-notes">
-																						<div class="kt-notes__items">
-																							<!--begin::Form-->
-																							<form name="createComment" class="kt-form kt-form--fit kt-form--label-right" onsubmit="submitCommentCase(event, '<%= casei.id %>')" id="comment_form<%= casei.id %>">
-																								<div class="kt-portlet__body">
-																									<div class="form-group">
-																										<label>Comment Title</label>
-																										<input type="text" name="title" class="form-control" aria-describedby="emailHelp" placeholder="Enter title">
-																									</div>
-																									<div class="form-group form-group-last">
-																										<label for="exampleTextarea">Comment Description</label>
-																										<textarea name="body" class="form-control" rows="5"></textarea>
-																									</div>
-																								</div>
-																								<div class="kt-portlet__foot">
-																									<div class="kt-form__actions">
-																										<button type="submit" id="commentSubmitBtn<%= casei.id %>" class="btn btn-success">Post Comment</button>
-																									</div>
-																								</div>
-																							</form>
-																					<!--end::Form-->
-																						</div>
-																					</div>
-																				</div>
-																			</div>
-																		</div>
-																	</div>
-																</div>
-																<div class="accordion" id="accordionExample4">
-																	<div class="card">
-																		<div class="card-header" id="headingTwo4">
-																			<div class="card-title collapsed" data-toggle="collapse" data-target="#collapseTwo4" aria-expanded="false" aria-controls="collapseTwo4">
-																				<i class="flaticon2-box"></i> View Comments
-																			</div>
-																		</div>
-																		<div id="collapseTwo4" class="collapse <% if(cases.casecomments.length != 0) { %> show <% } %>" aria-labelledby="headingTwo1" data-parent="#accordionExample4">
-																			<div class="card-body">
-																				<div class="kt-portlet__body">
-																					<div class="kt-notes">
-																						<div class="kt-notes__items">
-																							<% cases.casecomments.forEach(function(comment) { if(comment.CasemanagerId == casei.id) { %>
-																								<div class="kt-notes__item">
-																									<div class="kt-notes__media">
-																										<span class="kt-notes__icon">
-																											<i class="flaticon2-digital-marketing kt-font-danger"></i>
-																										</span>
-																									</div>
-																									<div class="kt-notes__content">
-																										<div class="kt-notes__section">
-																											<div class="kt-notes__info">
-																												<a href="#" class="kt-notes__title">
-																													<%= comment.title %>
-																												</a>
-																												<span class="kt-notes__desc">
-																													<%= moment(comment.createdAt).format('MMMM Do YYYY, h:mm:ss a') %>
-																												</span>
-																											</div>
-																										</div>
-																										<span class="kt-notes__body">
-																											<%= comment.body %>
-																										</span>
-																									</div>
-																									<% if(casei.UserId){ %>
-																										<%= comment.User.username %>
-																									<% } else { %>
-																										Guest
-																									<% } %>
-																								</div>
-																							<% }}); %>
-																						</div>
-																					</div>
-																				</div>
-																			</div>
-																		</div>
-																	</div>
-																</div>
-	
-																<!--end::Accordion-->
-															</div>
-														</div>
-	
-														<!--end::Portlet-->
-													</div>
-	
-													<!--End:: App Content-->
-													</div>
-												</div>
-											</div>
-										</div>
-									</span>
-									<button data-toggle="modal" data-target="#update<%= casei.id %>" class="btn btn-clean btn-sm btn-icon btn-icon-md" aria-haspopup="true" aria-expanded="false">
+									<a href="/case/<%= casei.id %>/details" class="btn btn-clean btn-sm btn-icon btn-icon-md">
+										<i class="la la-eye"></i>
+									</a>
+									<a href="/case/<%= casei.id %>/update" class="btn btn-clean btn-sm btn-icon btn-icon-md">
 										<i class="la la-edit"></i>
-									</button>
-									<!-- Modal -->
-									<div class="modal fade" id="update<%= casei.id %>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-										<div class="modal-dialog modal-xl" role="document">
-											<div class="modal-content">
-												<div class="modal-header">
-													<h5 class="modal-title" id="exampleModalLongTitle">Edit Case</h5>
-													<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-														<span aria-hidden="true">&times;</span>
-													</button>
-												</div>
-												<form class="kt-form kt-form--fit kt-form--label-right" onsubmit="submitUpdateCase(event, '<%= casei.id %>')" id="case_form<%= casei.id %>">
-													<div class="modal-body">
-														<!--begin::Form-->
-														<div class="form-group row">
-															<label class="col-lg-2 col-form-label">Subject:</label>
-															<div class="col-lg-3">
-																<input type="text" name="subject"required class="form-control" value="<%= casei.subject %>">
-															</div>
-															<label class="col-lg-2 col-form-label">Description:</label>
-															<div class="col-lg-3">
-																<textarea class="form-control" required readonly name="description" rows="5"><%= casei.description %></textarea>
-															</div>
-														</div>
-														<div class="form-group row">
-															<label class="col-lg-2 col-form-label">Contact Name:</label>
-															<div class="col-lg-3">
-																<div class="kt-input-icon">
-																	<input name="contact_name" required type="text" class="form-control" value="<%= casei.contact_name %>">
-																</div>
-															</div>
-															<label class="col-lg-2 col-form-label">Contact Email:</label>
-															<div class="col-lg-3">
-																<div class="kt-input-icon">
-																	<input name="contact_email" required type="text" class="form-control" value="<%= casei.contact_email %>">
-																</div>
-															</div>
-														</div>
-														<div class="form-group row">
-															<label class="col-lg-2 col-form-label">Department:</label>
-															<div class="col-lg-3">
-																<div class="kt-input-icon">
-																	<select class="form-control" required name="department">
-																		<option value="<%= casei.Department.id %>"><%= casei.Department.department_name %></option>
-																		<% departments.forEach(function(dropdown) { if(dropdown.department_name != 'Owner' && dropdown.department_name != 'Customer') { %>
-																			<option  value="<%= dropdown.id %>"><%= dropdown.department_name %></option>
-																		<% }}); %>
-																	</select>
-																</div>
-															</div>
-															<label class="col-lg-2 col-form-label">Assign To:</label>
-															<div class="col-lg-3">
-																<div class="kt-input-icon">
-
-																</div>
-															</div>
-														</div>
-														<div class="form-group row">
-															<label class="col-lg-2 col-form-label">Priority:</label>
-															<div class="col-lg-3">
-																<div class="kt-input-icon">
-																	<select class="form-control" required name="priority">
-																		<option value="<%= casei.priority %>"><%= casei.priority %></option>
-																		<% cases.caseData.casePriority.forEach(function(dropdown) { %>
-																			<option  value="<%= dropdown %>"><%= dropdown %></option>
-																		<% }); %>
-																	</select>
-																</div>
-															</div>
-															<label class="col-lg-2 col-form-label">Origin:</label>
-															<div class="col-lg-3">
-																<div class="kt-radio-inline">
-																	<% cases.caseData.caseOrigin.forEach(function(dropdown) { %>
-																	<label class="kt-radio kt-radio--solid">
-																			<input type="radio" required name="origin" value="<%= dropdown %>" <% if (dropdown == casei.case_origin ) { %>  checked <% } %> > <%= dropdown %>
-																		<span></span>
-																	</label>
-																	<% }); %>
-																</div>
-															</div>
-														</div>
-														<div class="form-group row">
-															<label class="col-lg-2 col-form-label">Case Type:</label>
-															<div class="col-lg-3">
-																<div class="kt-radio-inline">
-																	<% cases.caseData.caseType.forEach(function(dropdown) { %>
-																	<label class="kt-radio kt-radio--solid">
-																			<input type="radio" required name="case_type" value="<%= dropdown %>" <% if (dropdown == casei.case_type ) { %>  checked <% } %> >  <%= dropdown %>
-																		<span></span>
-																	</label>
-																	<% }); %>
-																</div>
-															</div>
-															<label class="col-lg-2 col-form-label">Request Type:</label>
-															<div class="col-lg-3">
-																<div class="kt-radio-inline">
-																	<% cases.caseData.caseRequestType.forEach(function(dropdown) { %>
-																	<label class="kt-radio kt-radio--solid">
-																			<input type="radio" required name="request_type" value="<%= dropdown %>" <% if (dropdown == casei.request_type ) { %>  checked <% } %> > <%= dropdown %>
-																		<span></span>
-																	</label>
-																	<% }); %>
-																</div>
-															</div>
-														</div>
-														<div class="form-group row">
-															<label class="col-lg-2 col-form-label">Additional Note:</label>
-															<div class="col-lg-3">
-																<textarea class="form-control" name="note"><%= casei.note %></textarea>
-															</div>
-															<label class="col-lg-2 col-form-label">Origin:</label>
-															<div class="col-lg-3">
-																<div class="kt-radio-inline">
-																	<label class="kt-radio kt-radio--solid">
-																		<input type="radio" required name="SLA_violation" value="No" <% if ('No' == casei.SLA_violation ) { %>  checked <% } %> > No
-																		<span></span>
-																	</label>
-																	<label class="kt-radio kt-radio--solid">
-																		<input type="radio" required name="SLA_violation" value="Yes" <% if ('Yes' == casei.SLA_violation ) { %>  checked <% } %> > Yes
-																		<span></span>
-																	</label>
-																</div>
-															</div>
-														</div>
-														<!--end::Form-->
-													</div>
-													<div class="modal-footer">
-														<button type="button" class="btn btn-outline-brand" data-dismiss="modal">Close</button>
-														<button type="submit" class="btn btn-outline-brand" id="caseiSubmitBtn<%= casei.id %>">Submit</button>
-													</div>
-												</form>
-											</div>
-										</div>
-									</div>
+									</a>
 									<% if(casei.status != 'Closed'){ %>
 										<a href="#" class="kt-nav__link active" data-toggle="dropdown" aria-expanded="true" role="tab">
-											<span class="kt-nav__link-text btn btn-clean">Status</span>
+											<span class="kt-nav__link-text">Status</span>
 										</a>
 										<div class="dropdown-menu dropdown-menu-right">
 											<% cases.caseData.caseStatus.forEach(function(status) { if(status != 'Closed') { %>
@@ -439,7 +126,7 @@
 											<% }}); %>
 										</div>
 									<% } else if(casei.status == 'Closed' && casei.assigned_to == user.id) { %>
-										<a class="btn btn-clean" onclick="submitStatus(event, '<%= casei.id %>', 'New')"> Reopen</a>
+										<a class="" onclick="submitStatus(event, '<%= casei.id %>', 'New')"> Reopen</a>
 									<% } %>
 								</span>
 							</td>
@@ -460,7 +147,7 @@
 													<div class="col-lg-8">
 														<div class="kt-input-icon">
 															<select class="form-control" required name="reason">
-																<option value="Resolved"><%= casei.subject %></option>
+																<option>Select a Reason</option>
 																<option value="Resolved">Resolved</option>
 																<option value="Abandoned">Abandoned</option>
 																<option value="Known Issues">Known Issues</option>
@@ -500,7 +187,5 @@
     </div>
 </div>
 <!-- end:: Content -->
-<script src="/assets/custom/case/updateCase.js" type="text/javascript"></script>
-<script src="/assets/custom/case/createComment.js" type="text/javascript"></script>
 <script src="/assets/custom/case/updateStatus.js" type="text/javascript"></script>
 <script src="/assets/custom/case/closedStatus.js" type="text/javascript"></script>

@@ -40,7 +40,7 @@ const submitCreateCase = async (event) => {
         'Case created Successfully!',
         'success'
       )
-      location.href = `/case/${casemanager.data.id}/details`;
+      location.href = `/guest/${casemanager.data.id}/details`;
     } else {
       caseSubmitBtn.innerHTML = 'Create Case';
       if(casemanager.errors) {
@@ -73,7 +73,7 @@ const submitCreateCase = async (event) => {
 
 const createCase = async (data) => {
     try {
-      const casemanager = await fetch(`/api/create`, {
+      const casemanager = await fetch(`/api/guest/create`, {
         // mode: 'no-cors',
         method: 'POST',
         body: data

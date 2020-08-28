@@ -10,7 +10,7 @@ var ejsLayouts = require('express-ejs-layouts');
 const fileUpload = require('express-fileupload');
 const moment = require('moment');
 var flash = require('connect-flash');
-
+var automateCaseEmails = require('./job/SendCaseReminderEmail');
 var env = process.env.NODE_ENV || 'development',
     config = require('./config/config.' + env);
 
@@ -21,8 +21,8 @@ var casemanager = require('./routes/casemanager');
 var api = require('./routes/api/casemanager');
 var post = require('./routes/post');
 var postApi = require('./routes/api/post');
-var createCase = require('./routes/createCase');
-var createCaseApi = require('./routes/api/createCase');
+var guest = require('./routes/guest');
+var guestApi = require('./routes/api/guest');
 var miscApi = require('./routes/api/misc');
 var login = require('./routes/login');
 var siteAdmin = require('./routes/siteAdmin');
@@ -84,7 +84,7 @@ app.use(tools.onRequestEnd);
 // generate menu of the application
 app.use('/user', tools.generateUserMenu);
 
-const isWhiteListed = ( path, whiteList = [ 'login', 'autoLogin', 'create', 'details', 'review' ] ) => {
+const isWhiteListed = ( path, whiteList = [ 'login', 'autoLogin', 'guest'] ) => {
     let whiteListed = false;
     for(let i=0; i < whiteList.length; i++) {
         // this won't check authentication for login and autoLogin
@@ -154,9 +154,9 @@ app.use('/case', casemanager);
 app.use('/api/post', postApi);
 app.use('/post', post);
 app.use('/api/misc', miscApi);
-app.use('/create', createCase);
-app.use('/api/create', createCaseApi);
-
+app.use('/guest', guest);
+app.use('/api/guest', guestApi);
+automateCaseEmails();
 //
 // error handling
 //

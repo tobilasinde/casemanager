@@ -34,16 +34,24 @@
                 <div class="kt-portlet__body">
                     <ul class="kt-nav kt-nav--bolder kt-nav--fit-ver kt-nav--v4" role="tablist">
                         <li class="kt-nav__item  active ">
-                            <a href="#" class="kt-nav__link active" data-toggle="dropdown" aria-expanded="true" role="tab">
-                                <span class="kt-nav__link-icon"><i class="flaticon-edit-1"></i></span>
-                                <span class="kt-nav__link-text">Change Case Status</span>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <% caseStatus.forEach(function(status) { %>
-                                    <!-- <a class="dropdown-item" href="/case/<%= casemanager.id %>/status/<%= status %>"><i class="la la-edit"></i> <%= status %></a> -->
-                                    <a class="dropdown-item" onclick="submitStatus(event, '<%= casemanager.id %>', '<%= status %>')"><i class="la la-edit"></i> <%= status %></a>
-                                <% }); %>
-                            </div>
+                            <% if(casemanager.status != 'Closed'){ %>
+                                <a href="#" class="kt-nav__link active" data-toggle="dropdown" aria-expanded="true" role="tab">
+                                    <span class="kt-nav__link-icon"><i class="flaticon-edit-1"></i></span>
+                                    <span class="kt-nav__link-text">Change Case Status</span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <% caseStatus.forEach(function(status) { if(status != 'Closed') { %>
+                                        <a class="dropdown-item" onclick="submitStatus(event, '<%= casemanager.id %>', '<%= status %>')"><i class="la la-edit"></i> <%= status %></a>
+                                    <% } else { %>
+                                        <a class="dropdown-item" data-toggle="modal" data-target=".status<%= casemanager.id %>"><i class="la la-edit"></i> <%= status %></a>
+                                    <% }}); %>
+                                </div>
+                            <% } else if(casemanager.status == 'Closed' && casemanager.assigned_to == user.id) { %>
+                                <a onclick="submitStatus(event, '<%= casemanager.id %>', 'New')" class="kt-nav__link active" >
+                                    <span class="kt-nav__link-icon"><i class="flaticon-edit-1"></i></span>
+                                    <span class="kt-nav__link-text">Reopen</span>
+                                </a>
+                            <% } %>
                         </li>
                         <li class="kt-nav__item  ">
                             <a class="kt-nav__link" onclick="editCase(event, '<%= casemanager.id %>')" role="tab">
@@ -54,9 +62,55 @@
                     </ul>
                 </div>
             </div>
+            <!--begin::Modal-->
+            <div class="modal fade status<%= casemanager.id %>" id="kt_select2_modal" role="dialog" aria-labelledby="" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="">Close Case</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true" class="la la-remove"></span>
+                            </button>
+                        </div>
+                        <form class="kt-form kt-form--fit kt-form--label-right" onsubmit="closedStatus(event, '<%= casemanager.id %>')" id="status_form<%= casemanager.id %>">
+                            <div class="modal-body">
+                                <div class="form-group row">
+                                    <label class="col-lg-3 col-form-label">Reason:</label>
+                                    <div class="col-lg-8">
+                                        <div class="kt-input-icon">
+                                            <select class="form-control" required name="reason">
+                                                <option>Select a reason</option>
+                                                <option value="Resolved">Resolved</option>
+                                                <option value="Abandoned">Abandoned</option>
+                                                <option value="Known Issues">Known Issues</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-form-label col-lg-3 col-sm-12">Solution No.</label>
+                                    <div class="col-lg-8 col-md-9 col-sm-12">
+                                        <select class="form-control kt-select2" id="kt_select2_1_modal" name="sol_no">
+                                            <option></option>
+                                            <% solutions.forEach(function(dropdown) { %>
+                                                <option value="<%= dropdown.solution_number %>"><%= dropdown.solution_number %></option>
+                                            <% }); %>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-brand" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-secondary">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!--end::Modal-->
 
             <!--End:: Portlet-->
-
         </div>
 
         <!--End:: App Aside-->
@@ -119,9 +173,9 @@
                                 <div class="col-lg-3">
                                     <%= casemanager.case_type %>
                                 </div>
-                                <label class="col-lg-2">Response:</label>
+                                <label class="col-lg-2">Request Type:</label>
                                 <div class="col-lg-3">
-                                    <%= casemanager.response_status %>
+                                    <%= casemanager.request_type %>
                                 </div>
                             </div>
                         </div>
@@ -154,7 +208,7 @@
                             </div>
                         </div>
                     </div>
-                    <% if(casemanager.updated_by) { %>
+                    <% if(casemanager.updatedBy) { %>
                         <div class="kt-section kt-section--first">
                             <div class="kt-section__body">
                                 <div class="row">
@@ -188,7 +242,7 @@
                         <div class="kt-section kt-section--first">
                             <div class="kt-section__body">
                                 <div class="row">
-                                    <label class="col-lg-2">Closed Reason:</label>
+                                    <label class="col-lg-2">Reason:</label>
                                     <div class="col-lg-3">
                                         <%= casemanager.closed_reason %>
                                     </div>
@@ -206,6 +260,10 @@
                                 <label class="col-lg-2">SLA Violation:</label>
                                 <div class="col-lg-3">
                                     <%= casemanager.SLA_violation %>
+                                </div>
+                                <label class="col-lg-2">Response:</label>
+                                <div class="col-lg-3">
+                                    <%= casemanager.response_status %>
                                 </div>
                             </div>
                         </div>
@@ -311,9 +369,9 @@
                                                         <div class="kt-notes__content" <% if(casecomment.UserId){ if(user.id == casecomment.UserId || casecomment.User.Role.role_name != 'Customer' && user.Role.role_name != 'Customer') { %> dir="rtl" style="text-align: right;" <% }} %>>
                                                             <div class="kt-notes__section">
                                                                 <div class="kt-notes__info">
-                                                                    <a href="#" class="kt-notes__title">
+                                                                    <span class="kt-notes__title">
                                                                         <%= casecomment.title %>
-                                                                    </a>
+                                                                    </span>
                                                                     <% if(casecomment.UserId) { %>
                                                                         <span class="kt-notes__desc">
                                                                             <%= casecomment.User.username %>
@@ -326,7 +384,7 @@
                                                             </span>
                                                         </div>
                                                         <%= moment(casecomment.createdAt).format('lll') %>
-                                                        <input id="input-7-xs" class="rating rating-loading review<%= casecomment.id %>"  value="<%= casecomment.review %>" dir="rtl" data-min="0" data-max="5" data-step="0.1" name="review" data-size="xs" onchange="sendReview(event, '<%= casecomment.id %>')"<% if(user.id == casecomment.UserId) { %> data-readonly="true" <% } %>><hr/>
+                                                        <!-- <input id="input-7-xs" class="rating rating-loading review<%= casecomment.id %>"  value="<%= casecomment.review %>" dir="rtl" data-min="0" data-max="5" data-step="0.1" name="review" data-size="xs" onchange="sendReview(event, '<%= casecomment.id %>')"<% if(user.id == casecomment.UserId) { %> data-readonly="true" <% } %>><hr/> -->
                                                     </div>
                                                 <% }); %>
                                             </div>
@@ -350,8 +408,10 @@
     <!--End::App-->
 </div>
 
+
 <!-- end:: Content -->
 <script src="assets/custom/case/updateStatus.js" type="text/javascript"></script>
 <script src="assets/custom/case/createComment.js" type="text/javascript"></script>
-<script src="assets/custom/case/sendReview.js" type="text/javascript"></script>
- 
+<!-- <script src="assets/custom/case/sendReview.js" type="text/javascript"></script> -->
+<script src="assets/custom/case/closedStatus.js" type="text/javascript"></script>
+<script src="assets/custom/case/editCase.js" type="text/javascript"></script>

@@ -1,29 +1,15 @@
 const models = require('../models');
 const { stringify } = require('querystring');
+const apiUrl = require('../helpers/apiUrl');
+const apiFetch = require('../helpers/apiFetch');
 const fetch = require('node-fetch');
 const Casemanager = models.Casemanager;
 const Role = models.Role;
-let caseCheck = '';
 let result = [];
-
+var sess;
 module.exports = {
-    caseCheck: async (req, res, next) => {
-        caseCheck = await Casemanager.findByPk(req.params.casemanager_id);
-        if(!caseCheck) {
-            return res.status(400).json({
-                status: false,
-                message: 'Case does not exist'
-            });
-        }
-        if(caseCheck.CurrentBusinessId != req.user.CurrentBusinessId) {
-            return res.status(401).json({
-                status: false,
-                message: 'Unauthorized access - You do not have access to this resources'
-            });
-        }
-        next();
-    },
-    updateCase: (req, res, next) => {
+    updateCase: async (req, res, next) => {
+        const caseCheck = await apiFetch(req, res, `${apiUrl}/case/checkcase/${req.params.casemanager_id}`);
         if(caseCheck.status == 'Closed')
         {
             return res.status(401).json({
@@ -40,7 +26,8 @@ module.exports = {
         }
         next();
     },
-    updateCaseStatus: (req, res, next) => {
+    updateCaseStatus: async (req, res, next) => {
+        const caseCheck = await apiFetch(req, res, `${apiUrl}/case/checkcase/${req.params.casemanager_id}`);
         if(caseCheck.assigned_to != req.user.id)
         {
             return res.status(401).json({
@@ -50,8 +37,8 @@ module.exports = {
         }
         next();
     },
-    createComment: (req, res, next) => {
-        console.log('I am here');
+    createComment: async (req, res, next) => {
+        const caseCheck = await apiFetch(req, res, `${apiUrl}/case/checkcase/${req.params.casemanager_id}`);
         if (req.user && caseCheck.DepartmentId != req.user.DepartmentId && caseCheck.UserId != req.user.id) {
             return res.status(401).json({
                 status: false,
@@ -61,60 +48,52 @@ module.exports = {
         next();
     },
     caseDetails: async (req, res, next) => {
-        caseCheck = await Casemanager.findByPk(req.params.casemanager_id);
+        const caseCheck = await apiFetch(req, res, `${apiUrl}/case/checkcase/${req.params.casemanager_id}`);
         if(!caseCheck) {
             return res.status(400).json({
                 status: false,
                 message: 'Case does not exist'
             });
         }
-        if(!req.user) {
-            return res.render('pages/content', {
-                title: 'Case Password',
-                functioName: 'GET CASE PASSWORD',
-                layout: 'loginlayout',
-                case_id: req.params.casemanager_id
-            });
-        } else {
             if(caseCheck.CurrentBusinessId != req.user.CurrentBusinessId) {
                 return res.status(401).json({
                     status: false,
                     message: 'Unauthorized access - You do not have access to this resources'
                 });
             }
-            const loggedInUser = await models.Role.findByPk(req.user.RoleId);
-            if(caseCheck.UserId != req.user.id && loggedInUser.role_name == 'Customer') {
+            const loggedInUser = await apiFetch(req, res, `${apiUrl}/case/getuser`);
+            if(caseCheck.UserId != req.user.id && loggedInUser.Role.role_name == 'Customer') {
                 return res.status(401).json({
                     status: false,
                     message: 'Unauthorized access - You do not have access to this resources'
                 });
             }
-        }
         next();
     },
-    postCaseDetails: async (req, res, next) => {
-        caseCheck = await Casemanager.findByPk(req.body.case_id);
+    getCaseDetails: async (req, res, next) => {
+        const caseCheck = await apiFetch(req, res, `${apiUrl}/guest/checkcase/${req.params.casemanager_id}`);
         if(!caseCheck) {
             return res.status(400).json({
                 status: false,
                 message: 'Case does not exist'
             });
         }
-        if(caseCheck.password != req.body.password) {
-            return res.status(400).json({
-                status: false,
-                message: 'Passord not match!!'
-            });
+        sess = req.session;
+        if(!sess.case_id){
+            res.redirect(`/guest/${req.params.casemanager_id}/password`);
+        }
+        if(sess.case_id !=  req.params.casemanager_id){
+            res.redirect(`/guest/${req.params.casemanager_id}/password`);
         }
         next();
     },
     dashboard: async (req, res, next) => {
-        const loggedInUser = await models.Role.findByPk(req.user.RoleId);
-        if(loggedInUser.role_name == 'Customer') return res.redirect('/case/create');
+        const loggedInUser = await apiFetch(req, res, `${apiUrl}/case/getuser`);
+        if(loggedInUser.Role.role_name == 'Customer') return res.redirect('/case/create');
         next();
     },
     superUsers: async (req, res, next) => {
-        roleCheck = await Role.findAll();
+        roleCheck = await apiFetch(req, res, `${apiUrl}/case/getroles`);
         console.log('roleCheck');
         if(!roleCheck) {
             return res.status(401).json({
@@ -127,6 +106,21 @@ module.exports = {
             if(element.role_name != 'Customer') result.push(element.role_name)
         });
         next();
+    },
+    departmentCheck: () => {
+        // Check if User is in department
+        const userDepartmentCheck = User.count({
+            where: {
+                id: req.body.assigned,
+                DepartmentId: req.body.department,
+            }
+        });
+        if (userDepartmentCheck == 0) {
+            return res.status(400).json({
+                status: false,
+                errors: errors.array()
+            });
+        }
     },
     recaptcha: async (req, res, next) => {
         // Secret key

@@ -1,17 +1,24 @@
 const apiUrl = require('../helpers/apiUrl');
 const apiFetch = require('../helpers/apiFetch');
-const moment = require('moment');
 
 // Display casemanager create form on GET.
 exports.getCasemanagerCreate = async function(req, res) {
     try {
-        const caseCreate = await apiFetch(req, res, `${apiUrl}/case/create`);
-        console.log(caseCreate.caseData);
-        // Render Casemanager Form Page
+        let caseCreate ='';
+        let layout = 'loginlayout';
+        let functioName = 'GET CREATE'
+        if(req.user){
+            caseCreate = await apiFetch(req, res, `${apiUrl}/case/create`);
+            const user = await apiFetch(req, res, `${apiUrl}/case/ getuser`);
+            layout = 'layout';
+            if(user.Role.role_name == 'Customer' || user.Role.role_name == 'User') layout = 'layout1'
+        } else {
+            caseCreate = await apiFetch(req, res, `${apiUrl}/guest/create`);
+        }
         res.render('pages/content', {
             title: 'Create a Case Record',
-            functioName: 'GET CASE CREATE',
-            layout: caseCreate.layout,
+            functioName,
+            layout,
             departments: caseCreate.departments,
             casePriority: caseCreate.caseData.casePriority,
             caseType: caseCreate.caseData.caseType,
@@ -52,10 +59,13 @@ exports.getCasemanagerUpdate = async function(req, res, next) {
     try {
         const id = req.params.casemanager_id;
         const case_update = await apiFetch(req, res, `${apiUrl}/case/${id}/update`);
+        const user = await apiFetch(req, res, `${apiUrl}/case/getuser`);
+        let layout = 'layout';
+        if (user.Role.role_name == 'Customer') layout = 'layout1';
         return res.render('pages/content', {
             title: 'Update Casemanager',
             functioName: 'GET CASE UPDATE',
-            layout: case_update.layout,
+            layout,
             casemanager: case_update.casemanager,
             users: case_update.users,
             departments: case_update.departments,
@@ -83,7 +93,7 @@ exports.getCasemanagerDetails = async function(req, res, next) {
     try {
         const id = req.params.casemanager_id;
         const case_details = await apiFetch(req, res, `${apiUrl}/case/${id}/details`);
-        const user = await apiFetch(req, res, `${apiUrl}/case/getuserrole`);
+        const user = await apiFetch(req, res, `${apiUrl}/case/ getuser`);
         let layout = 'layout';
         if (user.Role.role_name == 'Customer') layout = 'layout1';
         res.render('pages/content', {
@@ -97,7 +107,8 @@ exports.getCasemanagerDetails = async function(req, res, next) {
             date: case_details.date,
             user,
             closed_by: case_details.closed_by,
-            updated_by: case_details.updated_by
+            updated_by: case_details.updated_by,
+            solutions: case_details.solutions
         });
     } catch (error) {
         res.render('pages/error', {
@@ -108,51 +119,7 @@ exports.getCasemanagerDetails = async function(req, res, next) {
     }
 };
 
-exports.postCasemanagerDetails = async function(req, res, next) {
-    try {
-        const id = req.params.casemanager_id;
-        const case_details = await apiFetch(req, res, `${apiUrl}/case/${req.body.case_id}/guest/details`);
-        // const user = await apiFetch(req, res, `${apiUrl}/case/getuserrole`);
-        let layout = 'loginlayout';
-        res.render('pages/content', {
-            title: 'Guest | Case Details',
-            functioName: 'GET GUEST CASE DETAILS',
-            layout: layout,
-            casemanager: case_details.casemanager,
-            assignedTo: case_details.assignedTo,
-            casecomments: case_details.casecomments,
-            caseStatus: case_details.caseData.caseStatus,
-            date: case_details.date,
-            closed_by: case_details.closed_by,
-            updated_by: case_details.updated_by
-        });
-    } catch (error) {
-        res.render('pages/error', {
-            title: 'Error',
-            message: error,
-            error: error
-        });
-    }
-};
-
-exports.getCasePassword = async function(req, res, next) {
-    try {
-        res.render('pages/content', {
-            title: 'Case Password',
-            functioName: 'GET CASE PASSWORD',
-            layout: 'loginlayout',
-            case_id: req.query.case
-        });
-    } catch (error) {
-        res.render('pages/error', {
-            title: 'Error',
-            message: error,
-            error: error
-        });
-    }
-};
-
-// Get users by department
+// GET CASES BY DEPARTMENT
 exports.getCaseByDepartment = async function(req, res, next) {
     try {
         const case_list = await apiFetch(req, res, `${apiUrl}/case/department`);
@@ -174,7 +141,7 @@ exports.getCaseByDepartment = async function(req, res, next) {
     }
 };
 
-// Get users by department
+// GET CASES ASSIGNED TO ME
 exports.getCaseAssignedToMe = async function(req, res, next) {
     try {
         const cases = await apiFetch(req, res, `${apiUrl}/case/user`);
@@ -200,12 +167,12 @@ exports.getCaseAssignedToMe = async function(req, res, next) {
     }
 };
 
-// Get users by department
+// GET CASES FOR CUSTOMER
 exports.getCustomerCases = async function(req, res, next) {
     try {
         const cases = await apiFetch(req, res, `${apiUrl}/case/user/customer`);
         const departments = await apiFetch(req, res, `${apiUrl}/post/departments`);
-        const user = await apiFetch(req, res, `${apiUrl}/case/getuserrole`);
+        const user = await apiFetch(req, res, `${apiUrl}/case/ getuser`);
         let layout = 'layout';
         if(user.Role.role_name == 'Customer') layout = 'layout1'
             res.render('pages/content', {
@@ -227,7 +194,7 @@ exports.getCustomerCases = async function(req, res, next) {
     }
 };
              
-// Display list of all casemanagers.
+// LIST ALL CASES
 exports.getCasemanagerList = async function(req, res, next) {
     try {
         const cases = await apiFetch(req, res, `${apiUrl}/case/cases`);
@@ -252,20 +219,68 @@ exports.getCasemanagerList = async function(req, res, next) {
     }
 };
 
-// Display list of all casemanagers.
+// GET DASHBOARD
 exports.getCasemanagerDashboard = async function(req, res, next) {
     try {
-        const case_dashboard = await apiFetch(req, res, `${apiUrl}/case/`);
+        const case_dashboard = await apiFetch(req, res, `${apiUrl}/case`);
         res.render('pages/content', {
             title: 'Casemanager Dashboard',
             functioName: 'GET CASE DASHBOARD',
             layout: 'layout',
             dash: case_dashboard,
-            moment
         });
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
         console.log("There was an error " + error);
+        res.render('pages/error', {
+            title: 'Error',
+            message: error,
+            error: error
+        });
+    }
+};
+
+
+///// GUEST QUERIES
+
+// GET CASE DETAILS
+exports.getGuestCaseDetails = async function(req, res, next) {
+    try {
+        const id = req.params.casemanager_id;
+        const case_details = await apiFetch(req, res, `${apiUrl}/guest/${id}/details`);
+        // const user = await apiFetch(req, res, `${apiUrl}/case/ getuser`);
+        let layout = 'loginlayout';
+        res.render('pages/content', {
+            title: 'Guest | Case Details',
+            functioName: 'GET GUEST CASE DETAILS',
+            layout: layout,
+            casemanager: case_details.casemanager,
+            assignedTo: case_details.assignedTo,
+            casecomments: case_details.casecomments,
+            caseStatus: case_details.caseData.caseStatus,
+            date: case_details.date,
+            closed_by: case_details.closed_by,
+            updated_by: case_details.updated_by
+        });
+    } catch (error) {
+        res.render('pages/error', {
+            title: 'Error',
+            message: error,
+            error: error
+        });
+    }
+};
+
+exports.getCasePassword = async function(req, res, next) {
+    try {
+        const id = req.params.casemanager_id;
+        res.render('pages/content', {
+            title: 'Case Password',
+            functioName: 'GET CASE PASSWORD',
+            layout: 'loginlayout',
+            case_id: id
+        });
+    } catch (error) {
         res.render('pages/error', {
             title: 'Error',
             message: error,

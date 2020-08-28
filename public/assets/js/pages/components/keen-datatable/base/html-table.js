@@ -17,7 +17,6 @@ var KTDatatableHtmlTableDemo = function() {
                 scroll: true,
                 height: 550,
                 footer: false,
-                // class: '', // custom wrapper class
             },
             search: {
                 input: $('#generalSearch'),

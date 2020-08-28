@@ -1,5 +1,6 @@
 const models = require('../models');
 const moment = require('moment');
+const { Op } = require('sequelize');
 // Validation Middleware
 const { body } = require('express-validator');
 const { sendMail } = require('./sendMail');
@@ -24,6 +25,13 @@ module.exports = {
         let week_dept = [];
         const businesses = await models.Casemanager.count({where: {CurrentBusinessId: req.user.CurrentBusinessId}});
         const departments = await models.Casemanager.count({where: {CurrentBusinessId: req.user.CurrentBusinessId, DepartmentId: req.user.DepartmentId}});
+        const assigned = await models.Casemanager.count({where: {CurrentBusinessId: req.user.CurrentBusinessId, assigned_to: req.user.id}});
+        const myCases = await models.Casemanager.findAll({where: {CurrentBusinessId: req.user.CurrentBusinessId, assigned_to: req.user.id}, include: [{model: models.Department}]});
+        const newCase = await models.Casemanager.count({where: {CurrentBusinessId: req.user.CurrentBusinessId, assigned_to: req.user.id, status: 'New'}});
+        const closedCase = await models.Casemanager.count({where: {CurrentBusinessId: req.user.CurrentBusinessId, assigned_to: req.user.id, status: 'Closed'}});
+        const otherCase = await models.Casemanager.count({where: {CurrentBusinessId: req.user.CurrentBusinessId, assigned_to: req.user.id, [Op.not]: [{
+            status: {[Op.or]: ['Closed', 'New']}
+        }]}});
         const allDepartments = await models.Casemanager.findAll({where: {CurrentBusinessId: req.user.CurrentBusinessId, DepartmentId: req.user.DepartmentId}});
         const allBusiness =  await models.Casemanager.findAll({where: {CurrentBusinessId: req.user.CurrentBusinessId}});
         await allBusiness.forEach(business => {
@@ -58,7 +66,7 @@ module.exports = {
         let four_len_dept = Math.round(four_dept.length*100/week_dept.length);
         let five_len_dept = Math.round(five_dept.length*100/week_dept.length);
         let six_len_dept = Math.round(six_dept.length*100/week_dept.length);
-        const data = { businesses, departments, today_len, yesterday_len, two_len, three_len, four_len, five_len, six_len, today_len_dept, yesterday_len_dept, two_len_dept, three_len_dept, four_len_dept, five_len_dept, six_len_dept };
+        const data = { businesses, departments, assigned, newCase, closedCase, otherCase, myCases, today_len, yesterday_len, two_len, three_len, four_len, five_len, six_len, today_len_dept, yesterday_len_dept, two_len_dept, three_len_dept, four_len_dept, five_len_dept, six_len_dept };
         return data;
     },
     mockData: () => {

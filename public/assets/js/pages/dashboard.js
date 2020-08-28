@@ -161,13 +161,16 @@ var KTDashboard = function() {
         var randomScalingFactor = function() {
             return Math.round(Math.random() * 100);
         };
+        const newCase = document.querySelector('#new').value;
+        const closed = document.querySelector('#closed').value;
+        const other = document.querySelector('#other').value;
 
         var config = {
             type: 'doughnut',
             data: {
                 datasets: [{
                     data: [
-                        35, 30, 35
+                        newCase, closed, other
                     ],
                     backgroundColor: [
                         KTApp.getBaseColor('shape', 3),
@@ -176,9 +179,9 @@ var KTDashboard = function() {
                     ]
                 }],
                 labels: [
-                    'Angular',
-                    'CSS',
-                    'HTML'
+                    'New',
+                    'Closed',
+                    'Others'
                 ]
             },
             options: {

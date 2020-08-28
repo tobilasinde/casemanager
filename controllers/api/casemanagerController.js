@@ -1,6 +1,6 @@
 const models = require('../../models');
 const moment = require('moment');
-const { dashboardHelper, mockData, validation, randString, fileUload, sendCaseDetails, sendStatusUpdate } = require('../../helpers/helpers');
+const { dashboardHelper, mockData, validation, randString, fileUload, sendCaseDetails, sendStatusUpdate, sendGuestCaseDetails } = require('../../helpers/helpers');
 const User = models.User;
 const Department = models.Department;
 const Role = models.Role;
@@ -15,13 +15,11 @@ const AWS = require('aws-sdk');
 const s3 = new AWS.S3({
     accessKeyId: '',
     secretAccessKey: ''
-  });
+});
 
-
-// Display casemanager create form on GET.
+// GENERATE DATA FOR CREATE CASE
 exports.getCasemanagerCreate = async function(req, res) {
     try {
-        // create Department GET controller logic here 
         const departments = await Department.findAll({
             include: [{
                 model: User,
@@ -30,21 +28,12 @@ exports.getCasemanagerCreate = async function(req, res) {
                 },
             }],
         });
-        const customer = await User.findByPk(req.user.id, {
-            include: [{
-                model: Role
-            }]
-        });
-        let layout = 'layout';
-        if (customer.Role.role_name == 'Customer') layout = 'layout1';
-        const caseCreate = {departments, layout, caseData}
+        const caseCreate = {departments, caseData}
         res.status(200).json({
             status: true,
             data: caseCreate,
             message: 'Case create form rendered successfully'
         });
-        // everything done, now redirect....to casemanager detail.
-        // return res.redirect('/case/' + casemanager.id + '/details');  
     } catch (error) {
         res.status(500).json({
             status: false,
@@ -63,25 +52,11 @@ exports.postCasemanagerCreate = async function(req, res) {
                 errors: errors.array()
             });
         }
-
+        // GENERATE RANDOM NUMBER FOR CASE NUMBER
         let rand = 'CASE-'+randString(10, '#A');
         let caseNumberCheck = await Casemanager.count({where: {id: rand}});
         while (caseNumberCheck != 0) {
             rand = 'CASE-'+randString(10, '#A');
-        }
-        // Check if User is in department
-        const userDepartmentCheck = await User.count({
-            where: {
-                id: req.body.assigned,
-                DepartmentId: req.body.department,
-            }
-        });
-        if (userDepartmentCheck == 0) {
-            return res.status(400).json({
-                status: false,
-                errors: errors.array()
-            });
-            // return res.status(400).json({ status: false, code: 400, message: `The assigned User is not in the selected department` });
         }
 
         if (!req.files || Object.keys(req.files).length === 0) {
@@ -111,8 +86,6 @@ exports.postCasemanagerCreate = async function(req, res) {
                 data: casemanager,
                 message: 'Case created successfully'
             })
-            // everything done, now redirect....to casemanager detail.
-            // return res.redirect('/case/' + casemanager.id + '/details');
         }
 
         let params = '';
@@ -151,8 +124,6 @@ exports.postCasemanagerCreate = async function(req, res) {
                 data: casemanager,
                 message: 'Case created successfully'
             })
-            // everything done, now redirect....to casemanager detail.
-            // return res.redirect('/case/' + casemanager.id + '/details');  
         });
     } catch (error) {
         res.status(500).json({
@@ -197,7 +168,6 @@ exports.postCasemanagerCreate = async function(req, res) {
 //Display case update form on GET.
 exports.getCasemanagerUpdate = async function(req, res, next) {
     try {
-        console.log(req.user);
         // create User GET controller logic here 
         const users = await User.findAll({
             where: {
@@ -226,19 +196,12 @@ exports.getCasemanagerUpdate = async function(req, res, next) {
         });
         // Find the person the case was assigned to
         const assignedTo = await User.findByPk(casemanager.assigned_to);
-        const customer = await User.findByPk(req.user.id, {
-            include: [{
-                model: Role
-            }]
-        });
-        let layout = 'layout';
-        if (customer.Role.role_name == 'Customer') layout = 'layout1';
-        const data = {layout, casemanager, users, departments, caseData, assignedTo}
+        const data = {casemanager, users, departments, caseData, assignedTo}
         // renders a casemanager form
         res.status(200).json({
             status: true,
             data,
-            message: 'Case created successfully'
+            message: 'Case update data generated successfully'
         })
     } catch (error) {
         res.status(500).json({
@@ -259,7 +222,6 @@ exports.postCasemanagerUpdate = async function(req, res, next) {
                 errors: errors.array()
             });
         }
-        console.log(req.params.casemanager_id);
 
         // now update
         Casemanager.update(
@@ -287,7 +249,7 @@ exports.postCasemanagerUpdate = async function(req, res, next) {
             res.status(200).json({
                 status: true,
                 data,
-                message: 'Case created successfully'
+                message: 'Case updated successfully'
             })
         });
     } catch (error) {
@@ -298,7 +260,7 @@ exports.postCasemanagerUpdate = async function(req, res, next) {
     }
 };
 
-// Handle casemanager update on CASE.
+// Close a case.
 exports.closeCase = async function(req, res, next) {
     try {
         // now update
@@ -315,12 +277,19 @@ exports.closeCase = async function(req, res, next) {
                     id: req.params.casemanager_id
                 }
             }
-        ).then(function(data) {
+        ).then(async function(data) {
+            await models.Casemanager.update({
+                response_status: 'Completed'
+            },{
+                where: {
+                    id: req.params.casemanager_id
+                }
+            })
             sendStatusUpdate(req);
             res.status(200).json({
                 status: true,
                 data,
-                message: 'Case created successfully'
+                message: 'Case closed successfully'
             })
         });
     } catch (error) {
@@ -345,16 +314,7 @@ exports.getStatusUpdate = async function(req, res, next) {
                     id: req.params.casemanager_id
                 }
             }
-        ).then( async function(data) {
-            if(req.params.status == 'Closed'){
-                await models.Casemanager.update({
-                    response_status: 'Completed'
-                },{
-                    where: {
-                        id: req.params.casemanager_id
-                    }
-                })
-            }
+        ).then( function(data) {
             sendStatusUpdate(req);
             res.status(200).json({
                 status: true,
@@ -373,6 +333,7 @@ exports.getStatusUpdate = async function(req, res, next) {
 // Display detail page for a specific case.
 exports.getCasemanagerDetails = async function(req, res, next) {
     try {
+        const solutions = await models.Post.findAll({where: {CurrentBusinessId: req.user.CurrentBusinessId}});
         // find a casemanager by the primary key Pk
         const casemanager = await Casemanager.findByPk(
             req.params.casemanager_id, {
@@ -391,7 +352,7 @@ exports.getCasemanagerDetails = async function(req, res, next) {
         );
 
         // find all comment for a a case
-        var casecomments = await Casecomment.findAll(
+        const casecomments = await Casecomment.findAll(
             {
                 where: {CasemanagerId: casemanager.id},
                 include: [{ model: User,
@@ -405,60 +366,11 @@ exports.getCasemanagerDetails = async function(req, res, next) {
         const updated_by = await User.findByPk(casemanager.updatedBy);
         const assignedTo = await User.findByPk(casemanager.assigned_to);
         const date = moment(casemanager.createdAt).format('lll');
-        const case_details = {casemanager, assignedTo, casecomments, date, caseData, closed_by, updated_by}
+        const case_details = {casemanager, assignedTo, casecomments, date, caseData, closed_by, updated_by, solutions}
         res.status(200).json({
             status: true,
             data: case_details,
-            message: 'Case create form rendered successfully'
-        });
-    } catch (error) {
-        res.status(500).json({
-            status: false,
-            message: `There was an error - ${error}`
-        });
-    }
-};
-
-// Display detail page for a specific case.
-exports.postCasemanagerDetails = async function(req, res, next) {
-    try {
-        // find a casemanager by the primary key Pk
-        const casemanager = await Casemanager.findByPk(
-            req.params.casemanager_id, {
-                include: [
-                    {
-                        model: User
-                    },
-                    {
-                        model: Department
-                    },
-                    {
-                        model: CurrentBusiness
-                    }
-                ]
-            }
-        );
-
-        // find all comment for a a case
-        var casecomments = await Casecomment.findAll(
-            {
-                where: {CasemanagerId: casemanager.id},
-                include: [{ model: User,
-                    include: [{model: models.Role}]
-                }],
-                order: [['createdAt', 'DESC']]
-            }
-        );
-
-        const closed_by = await User.findByPk(casemanager.closed_by);
-        const updated_by = await User.findByPk(casemanager.updatedBy);
-        const assignedTo = await User.findByPk(casemanager.assigned_to);
-        const date = moment(casemanager.createdAt).format('lll');
-        const case_details = {casemanager, assignedTo, casecomments, date, caseData, closed_by, updated_by}
-        res.status(200).json({
-            status: true,
-            data: case_details,
-            message: 'Case create form rendered successfully'
+            message: 'Case details generated successfully'
         });
     } catch (error) {
         res.status(500).json({
@@ -523,7 +435,7 @@ exports.getUserDetails = async function(req, res, next) {
     }
 };
 // Get users Details
-exports.getUserRole = async function(req, res, next) {
+exports.getUser = async function(req, res, next) {
     try {
         const data = await models.User.findByPk(req.user.id,{
             include: [{model: models.Role}]
@@ -533,7 +445,6 @@ exports.getUserRole = async function(req, res, next) {
             data,
             message: 'Case create form rendered successfully'
         });
-
     } catch (error) {
         // we have an error during the process, then catch it and redirect to error page
         console.log("There was an error " + error);
@@ -558,7 +469,7 @@ exports.getCaseByDepartment = async function(req, res, next) {
             res.status(200).json({
                 status: true,
                 data: case_list,
-                message: 'Case create form rendered successfully'
+                message: 'Case department generated successfully'
             });
         });
     } catch (error) {
@@ -636,7 +547,7 @@ exports.getCustomerCases = async function(req, res, next) {
             res.status(200).json({
                 status: true,
                 data,
-                message: 'Case List rendered successfully'
+                message: 'Customer cases generated successfully'
             });
         });
     } catch (error) {
@@ -693,7 +604,7 @@ exports.getCasemanagerDashboard = async function(req, res, next) {
         res.status(200).json({
             status: true,
             data,
-            message: 'Case List rendered successfully'
+            message: 'Case dashboard generated successfully'
         });
     } catch (error) {
         res.status(500).json({
@@ -702,3 +613,260 @@ exports.getCasemanagerDashboard = async function(req, res, next) {
         });
     }
 }
+
+///MISC
+// Display list of all cases.
+exports.caseCheck = async function(req, res, next) {
+    try {
+        await Casemanager.findByPk(req.params.casemanager_id)
+        .then(function(data) {
+            res.status(200).json({
+                status: true,
+                data,
+                message: 'Case Exists'
+            });
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            message: `There was an error - ${error}`
+        });
+    }
+};
+
+exports.getAllRoles = async function(req, res, next) {
+    try {
+        await Role.findAll()
+        .then(function(data) {
+            res.status(200).json({
+                status: true,
+                data,
+                message: 'Roles generated successfully'
+            });
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            message: `There was an error - ${error}`
+        });
+    }
+};
+
+// GUEST QUERIES
+
+// Display casemanager create form on GET.
+exports.getCreate = async function(req, res) {
+    try {
+        // create Department GET controller logic here 
+        const departments = await Department.findAll();
+        const data = {departments, caseData}
+        res.status(200).json({
+            status: true,
+            data: data,
+            message: 'Department generated successfully'
+        });
+        // everything done, now redirect....to casemanager detail.
+        // return res.redirect('/case/' + casemanager.id + '/details');  
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            message: `There was an error - ${error}`
+        });
+    };
+}
+
+// Handle post create on CASEMANAGER.
+exports.postCreate = async function(req, res) {
+    try{
+        // Check if there are validation errors
+        // const errors = validationResult(req);
+        // if (!errors.isEmpty()) {
+        //     return res.status(422).json({
+        //         status: false,
+        //         errors: errors.array()
+        //     });
+        // }
+
+        let rand = 'CASE-'+randString(10, '#A');
+        let caseNumberCheck = await Casemanager.count({where: {id: rand}});
+        while (caseNumberCheck != 0) {
+            rand = 'CASE-'+randString(10, '#A');
+        }
+        let ass_to = await models.User.findOne({
+            include: [{model: models.Department,
+                where: {id: req.body.department}
+            },{
+                model: models.Role,
+                where: {role_name: 'Manager'}
+            }]
+        });
+        if (ass_to == null) {
+            ass_to = await models.User.findOne({
+                include: [{
+                    model: models.Department,
+                    where: {id: req.body.department}
+                }]
+            })
+        }
+        console.log(ass_to);
+        if (!req.files || Object.keys(req.files).length === 0) {
+            // The User did not upload a file
+            // create the casemanager with user current business and department
+            var casemanager = await Casemanager.create(
+                {
+                    priority: req.body.priority,
+                    request_type: req.body.request_type,
+                    case_type: req.body.case_type,
+                    DepartmentId: req.body.department,
+                    subject: req.body.subject,
+                    description: req.body.description,
+                    contact_name: req.body.contact_name,
+                    contact_email: req.body.contact_email,
+                    note: req.body.note,
+                    id: rand,
+                    SLA_violation: req.body.SLA_violation,
+                    assigned_to: ass_to.id,
+                    CurrentBusinessId: ass_to.CurrentBusinessId,
+                } 
+            );
+            sendGuestCaseDetails(req, ass_to.email, req.body.contact_email, casemanager.id, casemanager.password);
+            res.status(200).json({
+                status: true,
+                data: casemanager,
+                message: 'Case created successfully'
+            })
+            // everything done, now redirect....to casemanager detail.
+            // return res.redirect('/case/' + casemanager.id + '/details');
+        }
+
+        let params = '';
+        if(req.files) params = await fileUload(req, res);
+        s3.upload(params, async function (err, data) {
+            let datas = '';
+            if (err) {console.log(err);
+                return res.status(400).json({
+                status: false,
+                errors: err
+            })};
+            datas = data.Location;
+        // create the casemanager with user current business and department
+            var casemanager = await Casemanager.create(
+                {
+                    priority: req.body.priority,
+                    request_type: req.body.request_type,
+                    case_type: req.body.case_type,
+                    DepartmentId: req.body.department,
+                    subject: req.body.subject,
+                    description: req.body.description,
+                    contact_name: req.body.contact_name,
+                    contact_email: req.body.contact_email,
+                    note: req.body.note,
+                    id: rand,
+                    document: datas,
+                    SLA_violation: req.body.SLA_violation,
+                    assigned_to: ass_to.id,
+                    CurrentBusinessId: ass_to.CurrentBusinessId,
+                } 
+            );
+            sendGuestCaseDetails(req, ass_to.email, req.body.contact_email, casemanager.id, casemanager.password);
+            res.status(200).json({
+                status: true,
+                data: casemanager,
+                message: 'Case created successfully'
+            })
+            // everything done, now redirect....to casemanager detail.
+            // return res.redirect('/case/' + casemanager.id + '/details');  
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            message: `There was an error - ${error}`
+        });
+    };
+}
+
+// Display casemanager create form on GET.
+exports.casePassword = async function(req, res) {
+    try {
+        const caseCheck = await models.Casemanager.findByPk(req.params.case_id);
+        if(!caseCheck) {
+            return res.status(400).json({
+                status: false,
+                message: 'Case does not exist'
+            });
+        }
+        const passwordCheck = await models.Casemanager.findOne({
+            where: {
+                id: req.params.case_id,
+                password: req.body.password
+            }
+        })
+        if(!passwordCheck) {
+            return res.status(400).json({
+                status: false,
+                message: 'Password not match'
+            });
+        }
+        var sess = req.session;
+        sess.case_id = req.params.case_id;
+        res.status(200).json({
+            status: true,
+            data: caseCheck.id,
+            message: 'Password is correct'
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            message: `There was an error - ${error}`
+        });
+    };
+}
+
+// Display detail page for a specific case.
+exports.getGuestCaseDetails = async function(req, res, next) {
+    try {
+        // find a casemanager by the primary key Pk
+        const casemanager = await Casemanager.findByPk(
+            req.params.casemanager_id, {
+                include: [
+                    {
+                        model: User
+                    },
+                    {
+                        model: Department
+                    },
+                    {
+                        model: CurrentBusiness
+                    }
+                ]
+            }
+        );
+        
+        // find all comment for a a case
+        var casecomments = await Casecomment.findAll(
+            {
+                where: {CasemanagerId: casemanager.id},
+                include: [{ model: User,
+                    include: [{model: models.Role}]
+                }],
+                order: [['createdAt', 'DESC']]
+            }
+        );
+
+        const closed_by = await User.findByPk(casemanager.closed_by);
+        const updated_by = await User.findByPk(casemanager.updatedBy);
+        const assignedTo = await User.findByPk(casemanager.assigned_to);
+        const date = moment(casemanager.createdAt).format('lll');
+        const case_details = {casemanager, assignedTo, casecomments, date, caseData, closed_by, updated_by}
+        res.status(200).json({
+            status: true,
+            data: case_details,
+            message: 'Case details generated successfully'
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            message: `There was an error - ${error}`
+        });
+    }
+};

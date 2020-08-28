@@ -13,12 +13,13 @@ module.exports = {
         let mailOptions = {
             from: "info@manifest.ng",
             to: to, // get the email from case model
-            subject: `${subject}\n`,
-            text: `Hi there,\n this email was automatically sent by Case Management\n ${text}`
+            subject: `${subject}`,
+            text: `Hi there, this email was automatically sent by Case Management\n ${text}`
         };
         transporter.sendMail(mailOptions, function(error, info) {
         if (error) {
-            throw error;
+            // throw error;
+            console.log(error);
         } else {
             console.log("Email successfully sent!");
         }

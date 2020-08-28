@@ -9,20 +9,18 @@ const submitUpdateCase = async (event, caseId) => {
   event.preventDefault();
   //const form = event.target;
   const form = document.getElementById('case_form');
-  const formData = {
-          subject: form.subject.value,
-          description: form.description.value,
-          contact_name: form.contact_name.value,
-          contact_email: form.contact_email.value,
-          department: form.department.value,
-          assigned: form.assigned.value,
-          case_type: form.case_type.value,
-          priority: form.priority.value,
-          request_type: form.request_type.value,
-          origin: form.origin.value,
-          note: form.note.value,
-          SLA_violation: form.SLA_violation.value
-        }
+  const formData = new FormData()
+        formData.append('file', form.file.files[0])
+        formData.append('subject', form.subject.value)
+        formData.append('description', form.description.value)
+        formData.append('contact_name', form.contact_name.value)
+        formData.append('contact_email', form.contact_email.value)
+        formData.append('department', form.department.value)
+        formData.append('assigned', form.assigned.value)
+        formData.append('case_type', form.case_type.value)
+        formData.append('priority', form.priority.value)
+        formData.append('request_type', form.request_type.value)
+        formData.append('note', form.note.value)
     const casemanager = await updateCase(formData, caseId);
     let errors = '';
     console.log(casemanager);
@@ -34,26 +32,9 @@ const submitUpdateCase = async (event, caseId) => {
       )
       location.href = `/case/${caseId}/details`;
     } else {
-      caseSubmitBtn.innerHTML = 'Create Case';
+      caseSubmitBtn.innerHTML = 'Update Case';
       console.log(casemanager.errors);
       
-      toastr.options = {
-      "closeButton": true,
-      "debug": true,
-      "newestOnTop": true,
-      "progressBar": true,
-      "positionClass": "toast-top-right",
-      "preventDuplicates": false,
-      "onclick": null,
-      "showDuration": "300",
-      "hideDuration": "1000",
-      "timeOut": "5000",
-      "extendedTimeOut": "1000",
-      "showEasing": "swing",
-      "hideEasing": "linear",
-      "showMethod": "fadeIn",
-      "hideMethod": "fadeOut"
-    };
     casemanager.errors.forEach(error => {
       swal.fire(
         'Oops!',
@@ -81,10 +62,10 @@ const updateCase = async (data, caseId) => {
       const casemanager = await fetch(`${Route.apiRoot}/case/${caseId}/update`, {
         // mode: 'no-cors',
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
+        // headers: {
+        //   'Content-Type': 'application/json'
+        // },
+        body: data
       });
       return await casemanager.json();
     } catch (error) {

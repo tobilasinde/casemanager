@@ -1,5 +1,4 @@
 const models = require('../../models');
-const moment = require('moment');
 const { mockData, validation, randString, fileUload, sendGuestCaseDetails } = require('../../helpers/helpers');
 const User = models.User;
 const Department = models.Department;
