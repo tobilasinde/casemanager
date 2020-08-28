@@ -107,21 +107,6 @@ module.exports = {
         });
         next();
     },
-    departmentCheck: () => {
-        // Check if User is in department
-        const userDepartmentCheck = User.count({
-            where: {
-                id: req.body.assigned,
-                DepartmentId: req.body.department,
-            }
-        });
-        if (userDepartmentCheck == 0) {
-            return res.status(400).json({
-                status: false,
-                errors: errors.array()
-            });
-        }
-    },
     recaptcha: async (req, res, next) => {
         // Secret key
         const secretKey = '6LfsDcMZAAAAAOS7vxXvYA7uOYmvwBzNfLGmb-WV';

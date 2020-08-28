@@ -14,14 +14,14 @@ const router = express.Router();
 const casemanagerController = require('../../controllers/api/casemanagerController');
 const casecommentController = require('../../controllers/api/casecommentController');
 const { validation } = require('../../helpers/helpers');
-const { recaptcha, createComment, departmentCheck } = require('../../middlewares/case');
+const { recaptcha, createComment } = require('../../middlewares/case');
 
 
 // CASE ROUTES
 router.get('/create', casemanagerController.getCreate); 
 
 // POST CASE CREATE
-router.post('/create', recaptcha, validation, departmentCheck, casemanagerController.postCreate); 
+router.post('/create', recaptcha, validation, casemanagerController.postCreate); 
 
 // GET CASE DETAILS
 router.get('/:casemanager_id/details', casemanagerController.getGuestCaseDetails); 

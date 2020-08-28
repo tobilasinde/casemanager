@@ -27,7 +27,7 @@ router.get('/', authorize(), dashboard, casemanagerController.getCasemanagerDash
 router.get('/create', authorize(), casemanagerController.getCasemanagerCreate); 
 
 // POST CASE CREATE
-router.post('/create', validation, departmentCheck, authorize(), casemanagerController.postCasemanagerCreate); 
+router.post('/create', validation, authorize(), casemanagerController.postCasemanagerCreate); 
 
 // GET CASE UPDATE
 router.get('/:casemanager_id/update', authorize(), updateCase, casemanagerController.getCasemanagerUpdate); 

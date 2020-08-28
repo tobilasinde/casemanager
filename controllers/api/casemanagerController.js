@@ -58,7 +58,18 @@ exports.postCasemanagerCreate = async function(req, res) {
         while (caseNumberCheck != 0) {
             rand = 'CASE-'+randString(10, '#A');
         }
-
+        const userDepartmentCheck = await models.User.count({
+            where: {
+                id: req.body.assigned,
+                DepartmentId: req.body.department,
+            }
+        });
+        if (userDepartmentCheck == 0) {
+            return res.status(400).json({
+                status: false,
+                errors: errors.array()
+            });
+        }
         if (!req.files || Object.keys(req.files).length === 0) {
             // The User did not upload a file
             // create the casemanager with user current business and department
