@@ -13,8 +13,8 @@ const { validationResult } = require('express-validator');
 const AWS = require('aws-sdk');
 // initiate s3 library from AWS
 const s3 = new AWS.S3({
-    accessKeyId: config.AWS_ACCESS_KEY_ID,
-    secretAccessKey: config.AWS_SECRET_ACCESS_KEY
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 });
 
 // GENERATE DATA FOR CREATE CASE
