@@ -13,8 +13,8 @@ const { validationResult } = require('express-validator');
 const AWS = require('aws-sdk');
 // initiate s3 library from AWS
 const s3 = new AWS.S3({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    accessKeyId: 'AKIAJ3FBUL7RDCGFJVYA',
+    secretAccessKey: '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'
 });
 
 // GENERATE DATA FOR CREATE CASE
@@ -58,18 +58,7 @@ exports.postCasemanagerCreate = async function(req, res) {
         while (caseNumberCheck != 0) {
             rand = 'CASE-'+randString(10, '#A');
         }
-        const userDepartmentCheck = await models.User.count({
-            where: {
-                id: req.body.assigned,
-                DepartmentId: req.body.department,
-            }
-        });
-        if (userDepartmentCheck == 0) {
-            return res.status(400).json({
-                status: false,
-                errors: errors.array()
-            });
-        }
+
         if (!req.files || Object.keys(req.files).length === 0) {
             // The User did not upload a file
             // create the casemanager with user current business and department
@@ -92,7 +81,7 @@ exports.postCasemanagerCreate = async function(req, res) {
                 } 
             );
             sendCaseDetails(req, casemanager.id);
-            res.status(200).json({
+            return res.status(200).json({
                 status: true,
                 data: casemanager,
                 message: 'Case created successfully'
@@ -573,26 +562,14 @@ exports.getCustomerCases = async function(req, res, next) {
 exports.getCasemanagerList = async function(req, res, next) {
     try {
         const solutions = await models.Post.findAll({where: {CurrentBusinessId: req.user.CurrentBusinessId}});
-        // find all comment for a a case
-        const casecomments = await Casecomment.findAll(
-            {
-                where:
-                {
-                    CurrentBusinessId: req.user.CurrentBusinessId
-                },
-                include: [{
-                    model: User
-                }]
-            }
-        );
         // controller logic to display all casemanagers
         Casemanager.findAll({where: {
             CurrentBusinessId: req.user.CurrentBusinessId
         },
-        include: [{model: models.Department},{model: models.User}],
+        include: [{model: models.Department}],
         order: [['createdAt', 'DESC']]
     }).then(function(casemanagers) {
-            const data = {casemanagers, caseData, casecomments, solutions}
+            const data = {casemanagers, caseData, solutions}
             res.status(200).json({
                 status: true,
                 data,

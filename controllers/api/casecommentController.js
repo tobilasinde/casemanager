@@ -11,7 +11,14 @@
  */
 var models = require('../../models');
 const { body, validationResult } = require('express-validator');
-const { sendCommentUpdate } = require('../../helpers/helpers');
+const { sendCommentUpdate, fileUload } = require('../../helpers/helpers');
+// import aws-sdk library
+const AWS = require('aws-sdk');
+// initiate s3 library from AWS
+const s3 = new AWS.S3({
+    accessKeyId: 'AKIAJ3FBUL7RDCGFJVYA',
+    secretAccessKey: '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'
+});
 
 // Handle casecomment create on POST.
 exports.postCasecommentCreate = [
@@ -37,38 +44,33 @@ exports.postCasecommentCreate = [
                     message: 'Case does not exist'
                 });
             }
-            if(!req.user){
-                models.Casecomment.create({
-                    title: req.body.title,
-                    body: req.body.body,
-                    CasemanagerId: req.params.casemanager_id,
-                    // UserId: req.user.id,
-                    CurrentBusinessId: caseCheck.CurrentBusinessId
-                }).then( async function(casecomment) {
-                    await models.Casemanager.update({
-                        response_status: 'Awaiting Business Reply'
-                    },{
-                        where: {
-                            id: req.params.casemanager_id
-                        }
-                    })
-                    const assignedTo = await models.User.findByPk(caseCheck.assigned_to);
-                    sendCommentUpdate(req, assignedTo.email);
-                    res.status(200).json({
-                        status: true,
-                        data: casecomment,
-                        message: 'Commented posted successfully'
-                    });
-                });
-            } else {
+            let user_id = null;
+            if(req.user) {
+                user_id = req.user.id
+            }
             // no need to render a page
-            models.Casecomment.create({
+            const comment = await models.Casecomment.create({
                 title: req.body.title,
                 body: req.body.body,
                 CasemanagerId: req.params.casemanager_id,
-                UserId: req.user.id,
-                CurrentBusinessId: req.user.CurrentBusinessId
-            }).then( async function(casecomment) {
+                UserId: user_id,
+                CurrentBusinessId: caseCheck.CurrentBusinessId
+            });
+            if(req.files){
+                params = await fileUload(req, res);
+                s3.upload(params, async function (err, data) {
+                    let datas = '';
+                    if (err) {
+                        return res.status(400).json({
+                            status: false,
+                            errors: err
+                        })
+                    };
+                    models.Casecomment.update({document: data.Location},{where: {id: comment.id}})
+                })
+            }
+            const assignedTo = await models.User.findByPk(caseCheck.assigned_to);
+            if(req.user){
                 const role = await models.Role.findByPk(req.user.RoleId);
                 if(role.role_name == 'Customer'){
                     await models.Casemanager.update({
@@ -78,7 +80,6 @@ exports.postCasecommentCreate = [
                             id: req.params.casemanager_id
                         }
                     })
-                    const assignedTo = await models.User.findByPk(caseCheck.assigned_to);
                     sendCommentUpdate(req, assignedTo.email);
                 } else {
                     await models.Casemanager.update({
@@ -90,13 +91,21 @@ exports.postCasecommentCreate = [
                     });
                     sendCommentUpdate(req, caseCheck.contact_email);
                 }
-                res.status(200).json({
-                    status: true,
-                    data: casecomment,
-                    message: 'Comment Posted successfully'
-                });
+            } else {
+                await models.Casemanager.update({
+                    response_status: 'Awaiting Business Reply'
+                },{
+                    where: {
+                        id: req.params.casemanager_id
+                    }
+                })
+                sendCommentUpdate(req, assignedTo.email);
+            }
+            res.status(200).json({
+                status: true,
+                data: comment,
+                message: 'Comment Posted successfully'
             });
-        }
         } catch (error) {
             res.status(500).json({
             status: false,

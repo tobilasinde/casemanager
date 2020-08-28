@@ -12,6 +12,10 @@ module.exports = (sequelize, DataTypes) => {
     review: {
       type: DataTypes.REAL,
       allowNull: true,
+    },
+    document: {
+      type: DataTypes.STRING,
+      allowNull: true,
     }
   });
 

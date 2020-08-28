@@ -5,11 +5,10 @@ const submitCommentCase = async (event, caseId) => {
   commentSubmitBtn.innerHTML = '<i class="kt-spinner kt-spinner--md kt-spinner--center px-4 kt-spinner--light"></i>';
   //const form = event.target;
   const form = document.getElementById(`comment_form${caseId}`);
-  console.log(form);
-  const formData = {
-    title: form.title.value,
-    body: form.body.value
-  }
+        const formData = new FormData()
+        formData.append('file', form.file.files[0])
+        formData.append('title', form.title.value)
+        formData.append('body', form.body.value)
     const casemanager = await commentCreate(formData, caseId);
     let errors = '';
     console.log(casemanager);
@@ -45,15 +44,14 @@ const submitCommentCase = async (event, caseId) => {
 };
 
 const commentCreate = async (data, caseId) => {
-    console.log(data)
     try {
       const casemanager = await fetch(`${Route.apiRoot}/case/${caseId}/comment/create`, {
         // mode: 'no-cors',
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
+        // headers: {
+        //   'Content-Type': 'application/json'
+        // },
+        body: data
       });
       return await casemanager.json();
     } catch (error) {

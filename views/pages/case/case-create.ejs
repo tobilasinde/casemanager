@@ -52,14 +52,21 @@
 												<div class="kt-separator kt-separator--height-xs"></div>
 												<div class="kt-form__section kt-form__section--first">
 													<div class="form-group">
-														<div class="kt-radio-inline">
-                                                            <% caseType.forEach(function(dropdown) { %>
-                                                            <label class="kt-radio kt-radio--solid">
-                                                                    <input type="radio" required name="case_type" value="<%= dropdown %>" onclick="handleClick(this);"> <%= dropdown %>
-                                                                <span></span>
-                                                            </label>
-                                                            <% }); %>
-                                                        </div>
+														<div class="col-xl-12">
+                                                            <div class="form-group row">
+                                                                <label class="col-lg-3 col-form-label"></label>
+                                                                <div class="col-lg-6">
+                                                                    <div class="kt-radio-inline">
+																		<% caseType.forEach(function(dropdown) { %>
+																		<label class="kt-radio kt-radio--solid">
+																				<input type="radio" required name="case_type" value="<%= dropdown %>" onclick="handleClick(this);"> <%= dropdown %>
+																			<span></span>
+																		</label>
+																		<% }); %>
+																	</div>
+                                                                </div>
+                                                            </div>
+														</div>
 													</div>
 												</div>
 											</div>
@@ -69,11 +76,11 @@
 											<!--begin:Step 2-->
 											<div class="kt-wizard-v3__content" data-ktwizard-type="step-content">
 												<div class="kt-form__section kt-form__section--first">
-													<div class="kt-heading kt-heading--md">Request Type</div>
-													<div class="form-group">
-                                                        <div class="kt-radio-inline" id="request_type">
+													<div class="kt-heading kt-heading--md" id="">Request Type</div>
+													<div class="form-group" id="request_type">
+                                                        <!-- <div class="kt-radio-inline" id="request_type">
 
-                                                        </div>
+                                                        </div> -->
 													</div>
 												</div>
 											</div>
@@ -257,23 +264,43 @@
 <script>
     function handleClick(case_type) {
         if (case_type.value == 'Support'){
-            document.getElementById('request_type').innerHTML = `<label class="kt-radio kt-radio--solid">
-                                                                            <input type="radio" checked required name="request_type" value="Issues"> Issues
-                                                                        <span></span>
-                                                                    </label>
-                                                                    <label class="kt-radio kt-radio--solid">
-                                                                            <input type="radio" disabled required name="request_type" value="Complaints"> Complaints
-                                                                        <span></span>
-                                                                    </label>`;
+			document.getElementById('request_type').innerHTML = `
+			<div class="col-xl-12">
+				<div class="form-group row">
+					<label class="col-lg-3 col-form-label"></label>
+					<div class="col-lg-6">
+						<div class="kt-radio-inline">
+							<label class="kt-radio kt-radio--solid">
+								<input type="radio" checked required name="request_type" value="Issues"> Issues
+								<span></span>
+							</label>
+							<label class="kt-radio kt-radio--solid">
+									<input type="radio" disabled required name="request_type" value="Complaints"> Complaints
+								<span></span>
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>`;
         } else {
-            document.getElementById('request_type').innerHTML = `<label class="kt-radio kt-radio--solid">
-                                                                            <input type="radio" equired name="request_type" value="Issues"> Issues
-                                                                        <span></span>
-                                                                    </label>
-                                                                    <label class="kt-radio kt-radio--solid">
-                                                                            <input type="radio" required name="request_type" value="Complaints"> Complaints
-                                                                        <span></span>
-                                                                    </label>`;
+			document.getElementById('request_type').innerHTML = `
+			<div class="col-xl-12">
+				<div class="form-group row">
+					<label class="col-lg-3 col-form-label"></label>
+					<div class="col-lg-6">
+						<div class="kt-radio-inline">
+							<label class="kt-radio kt-radio--solid">
+								<input type="radio" equired name="request_type" value="Issues"> Issues
+								<span></span>
+							</label>
+							<label class="kt-radio kt-radio--solid">
+									<input type="radio" required name="request_type" value="Complaints"> Complaints
+								<span></span>
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>`;
         }
-    }
+	}
 </script>

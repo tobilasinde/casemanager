@@ -140,14 +140,21 @@ License: You must have a valid license purchased only from https://themes.getboo
 												<div class="kt-separator kt-separator--height-xs"></div>
 												<div class="kt-form__section kt-form__section--first">
 													<div class="form-group">
-														<div class="kt-radio-inline">
-                                                            <% caseType.forEach(function(dropdown) { %>
-                                                            <label class="kt-radio kt-radio--solid">
-                                                                    <input type="radio" required name="case_type" value="<%= dropdown %>" onclick="handleClick(this);"> <%= dropdown %>
-                                                                <span></span>
-                                                            </label>
-                                                            <% }); %>
-                                                        </div>
+														<div class="col-xl-12">
+                                                            <div class="form-group row">
+                                                                <label class="col-lg-3 col-form-label"></label>
+                                                                <div class="col-lg-6">
+                                                                    <div class="kt-radio-inline">
+																		<% caseType.forEach(function(dropdown) { %>
+																		<label class="kt-radio kt-radio--solid">
+																				<input type="radio" required name="case_type" value="<%= dropdown %>" onclick="handleClick(this);"> <%= dropdown %>
+																			<span></span>
+																		</label>
+																		<% }); %>
+																	</div>
+                                                                </div>
+                                                            </div>
+														</div>
 													</div>
 												</div>
 											</div>
@@ -401,23 +408,43 @@ License: You must have a valid license purchased only from https://themes.getboo
 		<script>
 			function handleClick(case_type) {
 				if (case_type.value == 'Support'){
-					document.getElementById('request_type').innerHTML = `<label class="kt-radio kt-radio--solid">
-																					<input type="radio" checked required name="request_type" value="Issues"> Issues
-																				<span></span>
-																			</label>
-																			<label class="kt-radio kt-radio--solid">
-																					<input type="radio" disabled required name="request_type" value="Complaints"> Complaints
-																				<span></span>
-																			</label>`;
+					document.getElementById('request_type').innerHTML = `
+					<div class="col-xl-12">
+						<div class="form-group row">
+							<label class="col-lg-3 col-form-label"></label>
+							<div class="col-lg-6">
+								<div class="kt-radio-inline">
+									<label class="kt-radio kt-radio--solid">
+										<input type="radio" checked required name="request_type" value="Issues"> Issues
+										<span></span>
+									</label>
+									<label class="kt-radio kt-radio--solid">
+											<input type="radio" disabled required name="request_type" value="Complaints"> Complaints
+										<span></span>
+									</label>
+								</div>
+							</div>
+						</div>
+					</div>`;
 				} else {
-					document.getElementById('request_type').innerHTML = `<label class="kt-radio kt-radio--solid">
-																					<input type="radio" equired name="request_type" value="Issues"> Issues
-																				<span></span>
-																			</label>
-																			<label class="kt-radio kt-radio--solid">
-																					<input type="radio" required name="request_type" value="Complaints"> Complaints
-																				<span></span>
-																			</label>`;
+					document.getElementById('request_type').innerHTML = `
+					<div class="col-xl-12">
+						<div class="form-group row">
+							<label class="col-lg-3 col-form-label"></label>
+							<div class="col-lg-6">
+								<div class="kt-radio-inline">
+									<label class="kt-radio kt-radio--solid">
+										<input type="radio" equired name="request_type" value="Issues"> Issues
+										<span></span>
+									</label>
+									<label class="kt-radio kt-radio--solid">
+											<input type="radio" required name="request_type" value="Complaints"> Complaints
+										<span></span>
+									</label>
+								</div>
+							</div>
+						</div>
+					</div>`;
 				}
 			}
 		</script>

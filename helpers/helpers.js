@@ -143,7 +143,7 @@ module.exports = {
         const manager = await models.User.findOne({
             include: [{
                 model: models.Department,
-                where: {DepartmentId: casei.DepartmentId}
+                where: {id: casei.DepartmentId}
             },{
                 model: models.Role,
                 where: {role_name: 'Manager'}
@@ -161,9 +161,9 @@ module.exports = {
     sendGuestCaseDetails: async (req, sender, assigned, casemanager_id, casemanager_password) => {
         const to = [sender, assigned];//email: 1. creator 2. assigned_to 3. req.body.contact_email
         const subject = ['You just Created a new Case', 'A new case Has been assigned to you'];
-        const text = `${req.body.subject}\n ${req.body.description}\n Link: ${req.get('host')}/case/${casemanager_id}/details\n Password: ${casemanager_password}`;
+        const text = [`Subject: ${req.body.subject}\n Description: ${req.body.description}\n Link: ${req.get('host')}/guest/${casemanager_id}/details\n Password: ${casemanager_password}`, `Subject: ${req.body.subject}\n Description: ${req.body.description}\n Link: ${req.get('host')}/case/${casemanager_id}/details\n Password: ${casemanager_password}`];
         for(let i=0;i<to.length;i++) {
-            sendMail(to[i], subject[i], text);
+            sendMail(to[i], subject[i], text[i]);
         }
     },
     sendCommentUpdate: async (req, email) => {
