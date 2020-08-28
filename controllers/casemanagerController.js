@@ -11,6 +11,7 @@ exports.getCasemanagerCreate = async function(req, res) {
             caseCreate = await apiFetch(req, res, `${apiUrl}/case/create`);
             const user = await apiFetch(req, res, `${apiUrl}/case/getuser`);
             layout = 'layout';
+            functioName = 'GET CASE CREATE'
             if(user.Role.role_name == 'Customer' || user.Role.role_name == 'User') layout = 'layout1'
         } else {
             caseCreate = await apiFetch(req, res, `${apiUrl}/guest/create`);
