@@ -9,7 +9,7 @@ exports.getCasemanagerCreate = async function(req, res) {
         let functioName = 'GET CREATE'
         if(req.user){
             caseCreate = await apiFetch(req, res, `${apiUrl}/case/create`);
-            const user = await apiFetch(req, res, `${apiUrl}/case/ getuser`);
+            const user = await apiFetch(req, res, `${apiUrl}/case/getuser`);
             layout = 'layout';
             if(user.Role.role_name == 'Customer' || user.Role.role_name == 'User') layout = 'layout1'
         } else {
@@ -93,7 +93,7 @@ exports.getCasemanagerDetails = async function(req, res, next) {
     try {
         const id = req.params.casemanager_id;
         const case_details = await apiFetch(req, res, `${apiUrl}/case/${id}/details`);
-        const user = await apiFetch(req, res, `${apiUrl}/case/ getuser`);
+        const user = await apiFetch(req, res, `${apiUrl}/case/getuser`);
         let layout = 'layout';
         if (user.Role.role_name == 'Customer') layout = 'layout1';
         res.render('pages/content', {
@@ -172,7 +172,7 @@ exports.getCustomerCases = async function(req, res, next) {
     try {
         const cases = await apiFetch(req, res, `${apiUrl}/case/user/customer`);
         const departments = await apiFetch(req, res, `${apiUrl}/post/departments`);
-        const user = await apiFetch(req, res, `${apiUrl}/case/ getuser`);
+        const user = await apiFetch(req, res, `${apiUrl}/case/getuser`);
         let layout = 'layout';
         if(user.Role.role_name == 'Customer') layout = 'layout1'
             res.render('pages/content', {
@@ -248,7 +248,7 @@ exports.getGuestCaseDetails = async function(req, res, next) {
     try {
         const id = req.params.casemanager_id;
         const case_details = await apiFetch(req, res, `${apiUrl}/guest/${id}/details`);
-        // const user = await apiFetch(req, res, `${apiUrl}/case/ getuser`);
+        // const user = await apiFetch(req, res, `${apiUrl}/case/getuser`);
         let layout = 'loginlayout';
         res.render('pages/content', {
             title: 'Guest | Case Details',

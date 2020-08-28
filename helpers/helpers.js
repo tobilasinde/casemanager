@@ -157,7 +157,8 @@ module.exports = {
         for(let i=0;i<to.length;i++) {
             sendMail(to[i], subject[i], text);
         }
-    },sendGuestCaseDetails: async (req, sender, assigned, casemanager_id, casemanager_password) => {
+    },
+    sendGuestCaseDetails: async (req, sender, assigned, casemanager_id, casemanager_password) => {
         const to = [sender, assigned];//email: 1. creator 2. assigned_to 3. req.body.contact_email
         const subject = ['You just Created a new Case', 'A new case Has been assigned to you'];
         const text = `${req.body.subject}\n ${req.body.description}\n Link: ${req.get('host')}/case/${casemanager_id}/details\n Password: ${casemanager_password}`;
